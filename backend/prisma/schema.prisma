@@ -1,0 +1,119 @@
+// CarePulse Database Schema
+// Simple schema matching our domain entities - no over-engineering
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users table - integrates with Clerk authentication
+model User {
+  id          String   @id @default(cuid())
+  clerkUserId String   @unique
+  role        UserRole
+  
+  // Common fields
+  firstName String
+  lastName  String
+  email     String   @unique
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Role-specific data
+  patient Patient?
+  doctor  Doctor?
+
+  @@map("users")
+}
+
+// Patient-specific information
+model Patient {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  phone         String
+  dateOfBirth   DateTime
+  address       String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments  Appointment[]
+
+  @@map("patients")
+}
+
+// Doctor-specific information
+model Doctor {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  specialization String?
+  isActive       Boolean   @default(true)
+  
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments   Appointment[]
+
+  @@map("doctors")
+}
+
+// Appointments - core business entity
+model Appointment {
+  id                  String            @id @default(cuid())
+  
+  // Core relationships
+  patientId           String
+  doctorId            String
+  
+  // Appointment details
+  type                AppointmentType
+  status              AppointmentStatus @default(SCHEDULED)
+  
+  // Scheduling
+  scheduledDateTime   DateTime
+  durationMinutes     Int               @default(60) // Store duration as minutes
+  
+  // Optional information
+  reasonForVisit      String?
+  notes               String?
+  
+  // System fields
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  // Relations
+  patient             Patient           @relation(fields: [patientId], references: [id])
+  doctor              Doctor            @relation(fields: [doctorId], references: [id])
+
+  @@map("appointments")
+}
+
+// Enums matching our domain types
+enum UserRole {
+  PATIENT
+  DOCTOR
+  STAFF
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum AppointmentType {
+  FIRST_CONSULT
+  CHECK_UP
+  FOLLOW_UP
+}
