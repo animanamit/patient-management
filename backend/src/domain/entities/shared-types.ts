@@ -1,14 +1,12 @@
 /**
  * CAREPULSE SHARED DOMAIN TYPES
- * 
+ *
  * Foundation types and value objects for the CarePulse healthcare management platform.
  * These types provide type safety, business rule validation, and domain modeling
  * for the entire application.
  */
 
-// =============================================================================
 // TYPE DEFINITIONS
-// =============================================================================
 
 // Branded ID Types
 export type PatientId = string & { readonly __brand: "PatientId" };
@@ -62,9 +60,7 @@ export type Appointment = {
   slot: AppointmentSlot;
 };
 
-// =============================================================================
 // ID CONSTRUCTORS
-// =============================================================================
 
 export const createPatientId = (id: string): PatientId => {
   const regex = /^patient_[a-zA-Z0-9]+$/;
@@ -94,9 +90,7 @@ export const createQueueId = (id: string): QueueId => {
   throw new Error("Invalid QueueId format (expected: queue_<alphanumeric>)");
 };
 
-// =============================================================================
 // VALUE OBJECTS
-// =============================================================================
 
 /**
  * Singapore Phone Number Value Object
@@ -191,30 +185,6 @@ export class EmailAddress {
     }
   }
 
-  private isDisposableEmail(email: string): boolean {
-    const disposableDomains = [
-      "10minutemail.com",
-      "tempmail.org",
-      "guerrillamail.com",
-      "mailinator.com",
-    ];
-    
-    const domain = email.split("@")[1];
-    return disposableDomains.includes(domain);
-  }
-
-  private isHealthcareCompliant(email: string): boolean {
-    const domain = email.split("@")[1];
-    const validTLDs = [".com", ".org", ".edu", ".gov", ".sg", ".net"];
-    const hasValidTLD = validTLDs.some((tld) => domain.endsWith(tld));
-    
-    if (!hasValidTLD) {
-      return false;
-    }
-
-    return true;
-  }
-
   toString(): string {
     return this.normalizedValue;
   }
@@ -235,10 +205,6 @@ export class EmailAddress {
     return this.normalizedValue.split("@")[0];
   }
 
-  isFromDomain(domain: string): boolean {
-    return this.getDomain().toLowerCase() === domain.toLowerCase();
-  }
-
   equals(other: EmailAddress): boolean {
     return this.normalizedValue === other.normalizedValue;
   }
@@ -256,13 +222,13 @@ export class AppointmentDuration {
   private readonly minutes: number;
 
   constructor(durationInMinutes: number) {
-    if (durationInMinutes < 15) {
+    if (durationInMinutes < 30) {
       throw new Error(
-        `Appointment duration too short: ${durationInMinutes} minutes. Minimum is 15 minutes.`
+        `Appointment duration too short: ${durationInMinutes} minutes. Minimum is 30 minutes.`
       );
     }
 
-    if (durationInMinutes > 180) {
+    if (durationInMinutes > 90) {
       throw new Error(
         `Appointment duration too long: ${durationInMinutes} minutes. Maximum is 180 minutes (3 hours).`
       );
@@ -290,11 +256,7 @@ export class AppointmentDuration {
   }
 
   static followUp(): AppointmentDuration {
-    return new AppointmentDuration(45);
-  }
-
-  static emergency(): AppointmentDuration {
-    return new AppointmentDuration(120);
+    return new AppointmentDuration(30);
   }
 
   static forAppointmentType(type: AppointmentType): AppointmentDuration {
@@ -350,7 +312,7 @@ export class AppointmentDuration {
     const endTime = this.calculateEndTime(startTime);
     const startHour = startTime.getHours();
     const endHour = endTime.getHours();
-    
+
     return startHour >= 9 && endHour <= 18;
   }
 

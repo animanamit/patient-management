@@ -123,15 +123,6 @@ async function createUsers() {
         role: 'DOCTOR',
       },
     }),
-    prisma.user.create({
-      data: {
-        clerkUserId: 'user_2ghi789jkl012',
-        email: 'dr.maria.rodriguez@carepulse.com',
-        firstName: 'Maria',
-        lastName: 'Rodriguez',
-        role: 'DOCTOR',
-      },
-    }),
   ]);
 
   return {
@@ -207,13 +198,6 @@ async function createDoctors(doctorUsers: any[]) {
         isActive: true,
       },
     }),
-    prisma.doctor.create({
-      data: {
-        userId: doctorUsers[2].id,
-        specialization: 'Pediatric Physiotherapy',
-        isActive: true,
-      },
-    }),
   ]);
 
   return doctors;
@@ -277,12 +261,12 @@ async function createAppointments(patients: any[], doctors: any[]) {
     prisma.appointment.create({
       data: {
         patientId: patients[4].id,
-        doctorId: doctors[2].id,
+        doctorId: doctors[0].id,
         type: 'FIRST_CONSULT',
         status: 'SCHEDULED',
         scheduledDateTime: daysFromNow(2),
         durationMinutes: 90,
-        reasonForVisit: 'Initial consultation for pediatric assessment',
+        reasonForVisit: 'Initial consultation for new patient',
       },
     }),
     // Future follow-up
