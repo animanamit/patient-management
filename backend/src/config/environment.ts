@@ -1,0 +1,1 @@
+// validate .env vars here

@@ -1,0 +1,90 @@
+{
+  "compilerOptions": {
+    // Target and Module Configuration
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020"],
+    "moduleResolution": "node",
+    
+    // Strict Type Checking (Session 2 requirement)
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    
+    // Module Resolution and Imports
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    
+    // Absolute Imports Configuration (Session 2 requirement)
+    "baseUrl": "./src",
+    "paths": {
+      "@config/*": ["config/*"],
+      "@domain/*": ["domain/*"],
+      "@api/*": ["api/*"],
+      "@shared/*": ["shared/*"],
+      "@/*": ["./*"]
+    },
+    
+    // Output Configuration
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "removeComments": true,
+    "sourceMap": true,
+    
+    // Declaration Generation (Session 2 requirement for type sharing)
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "./dist/types",
+    
+    // Advanced Options for Backend Development
+    "skipLibCheck": true,
+    "allowJs": false,
+    "checkJs": false,
+    "noEmit": false,
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    
+    // Emit Configuration
+    "noEmitOnError": true,
+    "preserveConstEnums": true,
+    
+    // Experimental Decorators (for future Fastify plugins/decorators)
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    
+    // Additional Checks for Code Quality
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    
+    // Type Checking for Better Error Handling
+    "useUnknownInCatchVariables": true
+  },
+  "include": [
+    "src/**/*",
+    "src/**/*.json"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "coverage"
+  ],
+  "ts-node": {
+    "esm": false,
+    "experimentalSpecifierResolution": "node"
+  }
+}
