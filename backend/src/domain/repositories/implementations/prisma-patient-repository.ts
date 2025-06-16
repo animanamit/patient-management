@@ -3,9 +3,10 @@
  * 
  * This class implements the IPatientRepository interface using Prisma ORM.
  * It translates the domain operations into actual database queries.
+ * Works with the User/Patient relational schema.
  */
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@config/database';
 import { Patient } from '@domain/entities/patient';
 import { 
   PatientId, 
@@ -16,75 +17,65 @@ import {
 import { 
   IPatientRepository, 
   RepositoryResult, 
-  RepositoryError,
   PatientFilters,
   PatientUpdateData 
 } from '@domain/repositories/interfaces';
 
 export class PrismaPatientRepository implements IPatientRepository {
-  constructor(private prisma: PrismaClient) {}
+  private prisma = prisma;
 
   async create(patientData: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>): Promise<RepositoryResult<Patient>> {
     try {
-      // Check for existing email or phone
-      const existingPatient = await this.prisma.patient.findFirst({
+      // Check for existing email or phone in User table
+      const existingUser = await this.prisma.user.findFirst({
         where: {
           OR: [
             { email: patientData.email.getValue() },
-            { phone: patientData.phone.getValue() }
+            { clerkUserId: patientData.clerkUserId }
           ]
         }
       });
 
-      if (existingPatient) {
+      if (existingUser) {
         return {
           success: false,
           error: {
             type: 'ConflictError',
-            message: 'Patient with this email or phone already exists',
+            message: 'User with this email or clerk ID already exists',
             details: { 
               email: patientData.email.getValue(), 
-              phone: patientData.phone.getValue() 
+              clerkUserId: patientData.clerkUserId 
             }
           }
         };
       }
 
-      // Create the patient
-      const createdPatient = await this.prisma.patient.create({
+      // Create user with patient in a transaction
+      const result = await this.prisma.user.create({
         data: {
           clerkUserId: patientData.clerkUserId,
           firstName: patientData.firstName,
           lastName: patientData.lastName,
           email: patientData.email.getValue(),
-          phone: patientData.phone.getValue(),
-          address: patientData.address,
-          dateOfBirth: patientData.dateOfBirth,
-          gender: patientData.gender,
-          emergencyContactName: patientData.emergencyContactName,
-          emergencyContactPhone: patientData.emergencyContactPhone?.getValue(),
+          role: 'PATIENT',
+          patient: {
+            create: {
+              phone: patientData.phone.getValue(),
+              dateOfBirth: patientData.dateOfBirth,
+              address: patientData.address || null,
+            }
+          }
+        },
+        include: {
+          patient: true
         }
-      });
+      }) as any; // Type assertion to handle complex Prisma types
 
-      // Transform Prisma result to domain entity
-      const patient: Patient = {
-        id: createPatientId(createdPatient.id),
-        clerkUserId: createdPatient.clerkUserId,
-        firstName: createdPatient.firstName,
-        lastName: createdPatient.lastName,
-        email: new EmailAddress(createdPatient.email),
-        phone: new PhoneNumber(createdPatient.phone),
-        address: createdPatient.address,
-        dateOfBirth: createdPatient.dateOfBirth,
-        gender: createdPatient.gender as Patient['gender'],
-        emergencyContactName: createdPatient.emergencyContactName,
-        emergencyContactPhone: createdPatient.emergencyContactPhone 
-          ? new PhoneNumber(createdPatient.emergencyContactPhone) 
-          : undefined,
-        createdAt: createdPatient.createdAt,
-        updatedAt: createdPatient.updatedAt,
-      };
+      if (!result.patient) {
+        throw new Error('Failed to create patient record');
+      }
 
+      const patient = this.transformPrismaToPatient(result, result.patient);
       return { success: true, data: patient };
 
     } catch (error) {
@@ -94,11 +85,14 @@ export class PrismaPatientRepository implements IPatientRepository {
 
   async findById(id: PatientId): Promise<RepositoryResult<Patient>> {
     try {
-      const prismaPatient = await this.prisma.patient.findUnique({
-        where: { id: id as string }
+      const prismaRecord = await this.prisma.patient.findUnique({
+        where: { id: id as string },
+        include: {
+          user: true
+        }
       });
 
-      if (!prismaPatient) {
+      if (!prismaRecord) {
         return {
           success: false,
           error: {
@@ -108,7 +102,7 @@ export class PrismaPatientRepository implements IPatientRepository {
         };
       }
 
-      const patient = this.transformPrismaToPatient(prismaPatient);
+      const patient = this.transformPrismaToPatient(prismaRecord.user, prismaRecord);
       return { success: true, data: patient };
 
     } catch (error) {
@@ -118,11 +112,14 @@ export class PrismaPatientRepository implements IPatientRepository {
 
   async findByEmail(email: EmailAddress): Promise<RepositoryResult<Patient>> {
     try {
-      const prismaPatient = await this.prisma.patient.findUnique({
-        where: { email: email.getValue() }
+      const prismaRecord = await this.prisma.user.findUnique({
+        where: { email: email.getValue() },
+        include: {
+          patient: true
+        }
       });
 
-      if (!prismaPatient) {
+      if (!prismaRecord || !prismaRecord.patient) {
         return {
           success: false,
           error: {
@@ -132,7 +129,7 @@ export class PrismaPatientRepository implements IPatientRepository {
         };
       }
 
-      const patient = this.transformPrismaToPatient(prismaPatient);
+      const patient = this.transformPrismaToPatient(prismaRecord, prismaRecord.patient);
       return { success: true, data: patient };
 
     } catch (error) {
@@ -144,7 +141,8 @@ export class PrismaPatientRepository implements IPatientRepository {
     try {
       // Check if patient exists
       const existingPatient = await this.prisma.patient.findUnique({
-        where: { id: id as string }
+        where: { id: id as string },
+        include: { user: true }
       });
 
       if (!existingPatient) {
@@ -157,20 +155,43 @@ export class PrismaPatientRepository implements IPatientRepository {
         };
       }
 
-      // Prepare update data
-      const prismaUpdateData: any = {};
-      if (updateData.firstName) prismaUpdateData.firstName = updateData.firstName;
-      if (updateData.lastName) prismaUpdateData.lastName = updateData.lastName;
-      if (updateData.email) prismaUpdateData.email = updateData.email.getValue();
-      if (updateData.phone) prismaUpdateData.phone = updateData.phone.getValue();
-      if (updateData.address) prismaUpdateData.address = updateData.address;
+      // Prepare update data for User and Patient
+      const userUpdateData: any = {};
+      const patientUpdateData: any = {};
 
-      const updatedPatient = await this.prisma.patient.update({
-        where: { id: id as string },
-        data: prismaUpdateData
+      if (updateData.firstName) userUpdateData.firstName = updateData.firstName;
+      if (updateData.lastName) userUpdateData.lastName = updateData.lastName;
+      if (updateData.email) userUpdateData.email = updateData.email.getValue();
+      if (updateData.phone) patientUpdateData.phone = updateData.phone.getValue();
+      if (updateData.address !== undefined) patientUpdateData.address = updateData.address;
+
+      // Update both user and patient records
+      await this.prisma.$transaction(async (tx) => {
+        if (Object.keys(userUpdateData).length > 0) {
+          await tx.user.update({
+            where: { id: existingPatient.userId },
+            data: userUpdateData
+          });
+        }
+        if (Object.keys(patientUpdateData).length > 0) {
+          await tx.patient.update({
+            where: { id: id as string },
+            data: patientUpdateData
+          });
+        }
       });
 
-      const patient = this.transformPrismaToPatient(updatedPatient);
+      // Fetch updated record
+      const updatedRecord = await this.prisma.patient.findUnique({
+        where: { id: id as string },
+        include: { user: true }
+      });
+
+      if (!updatedRecord) {
+        throw new Error('Failed to fetch updated patient');
+      }
+
+      const patient = this.transformPrismaToPatient(updatedRecord.user, updatedRecord);
       return { success: true, data: patient };
 
     } catch (error) {
@@ -180,8 +201,23 @@ export class PrismaPatientRepository implements IPatientRepository {
 
   async delete(id: PatientId): Promise<RepositoryResult<void>> {
     try {
-      await this.prisma.patient.delete({
+      const patient = await this.prisma.patient.findUnique({
         where: { id: id as string }
+      });
+
+      if (!patient) {
+        return {
+          success: false,
+          error: {
+            type: 'NotFound',
+            message: `Patient with ID ${id} not found`
+          }
+        };
+      }
+
+      // Delete user (cascades to patient)
+      await this.prisma.user.delete({
+        where: { id: patient.userId }
       });
 
       return { success: true, data: undefined };
@@ -193,11 +229,14 @@ export class PrismaPatientRepository implements IPatientRepository {
 
   async findByClerkUserId(clerkUserId: string): Promise<RepositoryResult<Patient>> {
     try {
-      const prismaPatient = await this.prisma.patient.findUnique({
-        where: { clerkUserId }
+      const prismaRecord = await this.prisma.user.findUnique({
+        where: { clerkUserId },
+        include: {
+          patient: true
+        }
       });
 
-      if (!prismaPatient) {
+      if (!prismaRecord || !prismaRecord.patient) {
         return {
           success: false,
           error: {
@@ -207,7 +246,7 @@ export class PrismaPatientRepository implements IPatientRepository {
         };
       }
 
-      const patient = this.transformPrismaToPatient(prismaPatient);
+      const patient = this.transformPrismaToPatient(prismaRecord, prismaRecord.patient);
       return { success: true, data: patient };
 
     } catch (error) {
@@ -217,11 +256,14 @@ export class PrismaPatientRepository implements IPatientRepository {
 
   async findByPhone(phone: PhoneNumber): Promise<RepositoryResult<Patient>> {
     try {
-      const prismaPatient = await this.prisma.patient.findUnique({
-        where: { phone: phone.getValue() }
+      const prismaRecord = await this.prisma.patient.findFirst({
+        where: { phone: phone.getValue() },
+        include: {
+          user: true
+        }
       });
 
-      if (!prismaPatient) {
+      if (!prismaRecord) {
         return {
           success: false,
           error: {
@@ -231,7 +273,7 @@ export class PrismaPatientRepository implements IPatientRepository {
         };
       }
 
-      const patient = this.transformPrismaToPatient(prismaPatient);
+      const patient = this.transformPrismaToPatient(prismaRecord.user, prismaRecord);
       return { success: true, data: patient };
 
     } catch (error) {
@@ -241,7 +283,7 @@ export class PrismaPatientRepository implements IPatientRepository {
 
   async emailExists(email: EmailAddress): Promise<boolean> {
     try {
-      const count = await this.prisma.patient.count({
+      const count = await this.prisma.user.count({
         where: { email: email.getValue() }
       });
       return count > 0;
@@ -266,30 +308,41 @@ export class PrismaPatientRepository implements IPatientRepository {
     pagination?: { limit: number; offset: number }
   ): Promise<RepositoryResult<{ patients: Patient[]; totalCount: number }>> {
     try {
-      // Build where clause
-      const where: any = {};
-      if (filters?.email) where.email = filters.email.getValue();
-      if (filters?.phone) where.phone = filters.phone.getValue();
-      if (filters?.clerkUserId) where.clerkUserId = filters.clerkUserId;
-      if (filters?.createdAfter) where.createdAt = { gte: filters.createdAfter };
+      // Build where clause for patient query
+      const patientWhere: any = {};
+      const userWhere: any = { role: 'PATIENT' };
+      
+      if (filters?.email) userWhere.email = filters.email.getValue();
+      if (filters?.phone) patientWhere.phone = filters.phone.getValue();
+      if (filters?.clerkUserId) userWhere.clerkUserId = filters.clerkUserId;
+      if (filters?.createdAfter) patientWhere.createdAt = { gte: filters.createdAfter };
       if (filters?.createdBefore) {
-        where.createdAt = { 
-          ...where.createdAt, 
+        patientWhere.createdAt = { 
+          ...patientWhere.createdAt, 
           lte: filters.createdBefore 
         };
       }
 
+      const where = {
+        ...patientWhere,
+        user: userWhere
+      };
+
+      const queryOptions: any = {
+        where,
+        orderBy: { createdAt: 'desc' },
+        include: { user: true }
+      };
+      
+      if (pagination?.offset) queryOptions.skip = pagination.offset;
+      if (pagination?.limit) queryOptions.take = pagination.limit;
+
       const [patients, totalCount] = await Promise.all([
-        this.prisma.patient.findMany({
-          where,
-          skip: pagination?.offset,
-          take: pagination?.limit,
-          orderBy: { createdAt: 'desc' }
-        }),
+        this.prisma.patient.findMany(queryOptions) as any, // Type assertion for complex Prisma types
         this.prisma.patient.count({ where })
       ]);
 
-      const transformedPatients = patients.map(this.transformPrismaToPatient.bind(this));
+      const transformedPatients = patients.map((p: any) => this.transformPrismaToPatient(p.user, p));
 
       return {
         success: true,
@@ -306,10 +359,17 @@ export class PrismaPatientRepository implements IPatientRepository {
 
   async count(filters?: PatientFilters): Promise<RepositoryResult<number>> {
     try {
-      const where: any = {};
-      if (filters?.email) where.email = filters.email.getValue();
-      if (filters?.phone) where.phone = filters.phone.getValue();
-      if (filters?.clerkUserId) where.clerkUserId = filters.clerkUserId;
+      const patientWhere: any = {};
+      const userWhere: any = { role: 'PATIENT' };
+      
+      if (filters?.email) userWhere.email = filters.email.getValue();
+      if (filters?.phone) patientWhere.phone = filters.phone.getValue();
+      if (filters?.clerkUserId) userWhere.clerkUserId = filters.clerkUserId;
+
+      const where = {
+        ...patientWhere,
+        user: userWhere
+      };
 
       const count = await this.prisma.patient.count({ where });
       return { success: true, data: count };
@@ -320,23 +380,18 @@ export class PrismaPatientRepository implements IPatientRepository {
   }
 
   // Private helper methods
-  private transformPrismaToPatient(prismaPatient: any): Patient {
+  private transformPrismaToPatient(user: any, patient: any): Patient {
     return {
-      id: createPatientId(prismaPatient.id),
-      clerkUserId: prismaPatient.clerkUserId,
-      firstName: prismaPatient.firstName,
-      lastName: prismaPatient.lastName,
-      email: new EmailAddress(prismaPatient.email),
-      phone: new PhoneNumber(prismaPatient.phone),
-      address: prismaPatient.address,
-      dateOfBirth: prismaPatient.dateOfBirth,
-      gender: prismaPatient.gender,
-      emergencyContactName: prismaPatient.emergencyContactName,
-      emergencyContactPhone: prismaPatient.emergencyContactPhone 
-        ? new PhoneNumber(prismaPatient.emergencyContactPhone) 
-        : undefined,
-      createdAt: prismaPatient.createdAt,
-      updatedAt: prismaPatient.updatedAt,
+      id: createPatientId(patient.id),
+      clerkUserId: user.clerkUserId,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: new EmailAddress(user.email),
+      phone: new PhoneNumber(patient.phone),
+      address: patient.address || undefined,
+      dateOfBirth: patient.dateOfBirth,
+      createdAt: patient.createdAt,
+      updatedAt: patient.updatedAt,
     };
   }
 

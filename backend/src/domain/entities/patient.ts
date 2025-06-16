@@ -9,7 +9,6 @@
 
 import { 
   PatientId, 
-  UserRole, 
   PhoneNumber,
   EmailAddress
 } from './shared-types';

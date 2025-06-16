@@ -49,15 +49,20 @@ export const createAppointment = (
   type: AppointmentType,
   reasonForVisit?: string
 ): Omit<Appointment, "id" | "createdAt" | "updatedAt"> => {
-  return {
+  const result: Omit<Appointment, "id" | "createdAt" | "updatedAt"> = {
     patientId,
     doctorId,
     type,
     status: AppointmentStatus.SCHEDULED,
     scheduledDateTime,
     duration: AppointmentDuration.forAppointmentType(type),
-    reasonForVisit: reasonForVisit?.trim(),
   };
+  
+  if (reasonForVisit) {
+    result.reasonForVisit = reasonForVisit.trim();
+  }
+  
+  return result;
 };
 
 // Helper functions for appointment management
@@ -65,7 +70,7 @@ export const canTransitionTo = (
   currentStatus: AppointmentStatus,
   newStatus: AppointmentStatus
 ): boolean => {
-  const validTransitions = {
+  const validTransitions: Record<AppointmentStatus, AppointmentStatus[]> = {
     [AppointmentStatus.SCHEDULED]: [
       AppointmentStatus.IN_PROGRESS,
       AppointmentStatus.CANCELLED,
@@ -79,7 +84,8 @@ export const canTransitionTo = (
     [AppointmentStatus.NO_SHOW]: [], // Final state
   };
 
-  return validTransitions[currentStatus]?.includes(newStatus) ?? false;
+  const transitions = validTransitions[currentStatus];
+  return transitions ? transitions.includes(newStatus) : false;
 };
 
 export const isAppointmentToday = (appointment: Appointment): boolean => {

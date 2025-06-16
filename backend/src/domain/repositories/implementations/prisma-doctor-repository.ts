@@ -3,9 +3,10 @@
  * 
  * This class implements the IDoctorRepository interface using Prisma ORM.
  * Handles doctor management, specialization filtering, and active status tracking.
+ * Works with the User/Doctor relational schema.
  */
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@config/database';
 import { Doctor } from '@domain/entities/doctor';
 import { 
   DoctorId, 
@@ -15,18 +16,17 @@ import {
 import { 
   IDoctorRepository, 
   RepositoryResult, 
-  RepositoryError,
   DoctorFilters,
   DoctorUpdateData 
 } from '@domain/repositories/interfaces';
 
 export class PrismaDoctorRepository implements IDoctorRepository {
-  constructor(private prisma: PrismaClient) {}
+  private prisma = prisma;
 
   async create(doctorData: Omit<Doctor, 'id' | 'createdAt' | 'updatedAt'>): Promise<RepositoryResult<Doctor>> {
     try {
       // Check for existing email or clerkUserId
-      const existingDoctor = await this.prisma.doctor.findFirst({
+      const existingUser = await this.prisma.user.findFirst({
         where: {
           OR: [
             { email: doctorData.email.getValue() },
@@ -35,12 +35,12 @@ export class PrismaDoctorRepository implements IDoctorRepository {
         }
       });
 
-      if (existingDoctor) {
+      if (existingUser) {
         return {
           success: false,
           error: {
             type: 'ConflictError',
-            message: 'Doctor with this email or Clerk user ID already exists',
+            message: 'User with this email or Clerk user ID already exists',
             details: { 
               email: doctorData.email.getValue(), 
               clerkUserId: doctorData.clerkUserId 
@@ -49,18 +49,30 @@ export class PrismaDoctorRepository implements IDoctorRepository {
         };
       }
 
-      const createdDoctor = await this.prisma.doctor.create({
+      const result = await this.prisma.user.create({
         data: {
           clerkUserId: doctorData.clerkUserId,
           firstName: doctorData.firstName,
           lastName: doctorData.lastName,
           email: doctorData.email.getValue(),
-          specialization: doctorData.specialization,
-          isActive: doctorData.isActive,
+          role: 'DOCTOR',
+          doctor: {
+            create: {
+              specialization: doctorData.specialization || null,
+              isActive: doctorData.isActive,
+            }
+          }
+        },
+        include: {
+          doctor: true
         }
-      });
+      }) as any; // Type assertion to handle complex Prisma types
 
-      const doctor = this.transformPrismaToDoctor(createdDoctor);
+      if (!result.doctor) {
+        throw new Error('Failed to create doctor record');
+      }
+
+      const doctor = this.transformPrismaToDoctor(result, result.doctor);
       return { success: true, data: doctor };
 
     } catch (error) {
@@ -70,11 +82,14 @@ export class PrismaDoctorRepository implements IDoctorRepository {
 
   async findById(id: DoctorId): Promise<RepositoryResult<Doctor>> {
     try {
-      const prismaDoctor = await this.prisma.doctor.findUnique({
-        where: { id: id as string }
+      const prismaRecord = await this.prisma.doctor.findUnique({
+        where: { id: id as string },
+        include: {
+          user: true
+        }
       });
 
-      if (!prismaDoctor) {
+      if (!prismaRecord) {
         return {
           success: false,
           error: {
@@ -84,7 +99,7 @@ export class PrismaDoctorRepository implements IDoctorRepository {
         };
       }
 
-      const doctor = this.transformPrismaToDoctor(prismaDoctor);
+      const doctor = this.transformPrismaToDoctor(prismaRecord.user, prismaRecord);
       return { success: true, data: doctor };
 
     } catch (error) {
@@ -94,11 +109,14 @@ export class PrismaDoctorRepository implements IDoctorRepository {
 
   async findByClerkUserId(clerkUserId: string): Promise<RepositoryResult<Doctor>> {
     try {
-      const prismaDoctor = await this.prisma.doctor.findUnique({
-        where: { clerkUserId }
+      const prismaRecord = await this.prisma.user.findUnique({
+        where: { clerkUserId },
+        include: {
+          doctor: true
+        }
       });
 
-      if (!prismaDoctor) {
+      if (!prismaRecord || !prismaRecord.doctor) {
         return {
           success: false,
           error: {
@@ -108,7 +126,7 @@ export class PrismaDoctorRepository implements IDoctorRepository {
         };
       }
 
-      const doctor = this.transformPrismaToDoctor(prismaDoctor);
+      const doctor = this.transformPrismaToDoctor(prismaRecord, prismaRecord.doctor);
       return { success: true, data: doctor };
 
     } catch (error) {
@@ -120,13 +138,16 @@ export class PrismaDoctorRepository implements IDoctorRepository {
     try {
       const prismaDoctors = await this.prisma.doctor.findMany({
         where: { isActive: true },
+        include: {
+          user: true
+        },
         orderBy: [
-          { lastName: 'asc' },
-          { firstName: 'asc' }
+          { user: { lastName: 'asc' } },
+          { user: { firstName: 'asc' } }
         ]
       });
 
-      const doctors = prismaDoctors.map(this.transformPrismaToDoctor.bind(this));
+      const doctors = prismaDoctors.map(d => this.transformPrismaToDoctor(d.user, d));
       return { success: true, data: doctors };
 
     } catch (error) {
@@ -144,13 +165,16 @@ export class PrismaDoctorRepository implements IDoctorRepository {
           },
           isActive: true // Only return active doctors
         },
+        include: {
+          user: true
+        },
         orderBy: [
-          { lastName: 'asc' },
-          { firstName: 'asc' }
+          { user: { lastName: 'asc' } },
+          { user: { firstName: 'asc' } }
         ]
       });
 
-      const doctors = prismaDoctors.map(this.transformPrismaToDoctor.bind(this));
+      const doctors = prismaDoctors.map(d => this.transformPrismaToDoctor(d.user, d));
       return { success: true, data: doctors };
 
     } catch (error) {
@@ -162,7 +186,8 @@ export class PrismaDoctorRepository implements IDoctorRepository {
     try {
       // Check if doctor exists
       const existingDoctor = await this.prisma.doctor.findUnique({
-        where: { id: id as string }
+        where: { id: id as string },
+        include: { user: true }
       });
 
       if (!existingDoctor) {
@@ -175,21 +200,43 @@ export class PrismaDoctorRepository implements IDoctorRepository {
         };
       }
 
-      // Prepare update data
-      const prismaUpdateData: any = { updatedAt: new Date() };
+      // Prepare update data for User and Doctor
+      const userUpdateData: any = {};
+      const doctorUpdateData: any = {};
       
-      if (updateData.firstName) prismaUpdateData.firstName = updateData.firstName;
-      if (updateData.lastName) prismaUpdateData.lastName = updateData.lastName;
-      if (updateData.email) prismaUpdateData.email = updateData.email.getValue();
-      if (updateData.specialization !== undefined) prismaUpdateData.specialization = updateData.specialization;
-      if (updateData.isActive !== undefined) prismaUpdateData.isActive = updateData.isActive;
+      if (updateData.firstName) userUpdateData.firstName = updateData.firstName;
+      if (updateData.lastName) userUpdateData.lastName = updateData.lastName;
+      if (updateData.email) userUpdateData.email = updateData.email.getValue();
+      if (updateData.specialization !== undefined) doctorUpdateData.specialization = updateData.specialization;
+      if (updateData.isActive !== undefined) doctorUpdateData.isActive = updateData.isActive;
 
-      const updatedDoctor = await this.prisma.doctor.update({
-        where: { id: id as string },
-        data: prismaUpdateData
+      // Update both user and doctor records
+      await this.prisma.$transaction(async (tx) => {
+        if (Object.keys(userUpdateData).length > 0) {
+          await tx.user.update({
+            where: { id: existingDoctor.userId },
+            data: userUpdateData
+          });
+        }
+        if (Object.keys(doctorUpdateData).length > 0) {
+          await tx.doctor.update({
+            where: { id: id as string },
+            data: doctorUpdateData
+          });
+        }
       });
 
-      const doctor = this.transformPrismaToDoctor(updatedDoctor);
+      // Fetch updated record
+      const updatedRecord = await this.prisma.doctor.findUnique({
+        where: { id: id as string },
+        include: { user: true }
+      });
+
+      if (!updatedRecord) {
+        throw new Error('Failed to fetch updated doctor');
+      }
+
+      const doctor = this.transformPrismaToDoctor(updatedRecord.user, updatedRecord);
       return { success: true, data: doctor };
 
     } catch (error) {
@@ -215,8 +262,23 @@ export class PrismaDoctorRepository implements IDoctorRepository {
         };
       }
 
-      await this.prisma.doctor.delete({
+      const doctor = await this.prisma.doctor.findUnique({
         where: { id: id as string }
+      });
+
+      if (!doctor) {
+        return {
+          success: false,
+          error: {
+            type: 'NotFound',
+            message: `Doctor with ID ${id} not found`
+          }
+        };
+      }
+
+      // Delete user (cascades to doctor)
+      await this.prisma.user.delete({
+        where: { id: doctor.userId }
       });
 
       return { success: true, data: undefined };
@@ -228,16 +290,22 @@ export class PrismaDoctorRepository implements IDoctorRepository {
 
   async count(filters?: DoctorFilters): Promise<RepositoryResult<number>> {
     try {
-      const where: any = {};
+      const doctorWhere: any = {};
+      const userWhere: any = { role: 'DOCTOR' };
       
       if (filters?.specialization) {
-        where.specialization = {
+        doctorWhere.specialization = {
           contains: filters.specialization,
           mode: 'insensitive'
         };
       }
-      if (filters?.isActive !== undefined) where.isActive = filters.isActive;
-      if (filters?.email) where.email = filters.email.getValue();
+      if (filters?.isActive !== undefined) doctorWhere.isActive = filters.isActive;
+      if (filters?.email) userWhere.email = filters.email.getValue();
+
+      const where = {
+        ...doctorWhere,
+        user: userWhere
+      };
 
       const count = await this.prisma.doctor.count({ where });
       return { success: true, data: count };
@@ -248,17 +316,17 @@ export class PrismaDoctorRepository implements IDoctorRepository {
   }
 
   // Private helper methods
-  private transformPrismaToDoctor(prismaDoctor: any): Doctor {
+  private transformPrismaToDoctor(user: any, doctor: any): Doctor {
     return {
-      id: createDoctorId(prismaDoctor.id),
-      clerkUserId: prismaDoctor.clerkUserId,
-      firstName: prismaDoctor.firstName,
-      lastName: prismaDoctor.lastName,
-      email: new EmailAddress(prismaDoctor.email),
-      specialization: prismaDoctor.specialization,
-      isActive: prismaDoctor.isActive,
-      createdAt: prismaDoctor.createdAt,
-      updatedAt: prismaDoctor.updatedAt,
+      id: createDoctorId(doctor.id),
+      clerkUserId: user.clerkUserId,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: new EmailAddress(user.email),
+      specialization: doctor.specialization,
+      isActive: doctor.isActive,
+      createdAt: doctor.createdAt,
+      updatedAt: doctor.updatedAt,
     };
   }
 

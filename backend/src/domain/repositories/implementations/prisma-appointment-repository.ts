@@ -5,14 +5,13 @@
  * Handles appointment scheduling, conflict checking, and status management.
  */
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@config/database';
 import { Appointment } from '@domain/entities/appointment';
 import { 
   AppointmentId, 
   PatientId, 
   DoctorId, 
   AppointmentStatus,
-  AppointmentType,
   AppointmentDuration,
   createAppointmentId,
   createPatientId,
@@ -21,13 +20,12 @@ import {
 import { 
   IAppointmentRepository, 
   RepositoryResult, 
-  RepositoryError,
   AppointmentFilters,
   AppointmentUpdateData 
 } from '@domain/repositories/interfaces';
 
 export class PrismaAppointmentRepository implements IAppointmentRepository {
-  constructor(private prisma: PrismaClient) {}
+  private prisma = prisma;
 
   async create(appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>): Promise<RepositoryResult<Appointment>> {
     try {
@@ -59,9 +57,9 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
           type: appointmentData.type,
           status: appointmentData.status,
           scheduledDateTime: appointmentData.scheduledDateTime,
-          duration: appointmentData.duration.getMinutes(),
-          reasonForVisit: appointmentData.reasonForVisit,
-          notes: appointmentData.notes,
+          durationMinutes: appointmentData.duration.getMinutes(),
+          reasonForVisit: appointmentData.reasonForVisit || null,
+          notes: appointmentData.notes || null,
         }
       });
 
@@ -152,7 +150,7 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
 
       // Filter for actual conflicts (this is simplified)
       const actualConflicts = conflictingAppointments.filter(existing => {
-        const existingEnd = new Date(existing.scheduledDateTime.getTime() + existing.duration * 60000);
+        const existingEnd = new Date(existing.scheduledDateTime.getTime() + existing.durationMinutes * 60000);
         return existingEnd > scheduledDateTime; // Existing appointment ends after new one starts
       });
 
@@ -189,7 +187,7 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
       
       if (updateData.status) prismaUpdateData.status = updateData.status;
       if (updateData.scheduledDateTime) prismaUpdateData.scheduledDateTime = updateData.scheduledDateTime;
-      if (updateData.duration) prismaUpdateData.duration = updateData.duration.getMinutes();
+      if (updateData.duration) prismaUpdateData.durationMinutes = updateData.duration.getMinutes();
       if (updateData.reasonForVisit) prismaUpdateData.reasonForVisit = updateData.reasonForVisit;
 
       const updatedAppointment = await this.prisma.appointment.update({
@@ -251,7 +249,7 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
       type: prismaAppointment.type,
       status: prismaAppointment.status,
       scheduledDateTime: prismaAppointment.scheduledDateTime,
-      duration: new AppointmentDuration(prismaAppointment.duration),
+      duration: new AppointmentDuration(prismaAppointment.durationMinutes),
       reasonForVisit: prismaAppointment.reasonForVisit,
       notes: prismaAppointment.notes,
       createdAt: prismaAppointment.createdAt,

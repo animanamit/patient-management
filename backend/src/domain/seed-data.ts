@@ -16,9 +16,10 @@ import {
   AppointmentType,
 } from './entities/shared-types';
 
-import { Patient, createPatient } from './entities/patient';
-import { Doctor, createDoctor } from './entities/doctor';
+import { Patient } from './entities/patient';
+import { Doctor } from './entities/doctor';
 import { Appointment, createAppointment } from './entities/appointment';
+import { EmailAddress, PhoneNumber, AppointmentDuration } from './entities/shared-types';
 
 // Helper function to create dates relative to today
 const daysFromNow = (days: number): Date => {
@@ -40,7 +41,7 @@ export const seedDoctors: Array<Doctor & { id: string }> = [
     clerkUserId: "user_2abc123def456", // Mock Clerk ID
     firstName: "Sarah",
     lastName: "Chen",
-    email: "dr.sarah.chen@carepulse.com",
+    email: new EmailAddress("dr.sarah.chen@carepulse.com"),
     specialization: "General Physiotherapy",
     isActive: true,
     createdAt: daysFromNow(-30),
@@ -51,7 +52,7 @@ export const seedDoctors: Array<Doctor & { id: string }> = [
     clerkUserId: "user_2def456ghi789",
     firstName: "James",
     lastName: "Wilson", 
-    email: "dr.james.wilson@carepulse.com",
+    email: new EmailAddress("dr.james.wilson@carepulse.com"),
     specialization: "Sports Physiotherapy",
     isActive: true,
     createdAt: daysFromNow(-25),
@@ -62,7 +63,7 @@ export const seedDoctors: Array<Doctor & { id: string }> = [
     clerkUserId: "user_2ghi789jkl012",
     firstName: "Maria",
     lastName: "Rodriguez",
-    email: "dr.maria.rodriguez@carepulse.com", 
+    email: new EmailAddress("dr.maria.rodriguez@carepulse.com"), 
     specialization: "Pediatric Physiotherapy",
     isActive: true,
     createdAt: daysFromNow(-20),
@@ -77,8 +78,8 @@ export const seedPatients: Array<Patient & { id: string }> = [
     clerkUserId: "user_2mno345pqr678",
     firstName: "John",
     lastName: "Doe",
-    email: "john.doe@email.com",
-    phone: "+65 9123 4567",
+    email: new EmailAddress("john.doe@email.com"),
+    phone: new PhoneNumber("+65 9123 4567"),
     dateOfBirth: new Date("1985-03-15"),
     address: "123 Orchard Road, Singapore 238863",
     createdAt: daysFromNow(-15),
@@ -89,8 +90,8 @@ export const seedPatients: Array<Patient & { id: string }> = [
     clerkUserId: "user_2stu901vwx234", 
     firstName: "Emily",
     lastName: "Tan",
-    email: "emily.tan@gmail.com",
-    phone: "+65 8234 5678",
+    email: new EmailAddress("emily.tan@gmail.com"),
+    phone: new PhoneNumber("+65 8234 5678"),
     dateOfBirth: new Date("1992-07-22"),
     address: "456 Marina Bay, Singapore 018956",
     createdAt: daysFromNow(-12),
@@ -101,8 +102,8 @@ export const seedPatients: Array<Patient & { id: string }> = [
     clerkUserId: "user_2yza567bcd890",
     firstName: "Michael", 
     lastName: "Lee",
-    email: "michael.lee@hotmail.com",
-    phone: "+65 9345 6789",
+    email: new EmailAddress("michael.lee@hotmail.com"),
+    phone: new PhoneNumber("+65 9345 6789"),
     dateOfBirth: new Date("1978-11-08"),
     address: "789 Sentosa Cove, Singapore 098234",
     createdAt: daysFromNow(-8),
@@ -113,8 +114,8 @@ export const seedPatients: Array<Patient & { id: string }> = [
     clerkUserId: "user_2efg123hij456",
     firstName: "Lisa",
     lastName: "Wong",
-    email: "lisa.wong@yahoo.com", 
-    phone: "+65 8456 7890",
+    email: new EmailAddress("lisa.wong@yahoo.com"), 
+    phone: new PhoneNumber("+65 8456 7890"),
     dateOfBirth: new Date("1995-01-30"),
     address: "321 Clarke Quay, Singapore 179024",
     createdAt: daysFromNow(-6),
@@ -125,8 +126,8 @@ export const seedPatients: Array<Patient & { id: string }> = [
     clerkUserId: "user_2klm789nop012",
     firstName: "David",
     lastName: "Kumar", 
-    email: "david.kumar@live.com",
-    phone: "+65 9567 8901",
+    email: new EmailAddress("david.kumar@live.com"),
+    phone: new PhoneNumber("+65 9567 8901"),
     dateOfBirth: new Date("1988-09-12"),
     address: "654 Tanjong Pagar, Singapore 088537",
     createdAt: daysFromNow(-4),
@@ -139,12 +140,12 @@ export const seedAppointments: Array<Appointment & { id: string }> = [
   // Past completed appointments
   {
     id: createAppointmentId("appt_past_completed_001"),
-    patientId: seedPatients[0].id,
-    doctorId: seedDoctors[0].id,
+    patientId: seedPatients[0]!.id,
+    doctorId: seedDoctors[0]!.id,
     type: AppointmentType.CHECK_UP,
     status: AppointmentStatus.COMPLETED,
     scheduledDateTime: daysFromNow(-3),
-    duration: { getMinutes: () => 30, calculateEndTime: (start: Date) => new Date(start.getTime() + 30 * 60000) },
+    duration: new AppointmentDuration(30),
     reasonForVisit: "Regular physiotherapy session for lower back pain",
     notes: "Patient showed good improvement. Recommended home exercises.",
     createdAt: daysFromNow(-5),
@@ -152,12 +153,12 @@ export const seedAppointments: Array<Appointment & { id: string }> = [
   },
   {
     id: createAppointmentId("appt_past_completed_002"),
-    patientId: seedPatients[1].id,
-    doctorId: seedDoctors[1].id,
+    patientId: seedPatients[1]!.id,
+    doctorId: seedDoctors[1]!.id,
     type: AppointmentType.FIRST_CONSULT,
     status: AppointmentStatus.COMPLETED,
     scheduledDateTime: daysFromNow(-5),
-    duration: { getMinutes: () => 90, calculateEndTime: (start: Date) => new Date(start.getTime() + 90 * 60000) },
+    duration: new AppointmentDuration(90),
     reasonForVisit: "Sports injury assessment - knee pain after running",
     notes: "Initial assessment complete. Prescribed strengthening exercises.",
     createdAt: daysFromNow(-7),
@@ -167,24 +168,24 @@ export const seedAppointments: Array<Appointment & { id: string }> = [
   // Today's appointments
   {
     id: createAppointmentId("appt_today_scheduled_001"),
-    patientId: seedPatients[2].id,
-    doctorId: seedDoctors[0].id,
+    patientId: seedPatients[2]!.id,
+    doctorId: seedDoctors[0]!.id,
     type: AppointmentType.FOLLOW_UP,
     status: AppointmentStatus.SCHEDULED,
     scheduledDateTime: hoursFromNow(2), // 2 hours from now
-    duration: { getMinutes: () => 45, calculateEndTime: (start: Date) => new Date(start.getTime() + 45 * 60000) },
+    duration: new AppointmentDuration(45),
     reasonForVisit: "Follow-up for shoulder rehabilitation",
     createdAt: daysFromNow(-3),
     updatedAt: daysFromNow(-1),
   },
   {
     id: createAppointmentId("appt_today_in_progress_001"),
-    patientId: seedPatients[3].id,
-    doctorId: seedDoctors[1].id,
+    patientId: seedPatients[3]!.id,
+    doctorId: seedDoctors[1]!.id,
     type: AppointmentType.CHECK_UP,
     status: AppointmentStatus.IN_PROGRESS,
     scheduledDateTime: hoursFromNow(-0.5), // Started 30 minutes ago
-    duration: { getMinutes: () => 60, calculateEndTime: (start: Date) => new Date(start.getTime() + 60 * 60000) },
+    duration: new AppointmentDuration(60),
     reasonForVisit: "Regular treatment for chronic pain management",
     createdAt: daysFromNow(-4),
     updatedAt: hoursFromNow(-0.5),
@@ -193,24 +194,24 @@ export const seedAppointments: Array<Appointment & { id: string }> = [
   // Future appointments
   {
     id: createAppointmentId("appt_future_scheduled_001"),
-    patientId: seedPatients[4].id,
-    doctorId: seedDoctors[2].id,
+    patientId: seedPatients[4]!.id,
+    doctorId: seedDoctors[2]!.id,
     type: AppointmentType.FIRST_CONSULT,
     status: AppointmentStatus.SCHEDULED,
     scheduledDateTime: daysFromNow(2),
-    duration: { getMinutes: () => 90, calculateEndTime: (start: Date) => new Date(start.getTime() + 90 * 60000) },
+    duration: new AppointmentDuration(90),
     reasonForVisit: "Initial consultation for pediatric assessment",
     createdAt: hoursFromNow(-12),
     updatedAt: hoursFromNow(-12),
   },
   {
     id: createAppointmentId("appt_future_scheduled_002"),
-    patientId: seedPatients[0].id,
-    doctorId: seedDoctors[0].id,
+    patientId: seedPatients[0]!.id,
+    doctorId: seedDoctors[0]!.id,
     type: AppointmentType.FOLLOW_UP,
     status: AppointmentStatus.SCHEDULED,
     scheduledDateTime: daysFromNow(5),
-    duration: { getMinutes: () => 45, calculateEndTime: (start: Date) => new Date(start.getTime() + 45 * 60000) },
+    duration: new AppointmentDuration(45),
     reasonForVisit: "Continued treatment for lower back recovery",
     createdAt: daysFromNow(-1),
     updatedAt: daysFromNow(-1),
@@ -219,12 +220,12 @@ export const seedAppointments: Array<Appointment & { id: string }> = [
   // Some cancelled appointments (realistic scenarios)
   {
     id: createAppointmentId("appt_cancelled_001"),
-    patientId: seedPatients[1].id,
-    doctorId: seedDoctors[0].id,
+    patientId: seedPatients[1]!.id,
+    doctorId: seedDoctors[0]!.id,
     type: AppointmentType.CHECK_UP,
     status: AppointmentStatus.CANCELLED,
     scheduledDateTime: daysFromNow(1),
-    duration: { getMinutes: () => 30, calculateEndTime: (start: Date) => new Date(start.getTime() + 30 * 60000) },
+    duration: new AppointmentDuration(30),
     reasonForVisit: "Regular session - cancelled due to scheduling conflict",
     createdAt: daysFromNow(-2),
     updatedAt: hoursFromNow(-6),
@@ -251,7 +252,7 @@ export const generateRandomAppointment = (
     "Treatment progress review"
   ];
   
-  const randomType = appointmentTypes[Math.floor(Math.random() * appointmentTypes.length)];
+  const randomType = appointmentTypes[Math.floor(Math.random() * appointmentTypes.length)]!;
   const randomReason = reasons[Math.floor(Math.random() * reasons.length)];
   
   return createAppointment(
