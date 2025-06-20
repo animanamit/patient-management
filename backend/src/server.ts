@@ -22,6 +22,7 @@ const start = async () => {
     await fastify.register(import("./plugins/cors"));
     await fastify.register(import("./plugins/security"));
     await fastify.register(import("./routes/health"));
+    await fastify.register(import("./routes/patients"), { prefix: "/api" });
 
     // 3. Start server
     await fastify.listen({
