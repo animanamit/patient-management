@@ -21,6 +21,7 @@ const start = async () => {
     // 2. Register plugins (you'll add these in later steps)
     await fastify.register(import("./plugins/cors"));
     await fastify.register(import("./plugins/security"));
+    await fastify.register(import("./plugins/error-handler"));
     await fastify.register(import("./routes/health"));
     await fastify.register(import("./routes/patients"), { prefix: "/api" });
 
