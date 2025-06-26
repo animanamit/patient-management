@@ -26,7 +26,6 @@ export const CreateDoctorSchema = z.object({
   clerkUserId: z.string().min(1, "Clerk user ID is required"),
   firstName: z.string().min(1, "First name is required").max(50),
   lastName: z.string().min(1, "Last name is required!").max(50),
-  email: EmailSchema,
   isActive: z.boolean(),
   specialization: z.string().optional(),
 });
