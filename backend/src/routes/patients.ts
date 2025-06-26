@@ -11,7 +11,6 @@ import {
   PatientQuerySchema,
   PatientIdParamSchema,
   CreatePatientRequest,
-  // UpdatePatientRequest,
   PatientQueryParams,
   PatientIdParam,
   UpdatePatientRequest,
