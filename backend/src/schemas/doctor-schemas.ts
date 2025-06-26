@@ -35,13 +35,14 @@ export const UpdateDoctorSchema = CreateDoctorSchema.partial().omit({
 });
 
 export const DoctorQuerySchema = z.object({
-  isActive: z
-    .string()
-    .transform((val) => val === "true")
-    .optional(),
+  isActive: z.string().optional(),
   specialization: z.string().optional(),
   search: z.string().optional(), // For searching by name
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
 });
+
+export type DoctorQueryParams = z.infer<typeof DoctorQuerySchema>;
 
 export const DoctorResponseSchema = z.object({
   id: z.string(),

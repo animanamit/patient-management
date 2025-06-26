@@ -41,6 +41,8 @@ export const CreatePatientSchema = z.object({
 export const UpdatePatientSchema = CreatePatientSchema.partial();
 
 export const PatientQuerySchema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
   email: EmailSchema.optional(),
   phone: PhoneSchema.optional(),
   limit: z.coerce.number().min(1).max(100).default(10),
