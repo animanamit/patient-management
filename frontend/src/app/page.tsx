@@ -1,13 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Calendar, Users, Stethoscope } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Calendar, Users, Stethoscope } from "lucide-react";
 import Link from "next/link";
 
 /**
  * Landing page for CarePulse
- * 
+ *
  * React 18/19 Features to implement:
  * - useId() for unique IDs in accessibility landmarks
  * - Concurrent rendering for smooth animations
@@ -20,14 +26,19 @@ export default function HomePage() {
       <header className="border-b border-mint bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Heart className="h-8 w-8 text-forest" />
             <h1 className="text-2xl font-bold text-forest">CarePulse</h1>
           </div>
           <nav className="hidden md:flex space-x-6">
-            <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/about"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               About
             </Link>
-            <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/contact"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               Contact
             </Link>
           </nav>
@@ -43,7 +54,7 @@ export default function HomePage() {
           <p className="text-lg text-charcoal/70 mb-8 max-w-xl mx-auto">
             Select your role to access the clinic management system
           </p>
-          
+
           {/* Role Selection Cards */}
           <div className="grid md:grid-cols-3 gap-6 mt-12">
             <Card className="border-forest/10 hover:border-forest/20 transition-colors cursor-pointer bg-white/90">
@@ -73,7 +84,10 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <Link href="/doctor" className="w-full">
-                  <Button variant="outline" className="w-full border-deep-blue text-deep-blue hover:bg-deep-blue hover:text-white">
+                  <Button
+                    variant="outline"
+                    className="w-full border-deep-blue text-deep-blue hover:bg-deep-blue hover:text-white"
+                  >
                     Doctor Dashboard
                   </Button>
                 </Link>
@@ -90,7 +104,10 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <Link href="/staff" className="w-full">
-                  <Button variant="outline" className="w-full border-orange text-orange hover:bg-orange hover:text-white">
+                  <Button
+                    variant="outline"
+                    className="w-full border-orange text-orange hover:bg-orange hover:text-white"
+                  >
                     Staff Dashboard
                   </Button>
                 </Link>
@@ -109,7 +126,10 @@ export default function HomePage() {
                   For patients arriving at the clinic
                 </p>
                 <Link href="/check-in">
-                  <Button variant="outline" className="border-grass text-grass hover:bg-grass hover:text-white">
+                  <Button
+                    variant="outline"
+                    className="border-grass text-grass hover:bg-grass hover:text-white"
+                  >
                     Check In Now
                   </Button>
                 </Link>
