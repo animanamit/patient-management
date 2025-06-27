@@ -75,3 +75,5 @@ export const DoctorWithAppointmentsSchema = DoctorResponseSchema.extend({
     )
     .optional(),
 });
+
+export type CreateDoctorRequest = z.infer<typeof CreateDoctorSchema>;
