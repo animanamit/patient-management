@@ -11,6 +11,8 @@ import {
 import {
   CreateDoctorRequest,
   CreateDoctorSchema,
+  DoctorIdParam,
+  DoctorIdParamSchema,
   DoctorQueryParams,
   DoctorQuerySchema,
 } from "../schemas/doctor-schemas";
@@ -48,6 +50,33 @@ export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
         }
 
         reply.code(201);
+        return { doctor: result.data };
+      } catch (error) {
+        fastify.log.error(error);
+        reply.code(500);
+        return { error: "Internal server error" };
+      }
+    }
+  );
+
+  fastify.get<{ Params: { id: DoctorIdParam } }>(
+    "/doctors/:id",
+    {
+      preHandler: validateParams(DoctorIdParamSchema),
+    },
+    async (request, reply) => {
+      try {
+        const params = (request as any).validatedParams;
+        const doctorId = createDoctorId(params.id);
+        const result = await doctorRepository.findById(doctorId);
+        if (!result.success) {
+          if (result.error.type === "NotFound") {
+            reply.code(404);
+            return { error: "Doctor not found" };
+          }
+          reply.code(500);
+          return { error: "Failed to fetch doctor", details: result.error };
+        }
         return { doctor: result.data };
       } catch (error) {
         fastify.log.error(error);

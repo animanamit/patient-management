@@ -77,3 +77,9 @@ export const DoctorWithAppointmentsSchema = DoctorResponseSchema.extend({
 });
 
 export type CreateDoctorRequest = z.infer<typeof CreateDoctorSchema>;
+export type DoctorIdParam = z.infer<typeof DoctorIdParamSchema>;
+export type UpdateDoctorRequest = z.infer<typeof UpdateDoctorSchema>;
+export type DoctorResponse = z.infer<typeof DoctorResponseSchema>;
+export type DoctorWithAppointmentsResponse = z.infer<
+  typeof DoctorWithAppointmentsSchema
+>;
