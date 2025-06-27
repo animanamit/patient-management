@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/* PPNeueMontreal Font Definition */
+@font-face {
+  font-family: 'PPNeueMontreal';
+  src: url('/fonts/PPNeueMontreal-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* CarePulse PRD Color Palette - Tailwind v4 Configuration */
+@theme {
+  /* Typography */
+  --font-sans: "PPNeueMontreal", system-ui, sans-serif;
+  
+  /* Radius values - soft curves per PRD (12-16px) */
+  --radius-sm: 0.75rem;
+  --radius-md: 0.875rem; 
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  
+  /* PRD Color Palette */
+  --color-forest: #427542;        /* Muted Forest Green - Nav bar, main containers */
+  --color-grass: #82A584;         /* Mellow Grass Green - Cards, secondary backgrounds */
+  --color-mint: #D0E3D2;          /* Mint Buff - Modal backgrounds, alternate surfaces */
+  --color-sky: #8CA8C8;           /* Soft Sky Blue - Info chips, quiet highlights */
+  --color-deep-blue: #355B8C;     /* Deep Calm Blue - UI headers, stat blocks */
+  --color-pale-blue: #D0E0F2;     /* Pale Blue - Dialog panels, gradients */
+  --color-orange: #DB8B3B;        /* Desaturated Orange - CTAs, progress accents */
+  --color-rose: #BB7292;          /* Muted Rose Pink - Subtle alerts, pill badges */
+  --color-charcoal: #222D2C;      /* Soft Charcoal - Body text, numerical displays */
+  --color-white: #FAFAFA;         /* Cloud White - Text, icons, foreground */
+  
+  /* Semantic color mapping */
+  --color-primary: var(--color-forest);
+  --color-primary-foreground: var(--color-white);
+  --color-secondary: var(--color-grass);
+  --color-secondary-foreground: var(--color-charcoal);
+  --color-accent: var(--color-orange);
+  --color-accent-foreground: var(--color-white);
+  --color-muted: var(--color-mint);
+  --color-muted-foreground: var(--color-charcoal);
+  --color-background: var(--color-white);
+  --color-foreground: var(--color-charcoal);
+  --color-card: var(--color-white);
+  --color-card-foreground: var(--color-charcoal);
+  --color-popover: var(--color-white);
+  --color-popover-foreground: var(--color-charcoal);
+  --color-border: var(--color-mint);
+  --color-input: var(--color-mint);
+  --color-ring: var(--color-sky);
+  --color-destructive: var(--color-rose);
+  --color-destructive-foreground: var(--color-white);
+  
+  /* UI-specific colors */
+  --color-info: var(--color-sky);
+  --color-info-foreground: var(--color-charcoal);
+  --color-success: var(--color-grass);
+  --color-success-foreground: var(--color-charcoal);
+  --color-warning: var(--color-orange);
+  --color-warning-foreground: var(--color-white);
+  
+  /* Chart colors for dashboards */
+  --color-chart-1: var(--color-forest);
+  --color-chart-2: var(--color-sky);
+  --color-chart-3: var(--color-orange);
+  --color-chart-4: var(--color-rose);
+  --color-chart-5: var(--color-deep-blue);
+  
+  /* Additional utility colors for the custom palette */
+  --color-forest-50: #f0f4f0;
+  --color-forest-500: var(--color-forest);
+  --color-grass-50: #f5f8f5;
+  --color-grass-500: var(--color-grass);
+  --color-mint-50: #f9fcf9;
+  --color-mint-500: var(--color-mint);
+  --color-sky-50: #f3f6fa;
+  --color-sky-500: var(--color-sky);
+  --color-deep-blue-50: #f1f4f8;
+  --color-deep-blue-500: var(--color-deep-blue);
+  --color-pale-blue-50: #f8fbfd;
+  --color-pale-blue-500: var(--color-pale-blue);
+  --color-orange-50: #fef7f1;
+  --color-orange-500: var(--color-orange);
+  --color-rose-50: #faf6f8;
+  --color-rose-500: var(--color-rose);
+  --color-charcoal-50: #f8f9f9;
+  --color-charcoal-500: var(--color-charcoal);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
