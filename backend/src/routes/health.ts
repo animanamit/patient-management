@@ -3,7 +3,7 @@ import { checkDatabaseConnection } from "../config/database";
 
 const healthRoutes: FastifyPluginAsync = async function (fastify) {
   // Basic health check
-  fastify.get("/health", async (request, reply) => {
+  fastify.get("/health", async (_request, _reply) => {
     return {
       status: "healthy",
       timestamp: new Date().toISOString(),
@@ -12,7 +12,7 @@ const healthRoutes: FastifyPluginAsync = async function (fastify) {
   });
 
   // Detailed health check with database
-  fastify.get("/health/detailed", async (request, reply) => {
+  fastify.get("/health/detailed", async (_request, reply) => {
     const dbHealthy = await checkDatabaseConnection();
 
     if (!dbHealthy) {

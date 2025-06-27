@@ -20,8 +20,8 @@ interface EnvironmentConfig {
   NODE_ENV: 'development' | 'production' | 'test';
   
   // External Services (for future use)
-  CLERK_SECRET_KEY?: string;
-  FRONTEND_URL?: string;
+  CLERK_SECRET_KEY: string | undefined;
+  FRONTEND_URL: string;
 }
 
 // Validate required environment variables

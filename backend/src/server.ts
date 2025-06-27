@@ -24,6 +24,8 @@ const start = async () => {
     await fastify.register(import("./plugins/error-handler"));
     await fastify.register(import("./routes/health"));
     await fastify.register(import("./routes/patients"), { prefix: "/api" });
+    await fastify.register(import("./routes/doctors"), { prefix: "/api" });
+    await fastify.register(import("./routes/appointments"), { prefix: "/api" });
 
     // 3. Start server
     await fastify.listen({

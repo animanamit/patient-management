@@ -11,6 +11,8 @@ import {
 import {
   CreateDoctorRequest,
   CreateDoctorSchema,
+  UpdateDoctorRequest,
+  UpdateDoctorSchema,
   DoctorIdParam,
   DoctorIdParamSchema,
   DoctorQueryParams,
@@ -132,4 +134,88 @@ export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
       }
     }
   );
+
+  // ✏️ PATCH /doctors/:id - Update doctor
+  fastify.patch<{ 
+    Params: DoctorIdParam, 
+    Body: UpdateDoctorRequest 
+  }>(
+    "/doctors/:id",
+    {
+      preHandler: [
+        validateParams(DoctorIdParamSchema),
+        validateRequest(UpdateDoctorSchema)
+      ]
+    },
+    async (request, reply) => {
+      try {
+        const { id } = (request as any).validatedParams;
+        const updateData = (request as any).validatedBody;
+        const doctorId = createDoctorId(id);
+
+        // Convert to domain objects where needed
+        const domainUpdateData: any = {};
+        if (updateData.firstName) domainUpdateData.firstName = updateData.firstName;
+        if (updateData.lastName) domainUpdateData.lastName = updateData.lastName;
+        if (updateData.email) domainUpdateData.email = new EmailAddress(updateData.email);
+        if (updateData.specialization !== undefined) domainUpdateData.specialization = updateData.specialization;
+        if (updateData.isActive !== undefined) domainUpdateData.isActive = updateData.isActive;
+
+        const result = await doctorRepository.update(doctorId, domainUpdateData);
+
+        if (!result.success) {
+          if (result.error.type === 'NotFound') {
+            reply.code(404);
+            return { error: "Doctor not found" };
+          }
+          reply.code(500);
+          return { error: "Failed to update doctor", details: result.error };
+        }
+
+        return { doctor: result.data };
+      } catch (error) {
+        fastify.log.error(error);
+        reply.code(500);
+        return { error: "Internal server error" };
+      }
+    }
+  );
+
+  // 🗑️ DELETE /doctors/:id - Delete doctor
+  fastify.delete<{ Params: DoctorIdParam }>(
+    "/doctors/:id",
+    {
+      preHandler: validateParams(DoctorIdParamSchema),
+    },
+    async (request, reply) => {
+      try {
+        const { id } = (request as any).validatedParams;
+        const doctorId = createDoctorId(id);
+
+        const result = await doctorRepository.delete(doctorId);
+
+        if (!result.success) {
+          if (result.error.type === 'NotFound') {
+            reply.code(404);
+            return { error: "Doctor not found" };
+          }
+          if (result.error.type === 'ConflictError') {
+            reply.code(409);
+            return { error: "Cannot delete doctor with existing appointments", details: result.error };
+          }
+          reply.code(500);
+          return { error: "Failed to delete doctor", details: result.error };
+        }
+
+        reply.code(204);
+        return;
+      } catch (error) {
+        fastify.log.error(error);
+        reply.code(500);
+        return { error: "Internal server error" };
+      }
+    }
+  );
 };
+
+export default doctorRoutes;
