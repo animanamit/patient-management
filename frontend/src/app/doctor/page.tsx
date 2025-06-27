@@ -150,7 +150,7 @@ export default function DoctorDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-deep-blue">Today's Appointments</p>
+                  <p className="text-sm font-medium text-deep-blue">Today&apos;s Appointments</p>
                   <p className="text-2xl font-bold text-charcoal">{todayAppointments.length}</p>
                 </div>
                 <Calendar className="h-8 w-8 text-deep-blue" />
@@ -203,7 +203,7 @@ export default function DoctorDashboard() {
           <TabsList className="grid w-full grid-cols-3 bg-white border border-mint/20">
             <TabsTrigger value="schedule" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-deep-blue/5 data-[state=active]:to-sky/5">
               <Calendar className="h-4 w-4 mr-2" />
-              Today's Schedule
+              Today&apos;s Schedule
             </TabsTrigger>
             <TabsTrigger value="patients" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-deep-blue/5 data-[state=active]:to-sky/5">
               <Users className="h-4 w-4 mr-2" />
@@ -219,7 +219,7 @@ export default function DoctorDashboard() {
           <TabsContent value="schedule" className="space-y-6">
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-semibold text-charcoal">
-                Today's Appointments - {new Date().toLocaleDateString()}
+                Today&apos;s Appointments - {new Date().toLocaleDateString()}
               </h3>
               <Button variant="outline" className="border-deep-blue text-deep-blue hover:bg-deep-blue hover:text-white">
                 View Full Calendar

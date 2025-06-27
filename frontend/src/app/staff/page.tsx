@@ -15,7 +15,6 @@ import {
   Search,
   CheckCircle,
   AlertCircle,
-  XCircle,
   Phone
 } from "lucide-react";
 import Link from "next/link";
@@ -210,7 +209,7 @@ export default function StaffDashboard() {
             </TabsTrigger>
             <TabsTrigger value="schedule" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange/5 data-[state=active]:to-rose/5">
               <Calendar className="h-4 w-4 mr-2" />
-              Today's Schedule
+              Today&apos;s Schedule
             </TabsTrigger>
             <TabsTrigger value="search" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange/5 data-[state=active]:to-rose/5">
               <Search className="h-4 w-4 mr-2" />

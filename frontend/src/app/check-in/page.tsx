@@ -28,16 +28,23 @@ import {
  */
 export default function CheckInPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [checkInStatus, setCheckInStatus] = useState<"idle" | "searching" | "success" | "error">("idle");
-  const [patientInfo, setPatientInfo] = useState<any>(null);
-  const [queueInfo, setQueueInfo] = useState<any>(null);
+  const [patientInfo, setPatientInfo] = useState<{
+    name: string;
+    id: string;
+    appointmentTime: string;
+    doctor: string;
+  } | null>(null);
+  const [queueInfo, setQueueInfo] = useState<{
+    queueNumber: number;
+    estimatedWait: string;
+    position: string;
+  } | null>(null);
 
   // Mock check-in process
   const handleCheckIn = async () => {
     if (!phoneNumber || phoneNumber.length < 8) return;
     
-    setIsSubmitting(true);
     setCheckInStatus("searching");
     
     // Simulate API call
@@ -60,8 +67,6 @@ export default function CheckInPage() {
     } else {
       setCheckInStatus("error");
     }
-    
-    setIsSubmitting(false);
   };
 
   const formatPhoneNumber = (value: string) => {
@@ -221,8 +226,8 @@ export default function CheckInPage() {
               <div className="bg-gradient-to-r from-sky/5 to-pale-blue/10 rounded-xl p-6 border border-sky/20">
                 <h4 className="font-semibold text-charcoal mb-3">What's Next?</h4>
                 <div className="space-y-2 text-sm text-charcoal/70">
-                  <p>✓ You're successfully checked in</p>
-                  <p>✓ You'll receive an SMS when it's your turn</p>
+                  <p>✓ You&apos;re successfully checked in</p>
+                  <p>✓ You&apos;ll receive an SMS when it&apos;s your turn</p>
                   <p>✓ Feel free to wait in our comfortable lounge or nearby area</p>
                   <p>✓ Please return when you receive the notification</p>
                 </div>
@@ -249,7 +254,7 @@ export default function CheckInPage() {
               </div>
               <CardTitle className="text-2xl text-rose">Check-in Failed</CardTitle>
               <CardDescription className="text-lg">
-                We couldn't find an appointment with this phone number
+                We couldn&apos;t find an appointment with this phone number
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
