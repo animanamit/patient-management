@@ -12,7 +12,7 @@ datasource db {
 
 // Users table - integrates with Clerk authentication
 model User {
-  id          String   @id @default(cuid())
+  id          String   @id
   clerkUserId String   @unique
   role        UserRole
   
@@ -33,7 +33,7 @@ model User {
 
 // Patient-specific information
 model Patient {
-  id            String    @id @default(cuid())
+  id            String    @id
   userId        String    @unique
   phone         String
   dateOfBirth   DateTime
@@ -51,7 +51,7 @@ model Patient {
 
 // Doctor-specific information
 model Doctor {
-  id             String    @id @default(cuid())
+  id             String    @id
   userId         String    @unique
   specialization String?
   isActive       Boolean   @default(true)
@@ -68,7 +68,7 @@ model Doctor {
 
 // Appointments - core business entity
 model Appointment {
-  id                  String            @id @default(cuid())
+  id                  String            @id
   
   // Core relationships
   patientId           String

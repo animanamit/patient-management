@@ -12,7 +12,8 @@ import {
   PatientId, 
   EmailAddress, 
   PhoneNumber,
-  createPatientId
+  createPatientId,
+  createUserId
 } from '@domain/entities/shared-types';
 import { 
   IPatientRepository, 
@@ -51,8 +52,11 @@ export class PrismaPatientRepository implements IPatientRepository {
       }
 
       // Create user with patient in a transaction
+      const userId = createUserId();
+      const patientId = createPatientId();
       const result = await this.prisma.user.create({
         data: {
+          id: userId as string,
           clerkUserId: patientData.clerkUserId,
           firstName: patientData.firstName,
           lastName: patientData.lastName,
@@ -60,6 +64,7 @@ export class PrismaPatientRepository implements IPatientRepository {
           role: 'PATIENT',
           patient: {
             create: {
+              id: patientId as string,
               phone: patientData.phone.getValue(),
               dateOfBirth: patientData.dateOfBirth,
               address: patientData.address || null,

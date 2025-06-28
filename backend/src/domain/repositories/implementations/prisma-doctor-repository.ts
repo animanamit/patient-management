@@ -11,7 +11,8 @@ import { Doctor } from '@domain/entities/doctor';
 import { 
   DoctorId, 
   EmailAddress,
-  createDoctorId
+  createDoctorId,
+  createUserId
 } from '@domain/entities/shared-types';
 import { 
   IDoctorRepository, 
@@ -49,8 +50,11 @@ export class PrismaDoctorRepository implements IDoctorRepository {
         };
       }
 
+      const userId = createUserId();
+      const doctorId = createDoctorId();
       const result = await this.prisma.user.create({
         data: {
+          id: userId as string,
           clerkUserId: doctorData.clerkUserId,
           firstName: doctorData.firstName,
           lastName: doctorData.lastName,
@@ -58,6 +62,7 @@ export class PrismaDoctorRepository implements IDoctorRepository {
           role: 'DOCTOR',
           doctor: {
             create: {
+              id: doctorId as string,
               specialization: doctorData.specialization || null,
               isActive: doctorData.isActive,
             }
@@ -317,17 +322,35 @@ export class PrismaDoctorRepository implements IDoctorRepository {
 
   // Private helper methods
   private transformPrismaToDoctor(user: any, doctor: any): Doctor {
-    return {
-      id: createDoctorId(doctor.id),
-      clerkUserId: user.clerkUserId,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: new EmailAddress(user.email),
-      specialization: doctor.specialization,
-      isActive: doctor.isActive,
-      createdAt: doctor.createdAt,
-      updatedAt: doctor.updatedAt,
-    };
+    try {
+      // Handle legacy IDs that might not match the new format
+      let doctorId: DoctorId;
+      try {
+        doctorId = createDoctorId(doctor.id);
+      } catch (idError) {
+        // If ID doesn't match format, use it as-is (cast to DoctorId)
+        // This handles legacy data that might not follow the new format
+        console.warn(`Doctor ID ${doctor.id} doesn't match expected format, using as-is`);
+        doctorId = doctor.id as DoctorId;
+      }
+
+      return {
+        id: doctorId,
+        clerkUserId: user.clerkUserId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: new EmailAddress(user.email),
+        specialization: doctor.specialization,
+        isActive: doctor.isActive,
+        createdAt: doctor.createdAt,
+        updatedAt: doctor.updatedAt,
+      };
+    } catch (error) {
+      console.error('Error transforming doctor data:', error);
+      console.error('User data:', user);
+      console.error('Doctor data:', doctor);
+      throw error;
+    }
   }
 
   private handleError(error: any): RepositoryResult<any> {

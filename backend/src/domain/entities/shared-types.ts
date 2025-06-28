@@ -6,9 +6,12 @@
  * for the entire application.
  */
 
+import { nanoid } from 'nanoid';
+
 // TYPE DEFINITIONS
 
 // Branded ID Types
+export type UserId = string & { readonly __brand: "UserId" };
 export type PatientId = string & { readonly __brand: "PatientId" };
 export type DoctorId = string & { readonly __brand: "DoctorId" };
 export type AppointmentId = string & { readonly __brand: "AppointmentId" };
@@ -62,32 +65,53 @@ export type Appointment = {
 
 // ID CONSTRUCTORS
 
-export const createPatientId = (id: string): PatientId => {
-  const regex = /^patient_[a-zA-Z0-9]+$/;
-  if (regex.test(id)) return id as PatientId;
-  throw new Error(
-    "Invalid PatientId format (expected: patient_<alphanumeric>)"
-  );
+export const createPatientId = (id?: string): PatientId => {
+  if (id) {
+    const regex = /^patient_[a-zA-Z0-9_]+$/;
+    if (regex.test(id)) return id as PatientId;
+    throw new Error(
+      "Invalid PatientId format (expected: patient_<alphanumeric>)"
+    );
+  }
+  return `patient_${nanoid(8)}` as PatientId;
 };
 
-export const createDoctorId = (id: string): DoctorId => {
-  const regex = /^doctor_[a-zA-Z0-9]+$/;
-  if (regex.test(id)) return id as DoctorId;
-  throw new Error("Invalid DoctorId format (expected: doctor_<alphanumeric>)");
+export const createDoctorId = (id?: string): DoctorId => {
+  if (id) {
+    const regex = /^doctor_[a-zA-Z0-9_]+$/;
+    if (regex.test(id)) return id as DoctorId;
+    throw new Error("Invalid DoctorId format (expected: doctor_<alphanumeric>)");
+  }
+  return `doctor_${nanoid(8)}` as DoctorId;
 };
 
-export const createAppointmentId = (id: string): AppointmentId => {
-  const regex = /^appt_[a-zA-Z0-9]+$/;
-  if (regex.test(id)) return id as AppointmentId;
-  throw new Error(
-    "Invalid AppointmentId format (expected: appt_<alphanumeric>)"
-  );
+export const createAppointmentId = (id?: string): AppointmentId => {
+  if (id) {
+    const regex = /^appt_[a-zA-Z0-9_]+$/;
+    if (regex.test(id)) return id as AppointmentId;
+    throw new Error(
+      "Invalid AppointmentId format (expected: appt_<alphanumeric>)"
+    );
+  }
+  return `appt_${nanoid(8)}` as AppointmentId;
 };
 
-export const createQueueId = (id: string): QueueId => {
-  const regex = /^queue_[a-zA-Z0-9]+$/;
-  if (regex.test(id)) return id as QueueId;
-  throw new Error("Invalid QueueId format (expected: queue_<alphanumeric>)");
+export const createQueueId = (id?: string): QueueId => {
+  if (id) {
+    const regex = /^queue_[a-zA-Z0-9_]+$/;
+    if (regex.test(id)) return id as QueueId;
+    throw new Error("Invalid QueueId format (expected: queue_<alphanumeric>)");
+  }
+  return `queue_${nanoid(8)}` as QueueId;
+};
+
+export const createUserId = (id?: string): UserId => {
+  if (id) {
+    const regex = /^user_[a-zA-Z0-9_]+$/;
+    if (regex.test(id)) return id as UserId;
+    throw new Error("Invalid UserId format (expected: user_<alphanumeric>)");
+  }
+  return `user_${nanoid(8)}` as UserId;
 };
 
 // VALUE OBJECTS

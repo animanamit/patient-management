@@ -84,12 +84,16 @@ export const appointmentRoutes: FastifyPluginAsync = async function (fastify) {
           return { appointments: result.data };
         }
 
-        // For now, return empty array for general listing - you'll need to implement findMany in repository
-        return {
-          appointments: [],
-          message:
-            "General appointment listing not yet implemented. Use patientId or doctorId filters.",
-        };
+        // General appointment listing with date filters
+        const appointments = await appointmentRepository.findWithFilters(filters);
+        if (!appointments.success) {
+          reply.code(500);
+          return {
+            error: "Failed to fetch appointments",
+            details: appointments.error,
+          };
+        }
+        return { appointments: appointments.data };
       } catch (error) {
         fastify.log.error(error);
         reply.code(500);

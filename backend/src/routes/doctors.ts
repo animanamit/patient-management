@@ -52,7 +52,12 @@ export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
         }
 
         reply.code(201);
-        return { doctor: result.data };
+        return { 
+          doctor: {
+            ...result.data,
+            email: result.data.email.getValue()
+          }
+        };
       } catch (error) {
         fastify.log.error(error);
         reply.code(500);
@@ -79,7 +84,12 @@ export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
           reply.code(500);
           return { error: "Failed to fetch doctor", details: result.error };
         }
-        return { doctor: result.data };
+        return { 
+          doctor: {
+            ...result.data,
+            email: result.data.email.getValue()
+          }
+        };
       } catch (error) {
         fastify.log.error(error);
         reply.code(500);
@@ -105,7 +115,12 @@ export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
             reply.code(500);
             return { error: "Failed to fetch doctors" };
           }
-          return { doctors: result.data };
+          return { 
+            doctors: result.data.map(doctor => ({
+              ...doctor,
+              email: doctor.email.getValue()
+            }))
+          };
         }
 
         // If they want doctors by specialization
@@ -117,7 +132,12 @@ export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
             reply.code(500);
             return { error: "Failed to fetch doctors" };
           }
-          return { doctors: result.data };
+          return { 
+            doctors: result.data.map(doctor => ({
+              ...doctor,
+              email: doctor.email.getValue()
+            }))
+          };
         }
 
         // Default: get active doctors
@@ -172,7 +192,12 @@ export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
           return { error: "Failed to update doctor", details: result.error };
         }
 
-        return { doctor: result.data };
+        return { 
+          doctor: {
+            ...result.data,
+            email: result.data.email.getValue()
+          }
+        };
       } catch (error) {
         fastify.log.error(error);
         reply.code(500);

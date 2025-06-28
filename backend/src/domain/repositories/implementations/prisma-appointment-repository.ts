@@ -50,8 +50,10 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
         };
       }
 
+      const appointmentId = createAppointmentId();
       const createdAppointment = await this.prisma.appointment.create({
         data: {
+          id: appointmentId as string,
           patientId: appointmentData.patientId as string,
           doctorId: appointmentData.doctorId as string,
           type: appointmentData.type,
@@ -74,7 +76,15 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
   async findById(id: AppointmentId): Promise<RepositoryResult<Appointment>> {
     try {
       const prismaAppointment = await this.prisma.appointment.findUnique({
-        where: { id: id as string }
+        where: { id: id as string },
+        include: {
+          doctor: {
+            include: { user: true }
+          },
+          patient: {
+            include: { user: true }
+          }
+        }
       });
 
       if (!prismaAppointment) {
@@ -87,7 +97,7 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
         };
       }
 
-      const appointment = this.transformPrismaToAppointment(prismaAppointment);
+      const appointment = this.transformPrismaToAppointmentWithDetails(prismaAppointment);
       return { success: true, data: appointment };
 
     } catch (error) {
@@ -99,10 +109,18 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
     try {
       const prismaAppointments = await this.prisma.appointment.findMany({
         where: { patientId: id as string },
+        include: {
+          doctor: {
+            include: { user: true }
+          },
+          patient: {
+            include: { user: true }
+          }
+        },
         orderBy: { scheduledDateTime: 'desc' }
       });
 
-      const appointments = prismaAppointments.map(this.transformPrismaToAppointment.bind(this));
+      const appointments = prismaAppointments.map(this.transformPrismaToAppointmentWithDetails.bind(this));
       return { success: true, data: appointments };
 
     } catch (error) {
@@ -114,10 +132,18 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
     try {
       const prismaAppointments = await this.prisma.appointment.findMany({
         where: { doctorId: id as string },
+        include: {
+          doctor: {
+            include: { user: true }
+          },
+          patient: {
+            include: { user: true }
+          }
+        },
         orderBy: { scheduledDateTime: 'asc' }
       });
 
-      const appointments = prismaAppointments.map(this.transformPrismaToAppointment.bind(this));
+      const appointments = prismaAppointments.map(this.transformPrismaToAppointmentWithDetails.bind(this));
       return { success: true, data: appointments };
 
     } catch (error) {
@@ -216,6 +242,45 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
     }
   }
 
+  async findWithFilters(filters?: any): Promise<RepositoryResult<Appointment[]>> {
+    try {
+      const where: any = {};
+      
+      if (filters?.patientId) where.patientId = filters.patientId as string;
+      if (filters?.doctorId) where.doctorId = filters.doctorId as string;
+      if (filters?.status) where.status = filters.status;
+      if (filters?.type) where.type = filters.type;
+      if (filters?.dateFrom) {
+        where.scheduledDateTime = { gte: filters.dateFrom };
+      }
+      if (filters?.dateTo) {
+        where.scheduledDateTime = { 
+          ...where.scheduledDateTime, 
+          lte: filters.dateTo 
+        };
+      }
+
+      const prismaAppointments = await this.prisma.appointment.findMany({
+        where,
+        include: {
+          doctor: {
+            include: { user: true }
+          },
+          patient: {
+            include: { user: true }
+          }
+        },
+        orderBy: { scheduledDateTime: 'asc' }
+      });
+
+      const appointments = prismaAppointments.map(this.transformPrismaToAppointmentWithDetails.bind(this));
+      return { success: true, data: appointments };
+
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
   async count(filters?: AppointmentFilters): Promise<RepositoryResult<number>> {
     try {
       const where: any = {};
@@ -242,10 +307,36 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
 
   // Private helper methods
   private transformPrismaToAppointment(prismaAppointment: any): Appointment {
+    // Handle legacy IDs that might not match the new format
+    let appointmentId: AppointmentId;
+    let patientId: PatientId;
+    let doctorId: DoctorId;
+
+    try {
+      appointmentId = createAppointmentId(prismaAppointment.id);
+    } catch (error) {
+      console.warn(`Appointment ID ${prismaAppointment.id} doesn't match expected format, using as-is`);
+      appointmentId = prismaAppointment.id as AppointmentId;
+    }
+
+    try {
+      patientId = createPatientId(prismaAppointment.patientId);
+    } catch (error) {
+      console.warn(`Patient ID ${prismaAppointment.patientId} doesn't match expected format, using as-is`);
+      patientId = prismaAppointment.patientId as PatientId;
+    }
+
+    try {
+      doctorId = createDoctorId(prismaAppointment.doctorId);
+    } catch (error) {
+      console.warn(`Doctor ID ${prismaAppointment.doctorId} doesn't match expected format, using as-is`);
+      doctorId = prismaAppointment.doctorId as DoctorId;
+    }
+
     return {
-      id: createAppointmentId(prismaAppointment.id),
-      patientId: createPatientId(prismaAppointment.patientId),
-      doctorId: createDoctorId(prismaAppointment.doctorId),
+      id: appointmentId,
+      patientId: patientId,
+      doctorId: doctorId,
       type: prismaAppointment.type,
       status: prismaAppointment.status,
       scheduledDateTime: prismaAppointment.scheduledDateTime,
@@ -255,6 +346,35 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
       createdAt: prismaAppointment.createdAt,
       updatedAt: prismaAppointment.updatedAt,
     };
+  }
+
+  private transformPrismaToAppointmentWithDetails(prismaAppointment: any): Appointment {
+    const baseAppointment = this.transformPrismaToAppointment(prismaAppointment);
+    
+    // Add doctor and patient details if they exist
+    const appointmentWithDetails: any = { ...baseAppointment };
+    
+    if (prismaAppointment.doctor) {
+      appointmentWithDetails.doctor = {
+        id: createDoctorId(prismaAppointment.doctor.id),
+        firstName: prismaAppointment.doctor.user.firstName,
+        lastName: prismaAppointment.doctor.user.lastName,
+        email: prismaAppointment.doctor.user.email,
+        specialization: prismaAppointment.doctor.specialization,
+      };
+    }
+    
+    if (prismaAppointment.patient) {
+      appointmentWithDetails.patient = {
+        id: createPatientId(prismaAppointment.patient.id),
+        firstName: prismaAppointment.patient.user.firstName,
+        lastName: prismaAppointment.patient.user.lastName,
+        email: prismaAppointment.patient.user.email,
+        phone: prismaAppointment.patient.user.phone,
+      };
+    }
+    
+    return appointmentWithDetails;
   }
 
   private handleError(error: any): RepositoryResult<any> {

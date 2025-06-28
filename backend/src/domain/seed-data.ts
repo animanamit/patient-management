@@ -12,8 +12,10 @@ import {
   createPatientId,
   createDoctorId,
   createAppointmentId,
+  createUserId,
   AppointmentStatus,
   AppointmentType,
+  UserRole,
 } from './entities/shared-types';
 
 import { Patient } from './entities/patient';
@@ -34,10 +36,123 @@ const hoursFromNow = (hours: number): Date => {
   return date;
 };
 
-// Sample doctors for the clinic
-export const seedDoctors: Array<Doctor & { id: string }> = [
+// Pre-generate IDs for consistent references
+const userIds = {
+  doctor1: createUserId(),
+  doctor2: createUserId(), 
+  doctor3: createUserId(),
+  patient1: createUserId(),
+  patient2: createUserId(),
+  patient3: createUserId(),
+  patient4: createUserId(),
+  patient5: createUserId(),
+};
+
+const doctorIds = {
+  doctor1: createDoctorId(),
+  doctor2: createDoctorId(),
+  doctor3: createDoctorId(),
+};
+
+const patientIds = {
+  patient1: createPatientId(),
+  patient2: createPatientId(),
+  patient3: createPatientId(),
+  patient4: createPatientId(),
+  patient5: createPatientId(),
+};
+
+// Sample users (combined for doctors and patients) - Using random IDs for security
+export const seedUsers = [
+  // Doctor users
   {
-    id: createDoctorId("doctor_dr_sarah_chen"),
+    id: userIds.doctor1,
+    clerkUserId: "user_2abc123def456",
+    role: UserRole.DOCTOR,
+    firstName: "Sarah",
+    lastName: "Chen",
+    email: "dr.sarah.chen@carepulse.com",
+    createdAt: daysFromNow(-30),
+    updatedAt: daysFromNow(-5),
+  },
+  {
+    id: userIds.doctor2,
+    clerkUserId: "user_2def456ghi789",
+    role: UserRole.DOCTOR,
+    firstName: "James",
+    lastName: "Wilson",
+    email: "dr.james.wilson@carepulse.com",
+    createdAt: daysFromNow(-25),
+    updatedAt: daysFromNow(-10),
+  },
+  {
+    id: userIds.doctor3,
+    clerkUserId: "user_2ghi789jkl012",
+    role: UserRole.DOCTOR,
+    firstName: "Maria",
+    lastName: "Rodriguez",
+    email: "dr.maria.rodriguez@carepulse.com",
+    createdAt: daysFromNow(-20),
+    updatedAt: daysFromNow(-3),
+  },
+  // Patient users
+  {
+    id: userIds.patient1,
+    clerkUserId: "user_2mno345pqr678",
+    role: UserRole.PATIENT,
+    firstName: "John",
+    lastName: "Doe",
+    email: "john.doe@email.com",
+    createdAt: daysFromNow(-15),
+    updatedAt: daysFromNow(-2),
+  },
+  {
+    id: userIds.patient2,
+    clerkUserId: "user_2stu901vwx234",
+    role: UserRole.PATIENT,
+    firstName: "Emily",
+    lastName: "Tan",
+    email: "emily.tan@gmail.com",
+    createdAt: daysFromNow(-12),
+    updatedAt: daysFromNow(-1),
+  },
+  {
+    id: userIds.patient3,
+    clerkUserId: "user_2yza567bcd890",
+    role: UserRole.PATIENT,
+    firstName: "Michael",
+    lastName: "Lee",
+    email: "michael.lee@hotmail.com",
+    createdAt: daysFromNow(-8),
+    updatedAt: daysFromNow(-4),
+  },
+  {
+    id: userIds.patient4,
+    clerkUserId: "user_2efg123hij456",
+    role: UserRole.PATIENT,
+    firstName: "Lisa",
+    lastName: "Wong",
+    email: "lisa.wong@yahoo.com",
+    createdAt: daysFromNow(-6),
+    updatedAt: daysFromNow(-1),
+  },
+  {
+    id: userIds.patient5,
+    clerkUserId: "user_2klm789nop012",
+    role: UserRole.PATIENT,
+    firstName: "David",
+    lastName: "Kumar",
+    email: "david.kumar@live.com",
+    createdAt: daysFromNow(-4),
+    updatedAt: hoursFromNow(-6),
+  }
+];
+
+// Sample doctors for the clinic - using random IDs for security
+export const seedDoctors: Array<Doctor & { id: string; userId: string }> = [
+  {
+    id: doctorIds.doctor1,
+    userId: userIds.doctor1,
     clerkUserId: "user_2abc123def456", // Mock Clerk ID
     firstName: "Sarah",
     lastName: "Chen",
@@ -48,7 +163,8 @@ export const seedDoctors: Array<Doctor & { id: string }> = [
     updatedAt: daysFromNow(-5),
   },
   {
-    id: createDoctorId("doctor_dr_james_wilson"),
+    id: doctorIds.doctor2,
+    userId: userIds.doctor2,
     clerkUserId: "user_2def456ghi789",
     firstName: "James",
     lastName: "Wilson", 
@@ -59,7 +175,8 @@ export const seedDoctors: Array<Doctor & { id: string }> = [
     updatedAt: daysFromNow(-10),
   },
   {
-    id: createDoctorId("doctor_dr_maria_rodriguez"),
+    id: doctorIds.doctor3,
+    userId: userIds.doctor3,
     clerkUserId: "user_2ghi789jkl012",
     firstName: "Maria",
     lastName: "Rodriguez",
@@ -71,10 +188,11 @@ export const seedDoctors: Array<Doctor & { id: string }> = [
   }
 ];
 
-// Sample patients with realistic profiles
-export const seedPatients: Array<Patient & { id: string }> = [
+// Sample patients with realistic profiles - using random IDs for security
+export const seedPatients: Array<Patient & { id: string; userId: string }> = [
   {
-    id: createPatientId("patient_john_doe_123"),
+    id: patientIds.patient1,
+    userId: userIds.patient1,
     clerkUserId: "user_2mno345pqr678",
     firstName: "John",
     lastName: "Doe",
@@ -86,7 +204,8 @@ export const seedPatients: Array<Patient & { id: string }> = [
     updatedAt: daysFromNow(-2),
   },
   {
-    id: createPatientId("patient_emily_tan_456"),
+    id: patientIds.patient2,
+    userId: userIds.patient2,
     clerkUserId: "user_2stu901vwx234", 
     firstName: "Emily",
     lastName: "Tan",
@@ -98,7 +217,8 @@ export const seedPatients: Array<Patient & { id: string }> = [
     updatedAt: daysFromNow(-1),
   },
   {
-    id: createPatientId("patient_michael_lee_789"),
+    id: patientIds.patient3,
+    userId: userIds.patient3,
     clerkUserId: "user_2yza567bcd890",
     firstName: "Michael", 
     lastName: "Lee",
@@ -110,7 +230,8 @@ export const seedPatients: Array<Patient & { id: string }> = [
     updatedAt: daysFromNow(-4),
   },
   {
-    id: createPatientId("patient_lisa_wong_321"),
+    id: patientIds.patient4,
+    userId: userIds.patient4,
     clerkUserId: "user_2efg123hij456",
     firstName: "Lisa",
     lastName: "Wong",
@@ -122,7 +243,8 @@ export const seedPatients: Array<Patient & { id: string }> = [
     updatedAt: daysFromNow(-1),
   },
   {
-    id: createPatientId("patient_david_kumar_654"),
+    id: patientIds.patient5,
+    userId: userIds.patient5,
     clerkUserId: "user_2klm789nop012",
     firstName: "David",
     lastName: "Kumar", 
@@ -135,11 +257,22 @@ export const seedPatients: Array<Patient & { id: string }> = [
   }
 ];
 
+// Pre-generate appointment IDs for consistent references
+const appointmentIds = {
+  appt1: createAppointmentId(),
+  appt2: createAppointmentId(),
+  appt3: createAppointmentId(),
+  appt4: createAppointmentId(),
+  appt5: createAppointmentId(),
+  appt6: createAppointmentId(),
+  appt7: createAppointmentId(),
+};
+
 // Sample appointments showing various states and scenarios
 export const seedAppointments: Array<Appointment & { id: string }> = [
   // Past completed appointments
   {
-    id: createAppointmentId("appt_past_completed_001"),
+    id: appointmentIds.appt1,
     patientId: seedPatients[0]!.id,
     doctorId: seedDoctors[0]!.id,
     type: AppointmentType.CHECK_UP,
@@ -152,7 +285,7 @@ export const seedAppointments: Array<Appointment & { id: string }> = [
     updatedAt: daysFromNow(-3),
   },
   {
-    id: createAppointmentId("appt_past_completed_002"),
+    id: appointmentIds.appt2,
     patientId: seedPatients[1]!.id,
     doctorId: seedDoctors[1]!.id,
     type: AppointmentType.FIRST_CONSULT,
@@ -167,7 +300,7 @@ export const seedAppointments: Array<Appointment & { id: string }> = [
 
   // Today's appointments
   {
-    id: createAppointmentId("appt_today_scheduled_001"),
+    id: appointmentIds.appt3,
     patientId: seedPatients[2]!.id,
     doctorId: seedDoctors[0]!.id,
     type: AppointmentType.FOLLOW_UP,
@@ -179,7 +312,7 @@ export const seedAppointments: Array<Appointment & { id: string }> = [
     updatedAt: daysFromNow(-1),
   },
   {
-    id: createAppointmentId("appt_today_in_progress_001"),
+    id: appointmentIds.appt4,
     patientId: seedPatients[3]!.id,
     doctorId: seedDoctors[1]!.id,
     type: AppointmentType.CHECK_UP,
@@ -193,7 +326,7 @@ export const seedAppointments: Array<Appointment & { id: string }> = [
 
   // Future appointments
   {
-    id: createAppointmentId("appt_future_scheduled_001"),
+    id: appointmentIds.appt5,
     patientId: seedPatients[4]!.id,
     doctorId: seedDoctors[2]!.id,
     type: AppointmentType.FIRST_CONSULT,
@@ -205,7 +338,7 @@ export const seedAppointments: Array<Appointment & { id: string }> = [
     updatedAt: hoursFromNow(-12),
   },
   {
-    id: createAppointmentId("appt_future_scheduled_002"),
+    id: appointmentIds.appt6,
     patientId: seedPatients[0]!.id,
     doctorId: seedDoctors[0]!.id,
     type: AppointmentType.FOLLOW_UP,
@@ -219,7 +352,7 @@ export const seedAppointments: Array<Appointment & { id: string }> = [
 
   // Some cancelled appointments (realistic scenarios)
   {
-    id: createAppointmentId("appt_cancelled_001"),
+    id: appointmentIds.appt7,
     patientId: seedPatients[1]!.id,
     doctorId: seedDoctors[0]!.id,
     type: AppointmentType.CHECK_UP,
@@ -262,6 +395,23 @@ export const generateRandomAppointment = (
     randomType,
     randomReason
   );
+};
+
+// Export IDs for frontend demo usage
+export const demoIds = {
+  // John Doe - first patient for demo
+  johnDoePatientId: patientIds.patient1,
+  johnDoeUserId: userIds.patient1,
+  
+  // Sarah Chen - first doctor for demo
+  sarahChenDoctorId: doctorIds.doctor1,
+  sarahChenUserId: userIds.doctor1,
+  
+  // All IDs for reference
+  patientIds,
+  doctorIds,
+  userIds,
+  appointmentIds,
 };
 
 // Summary for development/testing
