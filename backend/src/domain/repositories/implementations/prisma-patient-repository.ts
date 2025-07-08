@@ -385,9 +385,19 @@ export class PrismaPatientRepository implements IPatientRepository {
   }
 
   // Private helper methods
+  private ensureValidPatientId(id: string): PatientId {
+    // If the ID already follows the correct format, use it
+    if (id.match(/^patient_[a-zA-Z0-9_]+$/)) {
+      return id as PatientId;
+    }
+    
+    // For legacy IDs, convert them to the proper format
+    return `patient_${id}` as PatientId;
+  }
+
   private transformPrismaToPatient(user: any, patient: any): Patient {
     return {
-      id: createPatientId(patient.id),
+      id: this.ensureValidPatientId(patient.id),
       clerkUserId: user.clerkUserId,
       firstName: user.firstName,
       lastName: user.lastName,
