@@ -321,21 +321,20 @@ export class PrismaDoctorRepository implements IDoctorRepository {
   }
 
   // Private helper methods
+  private ensureValidDoctorId(id: string): DoctorId {
+    // If the ID already follows the correct format, use it
+    if (id.match(/^doctor_[a-zA-Z0-9_]+$/)) {
+      return id as DoctorId;
+    }
+    
+    // For legacy IDs, convert them to the proper format
+    return `doctor_${id}` as DoctorId;
+  }
+
   private transformPrismaToDoctor(user: any, doctor: any): Doctor {
     try {
-      // Handle legacy IDs that might not match the new format
-      let doctorId: DoctorId;
-      try {
-        doctorId = createDoctorId(doctor.id);
-      } catch (idError) {
-        // If ID doesn't match format, use it as-is (cast to DoctorId)
-        // This handles legacy data that might not follow the new format
-        console.warn(`Doctor ID ${doctor.id} doesn't match expected format, using as-is`);
-        doctorId = doctor.id as DoctorId;
-      }
-
       return {
-        id: doctorId,
+        id: this.ensureValidDoctorId(doctor.id),
         clerkUserId: user.clerkUserId,
         firstName: user.firstName,
         lastName: user.lastName,

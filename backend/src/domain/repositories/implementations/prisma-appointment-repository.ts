@@ -306,37 +306,41 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
   }
 
   // Private helper methods
+  private ensureValidAppointmentId(id: string): AppointmentId {
+    // If the ID already follows the correct format, use it
+    if (id.match(/^appt_[a-zA-Z0-9_]+$/)) {
+      return id as AppointmentId;
+    }
+    
+    // For legacy IDs, convert them to the proper format
+    return `appt_${id}` as AppointmentId;
+  }
+
+  private ensureValidPatientId(id: string): PatientId {
+    // If the ID already follows the correct format, use it
+    if (id.match(/^patient_[a-zA-Z0-9_]+$/)) {
+      return id as PatientId;
+    }
+    
+    // For legacy IDs, convert them to the proper format
+    return `patient_${id}` as PatientId;
+  }
+
+  private ensureValidDoctorId(id: string): DoctorId {
+    // If the ID already follows the correct format, use it
+    if (id.match(/^doctor_[a-zA-Z0-9_]+$/)) {
+      return id as DoctorId;
+    }
+    
+    // For legacy IDs, convert them to the proper format
+    return `doctor_${id}` as DoctorId;
+  }
+
   private transformPrismaToAppointment(prismaAppointment: any): Appointment {
-    // Handle legacy IDs that might not match the new format
-    let appointmentId: AppointmentId;
-    let patientId: PatientId;
-    let doctorId: DoctorId;
-
-    try {
-      appointmentId = createAppointmentId(prismaAppointment.id);
-    } catch (error) {
-      console.warn(`Appointment ID ${prismaAppointment.id} doesn't match expected format, using as-is`);
-      appointmentId = prismaAppointment.id as AppointmentId;
-    }
-
-    try {
-      patientId = createPatientId(prismaAppointment.patientId);
-    } catch (error) {
-      console.warn(`Patient ID ${prismaAppointment.patientId} doesn't match expected format, using as-is`);
-      patientId = prismaAppointment.patientId as PatientId;
-    }
-
-    try {
-      doctorId = createDoctorId(prismaAppointment.doctorId);
-    } catch (error) {
-      console.warn(`Doctor ID ${prismaAppointment.doctorId} doesn't match expected format, using as-is`);
-      doctorId = prismaAppointment.doctorId as DoctorId;
-    }
-
     return {
-      id: appointmentId,
-      patientId: patientId,
-      doctorId: doctorId,
+      id: this.ensureValidAppointmentId(prismaAppointment.id),
+      patientId: this.ensureValidPatientId(prismaAppointment.patientId),
+      doctorId: this.ensureValidDoctorId(prismaAppointment.doctorId),
       type: prismaAppointment.type,
       status: prismaAppointment.status,
       scheduledDateTime: prismaAppointment.scheduledDateTime,
