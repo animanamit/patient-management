@@ -21,9 +21,9 @@ import Link from "next/link";
  */
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-mint to-pale-blue">
+    <div className="min-h-screen bg-[#F8F4ED]">
       {/* Header */}
-      <header className="border-b border-mint bg-white">
+      <header className=" bg-[#F8F4ED]">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <h1 className="text-2xl font-bold text-forest">CarePulse</h1>
