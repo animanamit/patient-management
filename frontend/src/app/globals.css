@@ -20,73 +20,71 @@
   --radius-lg: 1rem;
   --radius-xl: 1.25rem;
   
-  /* PRD Color Palette */
-  --color-forest: #427542;        /* Muted Forest Green - Nav bar, main containers */
-  --color-grass: #82A584;         /* Mellow Grass Green - Cards, secondary backgrounds */
-  --color-mint: #D0E3D2;          /* Mint Buff - Modal backgrounds, alternate surfaces */
-  --color-sky: #8CA8C8;           /* Soft Sky Blue - Info chips, quiet highlights */
-  --color-deep-blue: #355B8C;     /* Deep Calm Blue - UI headers, stat blocks */
-  --color-pale-blue: #D0E0F2;     /* Pale Blue - Dialog panels, gradients */
-  --color-orange: #DB8B3B;        /* Desaturated Orange - CTAs, progress accents */
-  --color-rose: #BB7292;          /* Muted Rose Pink - Subtle alerts, pill badges */
-  --color-charcoal: #222D2C;      /* Soft Charcoal - Body text, numerical displays */
-  --color-white: #FAFAFA;         /* Cloud White - Text, icons, foreground */
+  /* Monochrome Color Palette */
+  --color-black: #000000;         /* Black - Main accent, headers */
+  --color-dark-gray: #333333;     /* Dark Gray - Body text, main content */
+  --color-gray: #666666;          /* Gray - Secondary text, icons */
+  --color-light-gray: #999999;    /* Light Gray - Muted text, placeholders */
+  --color-lighter-gray: #CCCCCC;  /* Lighter Gray - Borders, dividers */
+  --color-lightest-gray: #F5F5F5; /* Lightest Gray - Backgrounds, cards */
+  --color-white: #FFFFFF;         /* White - Main background, contrast */
+  --color-off-white: #FAFAFA;     /* Off White - Alternate backgrounds */
+  --color-medium-gray: #808080;   /* Medium Gray - Neutral elements */
+  --color-slate: #4A4A4A;         /* Slate - Subtle emphasis */
   
   /* Semantic color mapping */
-  --color-primary: var(--color-forest);
+  --color-primary: var(--color-black);
   --color-primary-foreground: var(--color-white);
-  --color-secondary: var(--color-grass);
-  --color-secondary-foreground: var(--color-charcoal);
-  --color-accent: var(--color-orange);
+  --color-secondary: var(--color-dark-gray);
+  --color-secondary-foreground: var(--color-white);
+  --color-accent: var(--color-slate);
   --color-accent-foreground: var(--color-white);
-  --color-muted: var(--color-mint);
-  --color-muted-foreground: var(--color-charcoal);
+  --color-muted: var(--color-lightest-gray);
+  --color-muted-foreground: var(--color-gray);
   --color-background: var(--color-white);
-  --color-foreground: var(--color-charcoal);
-  --color-card: var(--color-white);
-  --color-card-foreground: var(--color-charcoal);
+  --color-foreground: var(--color-dark-gray);
+  --color-card: var(--color-lightest-gray);
+  --color-card-foreground: var(--color-dark-gray);
   --color-popover: var(--color-white);
-  --color-popover-foreground: var(--color-charcoal);
-  --color-border: var(--color-mint);
-  --color-input: var(--color-mint);
-  --color-ring: var(--color-sky);
-  --color-destructive: var(--color-rose);
+  --color-popover-foreground: var(--color-dark-gray);
+  --color-border: transparent;
+  --color-input: var(--color-lightest-gray);
+  --color-ring: var(--color-gray);
+  --color-destructive: var(--color-dark-gray);
   --color-destructive-foreground: var(--color-white);
   
   /* UI-specific colors */
-  --color-info: var(--color-sky);
-  --color-info-foreground: var(--color-charcoal);
-  --color-success: var(--color-grass);
-  --color-success-foreground: var(--color-charcoal);
-  --color-warning: var(--color-orange);
+  --color-info: var(--color-medium-gray);
+  --color-info-foreground: var(--color-white);
+  --color-success: var(--color-dark-gray);
+  --color-success-foreground: var(--color-white);
+  --color-warning: var(--color-slate);
   --color-warning-foreground: var(--color-white);
   
   /* Chart colors for dashboards */
-  --color-chart-1: var(--color-forest);
-  --color-chart-2: var(--color-sky);
-  --color-chart-3: var(--color-orange);
-  --color-chart-4: var(--color-rose);
-  --color-chart-5: var(--color-deep-blue);
+  --color-chart-1: var(--color-black);
+  --color-chart-2: var(--color-dark-gray);
+  --color-chart-3: var(--color-gray);
+  --color-chart-4: var(--color-medium-gray);
+  --color-chart-5: var(--color-slate);
   
-  /* Additional utility colors for the custom palette */
-  --color-forest-50: #f0f4f0;
-  --color-forest-500: var(--color-forest);
-  --color-grass-50: #f5f8f5;
-  --color-grass-500: var(--color-grass);
-  --color-mint-50: #f9fcf9;
-  --color-mint-500: var(--color-mint);
-  --color-sky-50: #f3f6fa;
-  --color-sky-500: var(--color-sky);
-  --color-deep-blue-50: #f1f4f8;
-  --color-deep-blue-500: var(--color-deep-blue);
-  --color-pale-blue-50: #f8fbfd;
-  --color-pale-blue-500: var(--color-pale-blue);
-  --color-orange-50: #fef7f1;
-  --color-orange-500: var(--color-orange);
-  --color-rose-50: #faf6f8;
-  --color-rose-500: var(--color-rose);
-  --color-charcoal-50: #f8f9f9;
-  --color-charcoal-500: var(--color-charcoal);
+  /* Additional utility colors for the monochrome palette */
+  --color-black-50: #f8f8f8;
+  --color-black-500: var(--color-black);
+  --color-dark-gray-50: #f5f5f5;
+  --color-dark-gray-500: var(--color-dark-gray);
+  --color-gray-50: #f9f9f9;
+  --color-gray-500: var(--color-gray);
+  --color-light-gray-50: #fcfcfc;
+  --color-light-gray-500: var(--color-light-gray);
+  --color-lighter-gray-50: #fdfdfd;
+  --color-lighter-gray-500: var(--color-lighter-gray);
+  --color-lightest-gray-50: #ffffff;
+  --color-lightest-gray-500: var(--color-lightest-gray);
+  --color-medium-gray-50: #f7f7f7;
+  --color-medium-gray-500: var(--color-medium-gray);
+  --color-slate-50: #f6f6f6;
+  --color-slate-500: var(--color-slate);
 }
 
 @layer base {

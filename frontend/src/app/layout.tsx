@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { QueryProvider } from "@/lib/query-client";
+import { ColorPaletteModal } from "@/components/color-palette-modal";
 
 export const metadata: Metadata = {
   title: "CarePulse - Healthcare Management",
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-foreground">
         <QueryProvider>
           {children}
+          <ColorPaletteModal />
         </QueryProvider>
       </body>
     </html>

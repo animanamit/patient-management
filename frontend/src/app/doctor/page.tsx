@@ -26,7 +26,6 @@ import {
   Users,
   FileText,
   ArrowLeft,
-  User,
   Activity,
   CheckCircle,
   XCircle,
@@ -64,7 +63,7 @@ import {
 const AppointmentSkeleton = () => (
   <div className="space-y-4">
     {[1, 2, 3].map((i) => (
-      <Card key={i} className="border-mint/30 bg-white/90">
+      <Card key={i} className="mint/30 bg-white/90">
         <CardContent className="p-6">
           <div className="flex justify-between items-start">
             <div className="space-y-3 flex-1">
@@ -98,7 +97,7 @@ const StatsSkeleton = () => (
     {[1, 2, 3, 4].map((i) => (
       <Card
         key={i}
-        className="border-deep-blue/15 bg-gradient-to-br from-deep-blue/3 to-sky/5"
+        className="dark-blue/15 bg-light-gray from-dark-blue/3 to-blue/5"
       >
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
@@ -155,15 +154,15 @@ const AppointmentCard = ({
   const getStatusColor = (status: AppointmentStatus) => {
     switch (status) {
       case "SCHEDULED":
-        return "bg-sky/20 text-deep-blue border-sky/30";
+        return "bg-blue/20 text-dark-blue blue/30";
       case "IN_PROGRESS":
-        return "bg-orange/20 text-orange border-orange/30";
+        return "bg-orange/20 text-orange orange/30";
       case "COMPLETED":
-        return "bg-grass/20 text-forest border-grass/30";
+        return "bg-light-green/20 text-green light-green/30";
       case "CANCELLED":
-        return "bg-rose/20 text-rose border-rose/30";
+        return "bg-pink/20 text-pink pink/30";
       default:
-        return "bg-mint/20 text-charcoal border-mint/30";
+        return "bg-mint/20 text-gray mint/30";
     }
   };
 
@@ -176,7 +175,7 @@ const AppointmentCard = ({
     "patient" in appointment ? appointment.patient.id : "Loading...";
 
   return (
-    <Card className="border-mint/30 bg-white/90 hover:border-mint/50 transition-colors">
+    <Card className="mint/30 bg-white/90 hover:mint/50 transition-colors">
       <CardContent className="p-6">
         <div className="flex justify-between items-start">
           <div className="space-y-3">
@@ -198,12 +197,12 @@ const AppointmentCard = ({
               </span>
             </div>
             <div>
-              <h4 className="font-semibold text-charcoal text-lg">
+              <h4 className="font-semibold text-gray text-lg">
                 {patientName}
               </h4>
               <p className="text-muted-foreground">ID: {patientId}</p>
             </div>
-            <p className="text-deep-blue font-medium">
+            <p className="text-dark-blue font-medium">
               {appointment.type
                 .replace("_", " ")
                 .toLowerCase()
@@ -235,14 +234,14 @@ const AppointmentCard = ({
             <Button
               variant="outline"
               size="sm"
-              className="border-deep-blue text-deep-blue hover:bg-deep-blue hover:text-white"
+              className="dark-blue text-dark-blue bg-dark-blue text-black"
             >
               View Patient
             </Button>
             {appointment.status === "SCHEDULED" && (
               <Button
                 size="sm"
-                className="bg-orange hover:bg-orange/90 text-white"
+                className="bg-orange bg-orange/90 text-black"
                 onClick={() => handleStatusChange("IN_PROGRESS")}
                 disabled={isPending || isUpdating}
               >
@@ -255,7 +254,7 @@ const AppointmentCard = ({
             {appointment.status === "IN_PROGRESS" && (
               <Button
                 size="sm"
-                className="bg-forest hover:bg-forest/90 text-white"
+                className="bg-green bg-green/90 text-black"
                 onClick={() => handleStatusChange("COMPLETED")}
                 disabled={isPending || isUpdating}
               >
@@ -295,28 +294,28 @@ const DashboardStats = ({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <Card className="border-deep-blue/15 bg-gradient-to-br from-deep-blue/3 to-sky/5">
+      <Card className="dark-blue/15 bg-light-gray from-dark-blue/3 to-blue/5">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-deep-blue">
+              <p className="text-sm font-medium text-dark-blue">
                 Today&apos;s Appointments
               </p>
-              <p className="text-2xl font-bold text-charcoal">
+              <p className="text-2xl font-bold text-gray">
                 {stats.totalToday}
               </p>
             </div>
-            <Calendar className="h-8 w-8 text-deep-blue" />
+            <Calendar className="h-8 w-8 text-dark-blue" />
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-orange/15 bg-gradient-to-br from-orange/3 to-orange/5">
+      <Card className="orange/15 bg-light-gray from-orange/3 to-orange/5">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-orange">In Progress</p>
-              <p className="text-2xl font-bold text-charcoal">
+              <p className="text-2xl font-bold text-gray">
                 {stats.inProgress}
               </p>
             </div>
@@ -325,32 +324,32 @@ const DashboardStats = ({
         </CardContent>
       </Card>
 
-      <Card className="border-grass/15 bg-gradient-to-br from-grass/3 to-mint/5">
+      <Card className="light-green/15 bg-light-gray from-light-green/3 to-mint/5">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-forest">Scheduled</p>
-              <p className="text-2xl font-bold text-charcoal">
+              <p className="text-sm font-medium text-green">Scheduled</p>
+              <p className="text-2xl font-bold text-gray">
                 {stats.scheduled}
               </p>
             </div>
-            <Users className="h-8 w-8 text-forest" />
+            <Users className="h-8 w-8 text-green" />
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-sky/15 bg-gradient-to-br from-sky/3 to-pale-blue/5">
+      <Card className="blue/15 bg-light-gray from-blue/3 to-light-blue/5">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-deep-blue">
+              <p className="text-sm font-medium text-dark-blue">
                 Completed Today
               </p>
-              <p className="text-2xl font-bold text-charcoal">
+              <p className="text-2xl font-bold text-gray">
                 {stats.completed}
               </p>
             </div>
-            <CheckCircle className="h-8 w-8 text-deep-blue" />
+            <CheckCircle className="h-8 w-8 text-dark-blue" />
           </div>
         </CardContent>
       </Card>
@@ -434,18 +433,18 @@ export default function DoctorDashboard() {
   // Show loading state if doctor data is loading
   if (isDoctorsLoading || isDoctorLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-pale-blue/20 to-sky/30">
-        <header className="border-b border-mint bg-white">
+      <div className="min-h-screen bg-light-gray from-white via-light-blue/20 to-blue/30">
+        <header className="b mint bg-white">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link
                 href="/"
-                className="flex items-center text-muted-foreground hover:text-foreground"
+                className="flex items-center text-muted-foreground text-foreground"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
               </Link>
               <div className="h-4 w-px bg-border" />
-              <h1 className="text-xl font-semibold text-deep-blue">
+              <h1 className="text-xl font-semibold text-dark-blue">
                 Doctor Dashboard
               </h1>
             </div>
@@ -470,18 +469,18 @@ export default function DoctorDashboard() {
   // Show error state if doctor data failed to load
   if (doctorsError || doctorError || !doctorData || !firstDoctorId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-pale-blue/20 to-sky/30">
-        <header className="border-b border-mint bg-white">
+      <div className="min-h-screen bg-light-gray from-white via-light-blue/20 to-blue/30">
+        <header className="b mint bg-white">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link
                 href="/"
-                className="flex items-center text-muted-foreground hover:text-foreground"
+                className="flex items-center text-muted-foreground text-foreground"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
               </Link>
               <div className="h-4 w-px bg-border" />
-              <h1 className="text-xl font-semibold text-deep-blue">
+              <h1 className="text-xl font-semibold text-dark-blue">
                 Doctor Dashboard
               </h1>
             </div>
@@ -505,14 +504,14 @@ export default function DoctorDashboard() {
   const appointments = filteredAppointments;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-pale-blue/20 to-sky/30">
+    <div className="min-h-screen bg-light-gray from-white via-light-blue/20 to-blue/30">
       {/* Navigation */}
-      <header className="border-b border-mint bg-white">
+      <header className="b mint bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link
               href="/"
-              className="flex items-center text-muted-foreground hover:text-foreground"
+              className="flex items-center text-muted-foreground text-foreground"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
             </Link>
@@ -554,10 +553,10 @@ export default function DoctorDashboard() {
           onValueChange={handleTabChange}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-3 bg-white border border-mint/20">
+          <TabsList className="grid w-full grid-cols-3 bg-white border mint/20">
             <TabsTrigger
               value="schedule"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-deep-blue/5 data-[state=active]:to-sky/5"
+              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-dark-blue/5 data-[state=active]:to-blue/5"
               disabled={isPending}
             >
               <Calendar className="h-4 w-4 mr-2" />
@@ -568,7 +567,7 @@ export default function DoctorDashboard() {
             </TabsTrigger>
             <TabsTrigger
               value="patients"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-deep-blue/5 data-[state=active]:to-sky/5"
+              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-dark-blue/5 data-[state=active]:to-blue/5"
               disabled={isPending}
             >
               <Users className="h-4 w-4 mr-2" />
@@ -579,7 +578,7 @@ export default function DoctorDashboard() {
             </TabsTrigger>
             <TabsTrigger
               value="notes"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-deep-blue/5 data-[state=active]:to-sky/5"
+              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-dark-blue/5 data-[state=active]:to-blue/5"
               disabled={isPending}
             >
               <FileText className="h-4 w-4 mr-2" />
@@ -593,7 +592,7 @@ export default function DoctorDashboard() {
           {/* Schedule Tab */}
           <TabsContent value="schedule" className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <h3 className="text-xl font-semibold text-charcoal">
+              <h3 className="text-xl font-semibold text-gray">
                 Today&apos;s Appointments - {new Date().toLocaleDateString()}
               </h3>
               <div className="flex gap-2">
@@ -608,7 +607,7 @@ export default function DoctorDashboard() {
                 </div>
                 <Button
                   variant="outline"
-                  className="border-deep-blue text-deep-blue hover:bg-deep-blue hover:text-white"
+                  className="dark-blue text-dark-blue bg-dark-blue text-black"
                 >
                   View Full Calendar
                 </Button>
@@ -626,10 +625,10 @@ export default function DoctorDashboard() {
                   </AlertDescription>
                 </Alert>
               ) : appointments.length === 0 ? (
-                <Card className="border-mint/30 bg-white/90">
+                <Card className="mint/30 bg-white/90">
                   <CardContent className="p-8 text-center">
                     <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-medium text-charcoal mb-2">
+                    <h3 className="text-lg font-medium text-gray mb-2">
                       {searchQuery
                         ? "No matching appointments"
                         : "No appointments scheduled"}
@@ -658,21 +657,21 @@ export default function DoctorDashboard() {
           {/* Patients Tab */}
           <TabsContent value="patients" className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-charcoal">
+              <h3 className="text-xl font-semibold text-gray">
                 Patient Management
               </h3>
               <Button
                 variant="outline"
-                className="border-deep-blue text-deep-blue hover:bg-deep-blue hover:text-white"
+                className="dark-blue text-dark-blue bg-dark-blue text-black"
               >
                 Search All Patients
               </Button>
             </div>
 
-            <Card className="border-mint/30 bg-white/90">
+            <Card className="mint/30 bg-white/90">
               <CardContent className="p-8 text-center">
                 <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-medium text-charcoal mb-2">
+                <h3 className="text-lg font-medium text-gray mb-2">
                   Patient Management
                 </h3>
                 <p className="text-muted-foreground mb-4">
@@ -680,7 +679,7 @@ export default function DoctorDashboard() {
                 </p>
                 <Button
                   variant="outline"
-                  className="border-deep-blue text-deep-blue hover:bg-deep-blue hover:text-white"
+                  className="dark-blue text-dark-blue bg-dark-blue text-black"
                 >
                   View All Patients
                 </Button>
@@ -690,9 +689,9 @@ export default function DoctorDashboard() {
 
           {/* Clinical Notes Tab */}
           <TabsContent value="notes" className="space-y-6">
-            <Card className="border-mint/30 bg-white/90">
+            <Card className="mint/30 bg-white/90">
               <CardHeader>
-                <CardTitle className="text-charcoal">Clinical Notes</CardTitle>
+                <CardTitle className="text-gray">Clinical Notes</CardTitle>
                 <CardDescription>
                   Manage patient notes and documentation
                 </CardDescription>

@@ -39,7 +39,7 @@ import { Patient, Appointment, AppointmentWithDetails, PatientId, AppointmentId 
  */
 // Loading skeleton components
 const QueueSkeleton = () => (
-  <Card className="border-mint/30 bg-white/95">
+  <Card className=" bg-lightest-gray">
     <CardContent className="py-12">
       <div className="text-center space-y-4">
         <Skeleton className="h-16 w-16 rounded-full mx-auto" />
@@ -76,22 +76,22 @@ const CheckInSuccess = ({
     : 'Doctor information loading...';
 
   return (
-    <Card className="border-grass/30 bg-white/95">
+    <Card className=" bg-lightest-gray">
       <CardHeader className="text-center pb-6">
         <div className="flex justify-center mb-4">
-          <div className="bg-gradient-to-br from-grass/20 to-mint/40 p-4 rounded-full">
-            <CheckCircle className="h-12 w-12 text-forest" />
+          <div className="bg-light-gray from-light-gray/20 to-lightest-gray/40 p-4 rounded-full">
+            <CheckCircle className="h-12 w-12 text-black" />
           </div>
         </div>
-        <CardTitle className="text-2xl text-forest">Check-in Successful!</CardTitle>
+        <CardTitle className="text-2xl text-black">Check-in Successful!</CardTitle>
         <CardDescription className="text-lg">
           Welcome, {patient.firstName} {patient.lastName}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Patient Info */}
-        <div className="bg-gradient-to-r from-forest/5 to-grass/5 rounded-xl p-6 border border-mint/30">
-          <h4 className="font-semibold text-charcoal mb-3">Appointment Details</h4>
+        <div className="bg-lightest-gray from-black/5 to-dark-gray/5 rounded-xl p-6 border ">
+          <h4 className="font-semibold text-dark-gray mb-3">Appointment Details</h4>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-muted-foreground">Patient ID:</span>
@@ -124,10 +124,10 @@ const CheckInSuccess = ({
           {isQueueLoading ? (
             <QueueSkeleton />
           ) : queueData ? (
-            <div className="bg-gradient-to-r from-orange/5 to-orange/10 rounded-xl p-6 border border-orange/20">
+            <div className="bg-lightest-gray from-orange/5 to-orange/10 rounded-xl p-6 border orange/20">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="font-semibold text-charcoal">Your Queue Status</h4>
-                <Badge className="bg-orange/20 text-orange border-orange/30 text-lg px-4 py-2">
+                <h4 className="font-semibold text-dark-gray">Your Queue Status</h4>
+                <Badge className="bg-orange/20 text-orange orange/30 text-lg px-4 py-2">
                   #{queueData.queueNumber}
                 </Badge>
               </div>
@@ -143,17 +143,17 @@ const CheckInSuccess = ({
               </div>
             </div>
           ) : (
-            <div className="bg-gradient-to-r from-sky/5 to-pale-blue/10 rounded-xl p-6 border border-sky/20">
-              <h4 className="font-semibold text-charcoal mb-3">Queue Information</h4>
+            <div className="bg-lightest-gray from-blue/5 to-light-blue/10 rounded-xl p-6 border blue/20">
+              <h4 className="font-semibold text-dark-gray mb-3">Queue Information</h4>
               <p className="text-muted-foreground">Loading queue position...</p>
             </div>
           )}
         </Suspense>
 
         {/* Instructions */}
-        <div className="bg-gradient-to-r from-sky/5 to-pale-blue/10 rounded-xl p-6 border border-sky/20">
-          <h4 className="font-semibold text-charcoal mb-3">What's Next?</h4>
-          <div className="space-y-2 text-sm text-charcoal/70">
+        <div className="bg-lightest-gray from-blue/5 to-light-blue/10 rounded-xl p-6 border blue/20">
+          <h4 className="font-semibold text-dark-gray mb-3">What's Next?</h4>
+          <div className="space-y-2 text-sm text-dark-gray/70">
             <p>✓ You're successfully checked in</p>
             <p>✓ You'll receive an SMS when it's your turn</p>
             <p>✓ Feel free to wait in our comfortable lounge or nearby area</p>
@@ -164,7 +164,7 @@ const CheckInSuccess = ({
         <Button 
           onClick={onReset}
           variant="outline"
-          className="w-full h-12 border-forest text-forest hover:bg-forest hover:text-white"
+          className="w-full h-12 green text-black bg-green text-white"
         >
           Check In Another Patient
         </Button>
@@ -279,29 +279,29 @@ export default function CheckInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-mint to-pale-blue flex items-center justify-center p-4">
+    <div className="min-h-screen bg-light-gray from-mint to-light-blue flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Heart className="h-12 w-12 text-forest mr-3" />
-            <h1 className="text-4xl font-bold text-forest">CarePulse</h1>
+            <Heart className="h-12 w-12 text-black mr-3" />
+            <h1 className="text-4xl font-bold text-black">CarePulse</h1>
           </div>
-          <p className="text-xl text-charcoal/70">Digital Check-in System</p>
+          <p className="text-xl text-dark-gray/70">Digital Check-in System</p>
         </div>
 
         {/* Idle State - Phone Input */}
         {checkInStatus === "idle" && (
-          <Card className="border-mint/30 bg-white/95">
+          <Card className=" bg-lightest-gray">
             <CardHeader className="text-center pb-6">
-              <CardTitle className="text-2xl text-charcoal">Welcome to Our Clinic</CardTitle>
+              <CardTitle className="text-2xl text-dark-gray">Welcome to Our Clinic</CardTitle>
               <CardDescription className="text-lg">
                 Please enter your phone number to check in for your appointment
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-charcoal">
+                <label className="text-sm font-medium text-dark-gray">
                   Phone Number
                 </label>
                 <div className="relative">
@@ -314,7 +314,7 @@ export default function CheckInPage() {
                     placeholder="XXXX XXXX"
                     value={formattedPhone}
                     onChange={handlePhoneChange}
-                    className="pl-20 text-lg h-14 border-mint/40 focus:border-forest"
+                    className="pl-20 text-lg h-14 mint/40 focus:green"
                     maxLength={11}
                   />
                 </div>
@@ -332,7 +332,7 @@ export default function CheckInPage() {
               <Button 
                 onClick={handleLookupPatient}
                 disabled={formattedPhone.length < 7 || isLookingUp || isPending}
-                className="w-full h-14 text-lg bg-forest hover:bg-forest/90 text-white"
+                className="w-full h-14 text-lg bg-green bg-green/90 text-white"
               >
                 {isLookingUp ? (
                   <>
@@ -358,9 +358,9 @@ export default function CheckInPage() {
 
         {/* Found Patient - Show Appointments */}
         {checkInStatus === "found" && selectedPatient && (
-          <Card className="border-sky/30 bg-white/95">
+          <Card className="blue/30 bg-lightest-gray">
             <CardHeader className="text-center pb-6">
-              <CardTitle className="text-2xl text-charcoal">
+              <CardTitle className="text-2xl text-dark-gray">
                 Welcome, {selectedPatient.firstName} {selectedPatient.lastName}!
               </CardTitle>
               <CardDescription className="text-lg">
@@ -379,11 +379,11 @@ export default function CheckInPage() {
                         : 'Doctor information loading...';
 
                       return (
-                        <Card key={appointment.id} className="border-mint/30 bg-white/90 hover:border-mint/50 transition-colors">
+                        <Card key={appointment.id} className=" bg-white/90 hover:mint/50 transition-colors">
                           <CardContent className="p-6">
                             <div className="flex justify-between items-start">
                               <div className="space-y-2">
-                                <h4 className="font-semibold text-charcoal text-lg">
+                                <h4 className="font-semibold text-dark-gray text-lg">
                                   {appointment.type.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}
                                 </h4>
                                 <p className="text-muted-foreground">{doctorName}</p>
@@ -395,7 +395,7 @@ export default function CheckInPage() {
                                       minute: '2-digit' 
                                     })}
                                   </div>
-                                  <Badge className="bg-sky/20 text-deep-blue border-sky/30">
+                                  <Badge className="bg-blue/20 text-dark-blue blue/30">
                                     {appointment.status.toLowerCase().replace('_', ' ')}
                                   </Badge>
                                 </div>
@@ -411,7 +411,7 @@ export default function CheckInPage() {
                                   handleCheckIn(appointment.id);
                                 }}
                                 disabled={isCheckingIn || isPending}
-                                className="bg-forest hover:bg-forest/90 text-white"
+                                className="bg-green bg-green/90 text-white"
                               >
                                 {isCheckingIn ? (
                                   <>
@@ -444,7 +444,7 @@ export default function CheckInPage() {
               <Button 
                 onClick={resetCheckIn}
                 variant="outline"
-                className="w-full border-charcoal text-charcoal hover:bg-charcoal hover:text-white"
+                className="w-full gray text-dark-gray bg-gray text-white"
               >
                 Back to Phone Entry
               </Button>
@@ -464,14 +464,14 @@ export default function CheckInPage() {
 
         {/* Error State */}
         {checkInStatus === "error" && (
-          <Card className="border-rose/30 bg-white/95">
+          <Card className="pink/30 bg-lightest-gray">
             <CardHeader className="text-center pb-6">
               <div className="flex justify-center mb-4">
-                <div className="bg-gradient-to-br from-rose/20 to-rose/40 p-4 rounded-full">
-                  <AlertCircle className="h-12 w-12 text-rose" />
+                <div className="bg-light-gray from-pink/20 to-pink/40 p-4 rounded-full">
+                  <AlertCircle className="h-12 w-12 text-pink" />
                 </div>
               </div>
-              <CardTitle className="text-2xl text-rose">Check-in Failed</CardTitle>
+              <CardTitle className="text-2xl text-pink">Check-in Failed</CardTitle>
               <CardDescription className="text-lg">
                 {lookupError 
                   ? "There was a problem looking up your information"
@@ -489,9 +489,9 @@ export default function CheckInPage() {
                 </Alert>
               )}
 
-              <div className="bg-gradient-to-r from-rose/5 to-rose/10 rounded-xl p-6 border border-rose/20">
-                <h4 className="font-semibold text-charcoal mb-3">Possible Reasons:</h4>
-                <div className="space-y-2 text-sm text-charcoal/70">
+              <div className="bg-lightest-gray from-pink/5 to-pink/10 rounded-xl p-6 border pink/20">
+                <h4 className="font-semibold text-dark-gray mb-3">Possible Reasons:</h4>
+                <div className="space-y-2 text-sm text-dark-gray/70">
                   <p>• No appointment scheduled for today</p>
                   <p>• Different phone number used for booking</p>
                   <p>• Appointment may have been rescheduled</p>
@@ -504,13 +504,13 @@ export default function CheckInPage() {
                 <Button 
                   onClick={resetCheckIn}
                   variant="outline"
-                  className="border-rose text-rose hover:bg-rose hover:text-white"
+                  className="pink text-pink bg-pink text-white"
                 >
                   Try Again
                 </Button>
                 <Button 
                   onClick={() => window.location.href = "/staff"}
-                  className="bg-forest hover:bg-forest/90 text-white"
+                  className="bg-green bg-green/90 text-white"
                 >
                   Get Help
                 </Button>

@@ -43,7 +43,7 @@ import { AppointmentStatus, AppointmentWithDetails, Appointment, Patient } from 
 const StatsSkeleton = () => (
   <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
     {[1, 2, 3, 4, 5].map((i) => (
-      <Card key={i} className="border-orange/15 bg-gradient-to-br from-orange/3 to-rose/5">
+      <Card key={i} className="orange/15 bg-light-gray from-orange/3 to-pink/5">
         <CardContent className="p-4">
           <div className="text-center">
             <Skeleton className="h-8 w-8 mx-auto mb-2" />
@@ -58,7 +58,7 @@ const StatsSkeleton = () => (
 const QueueSkeleton = () => (
   <div className="space-y-4">
     {[1, 2, 3].map((i) => (
-      <Card key={i} className="border-mint/30 bg-white/90">
+      <Card key={i} className="mint/30 bg-white/90">
         <CardContent className="p-6">
           <div className="flex justify-between items-start">
             <div className="space-y-3 flex-1">
@@ -101,47 +101,47 @@ const DashboardStats = ({ appointments }: { appointments: (Appointment | Appoint
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-      <Card className="border-orange/15 bg-gradient-to-br from-orange/3 to-rose/5">
+      <Card className="orange/15 bg-light-gray from-orange/3 to-pink/5">
         <CardContent className="p-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-charcoal">{stats.totalAppointments}</p>
+            <p className="text-2xl font-bold text-gray">{stats.totalAppointments}</p>
             <p className="text-sm text-orange">Total Today</p>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-sky/15 bg-gradient-to-br from-sky/3 to-pale-blue/5">
+      <Card className="blue/15 bg-light-gray from-blue/3 to-light-blue/5">
         <CardContent className="p-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-charcoal">{stats.checkedIn}</p>
-            <p className="text-sm text-deep-blue">Checked In</p>
+            <p className="text-2xl font-bold text-gray">{stats.checkedIn}</p>
+            <p className="text-sm text-dark-blue">Checked In</p>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-orange/15 bg-gradient-to-br from-orange/3 to-orange/5">
+      <Card className="orange/15 bg-light-gray from-orange/3 to-orange/5">
         <CardContent className="p-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-charcoal">{stats.inProgress}</p>
+            <p className="text-2xl font-bold text-gray">{stats.inProgress}</p>
             <p className="text-sm text-orange">In Progress</p>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-grass/15 bg-gradient-to-br from-grass/3 to-mint/5">
+      <Card className="light-green/15 bg-light-gray from-light-green/3 to-mint/5">
         <CardContent className="p-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-charcoal">{stats.completed}</p>
-            <p className="text-sm text-forest">Completed</p>
+            <p className="text-2xl font-bold text-gray">{stats.completed}</p>
+            <p className="text-sm text-green">Completed</p>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-rose/15 bg-gradient-to-br from-rose/3 to-rose/5">
+      <Card className="pink/15 bg-light-gray from-pink/3 to-pink/5">
         <CardContent className="p-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-charcoal">{stats.noShows}</p>
-            <p className="text-sm text-rose">No Shows</p>
+            <p className="text-2xl font-bold text-gray">{stats.noShows}</p>
+            <p className="text-sm text-pink">No Shows</p>
           </div>
         </CardContent>
       </Card>
@@ -186,7 +186,7 @@ const PatientSearchTab = () => {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3].map(i => (
-            <Card key={i} className="border-mint/30 bg-white/90">
+            <Card key={i} className="mint/30 bg-white/90">
               <CardContent className="p-6">
                 <div className="space-y-2">
                   <Skeleton className="h-6 w-48" />
@@ -205,10 +205,10 @@ const PatientSearchTab = () => {
           </AlertDescription>
         </Alert>
       ) : patients.length === 0 ? (
-        <Card className="border-mint/30 bg-white/90">
+        <Card className="mint/30 bg-white/90">
           <CardContent className="p-8 text-center">
             <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-medium text-charcoal mb-2">
+            <h3 className="text-lg font-medium text-gray mb-2">
               {searchQuery ? 'No patients found' : 'Search for patients'}
             </h3>
             <p className="text-muted-foreground">
@@ -219,11 +219,11 @@ const PatientSearchTab = () => {
       ) : (
         <div className="space-y-4">
           {patients.map((patient) => (
-            <Card key={patient.id} className="border-mint/30 bg-white/90 hover:border-mint/50 transition-colors">
+            <Card key={patient.id} className="mint/30 bg-white/90 hover:mint/50 transition-colors">
               <CardContent className="p-6">
                 <div className="flex justify-between items-start">
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-charcoal text-lg">
+                    <h4 className="font-semibold text-gray text-lg">
                       {patient.firstName} {patient.lastName}
                     </h4>
                     <p className="text-muted-foreground">ID: {patient.id}</p>
@@ -242,10 +242,10 @@ const PatientSearchTab = () => {
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="border-orange text-orange hover:bg-orange hover:text-white">
+                    <Button variant="outline" size="sm" className="orange text-orange bg-orange text-black">
                       View History
                     </Button>
-                    <Button size="sm" className="bg-orange hover:bg-orange/90 text-white">
+                    <Button size="sm" className="bg-orange bg-orange/90 text-black">
                       Book Appointment
                     </Button>
                   </div>
@@ -316,24 +316,24 @@ export default function StaffDashboard() {
   const getQueueStatusColor = (status: AppointmentStatus) => {
     switch (status) {
       case "SCHEDULED":
-        return "bg-sky/15 text-deep-blue border-sky/30";
+        return "bg-blue/15 text-dark-blue blue/30";
       case "IN_PROGRESS":
-        return "bg-orange/15 text-orange border-orange/30";
+        return "bg-orange/15 text-orange orange/30";
       case "COMPLETED":
-        return "bg-grass/15 text-forest border-grass/30";
+        return "bg-light-green/15 text-green light-green/30";
       default:
-        return "bg-rose/15 text-rose border-rose/30";
+        return "bg-pink/15 text-pink pink/30";
     }
   };
 
   // Show loading state if appointments data is loading
   if (isAppointmentsLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-orange/10 to-rose/20">
-        <header className="border-b border-mint/20 bg-white">
+      <div className="min-h-screen bg-light-gray from-white via-orange/10 to-pink/20">
+        <header className="b mint/20 bg-white">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center text-muted-foreground hover:text-foreground">
+              <Link href="/" className="flex items-center text-muted-foreground text-foreground">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Portal
               </Link>
@@ -359,12 +359,12 @@ export default function StaffDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-orange/10 to-rose/20">
+    <div className="min-h-screen bg-light-gray from-white via-orange/10 to-pink/20">
       {/* Navigation */}
-      <header className="border-b border-mint/20 bg-white">
+      <header className="b mint/20 bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link href="/" className="flex items-center text-muted-foreground hover:text-foreground">
+            <Link href="/" className="flex items-center text-muted-foreground text-foreground">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Portal
             </Link>
@@ -407,10 +407,10 @@ export default function StaffDashboard() {
         </Suspense>
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-white border border-mint/20">
+          <TabsList className="grid w-full grid-cols-3 bg-white border mint/20">
             <TabsTrigger 
               value="queue" 
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange/5 data-[state=active]:to-rose/5"
+              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-orange/5 data-[state=active]:to-pink/5"
               disabled={isPending}
             >
               <Users className="h-4 w-4 mr-2" />
@@ -421,7 +421,7 @@ export default function StaffDashboard() {
             </TabsTrigger>
             <TabsTrigger 
               value="schedule" 
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange/5 data-[state=active]:to-rose/5"
+              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-orange/5 data-[state=active]:to-pink/5"
               disabled={isPending}
             >
               <Calendar className="h-4 w-4 mr-2" />
@@ -432,7 +432,7 @@ export default function StaffDashboard() {
             </TabsTrigger>
             <TabsTrigger 
               value="search" 
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange/5 data-[state=active]:to-rose/5"
+              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-orange/5 data-[state=active]:to-pink/5"
               disabled={isPending}
             >
               <Search className="h-4 w-4 mr-2" />
@@ -446,9 +446,9 @@ export default function StaffDashboard() {
           {/* Patient Queue Tab */}
           <TabsContent value="queue" className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-charcoal">Current Patient Queue</h3>
+              <h3 className="text-xl font-semibold text-gray">Current Patient Queue</h3>
               <Button 
-                className="bg-orange hover:bg-orange/90 text-white" 
+                className="bg-orange bg-orange/90 text-black" 
                 disabled={isBulkUpdating}
               >
                 <Bell className="h-4 w-4 mr-2" />
@@ -465,10 +465,10 @@ export default function StaffDashboard() {
                   </AlertDescription>
                 </Alert>
               ) : patientQueue.length === 0 ? (
-                <Card className="border-mint/30 bg-white/90">
+                <Card className="mint/30 bg-white/90">
                   <CardContent className="p-8 text-center">
                     <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-medium text-charcoal mb-2">No patients in queue</h3>
+                    <h3 className="text-lg font-medium text-gray mb-2">No patients in queue</h3>
                     <p className="text-muted-foreground">All appointments are completed or no patients have checked in yet</p>
                   </CardContent>
                 </Card>
@@ -484,7 +484,7 @@ export default function StaffDashboard() {
                       : 'Doctor name loading...';
 
                     return (
-                      <Card key={appointment.id} className="border-mint/30 bg-white/90 hover:border-mint/50 transition-colors">
+                      <Card key={appointment.id} className="mint/30 bg-white/90 hover:mint/50 transition-colors">
                         <CardContent className="p-6">
                           <div className="flex justify-between items-start">
                             <div className="space-y-3">
@@ -498,7 +498,7 @@ export default function StaffDashboard() {
                                 </div>
                               </div>
                               <div>
-                                <h4 className="font-semibold text-charcoal text-lg">{patientName}</h4>
+                                <h4 className="font-semibold text-gray text-lg">{patientName}</h4>
                                 <p className="text-muted-foreground">ID: {('patient' in appointment) ? appointment.patient.id : 'Loading...'}</p>
                               </div>
                               <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -524,7 +524,7 @@ export default function StaffDashboard() {
                               <Button 
                                 variant="outline" 
                                 size="sm" 
-                                className="border-deep-blue text-deep-blue hover:bg-deep-blue hover:text-white"
+                                className="dark-blue text-dark-blue bg-dark-blue text-black"
                                 onClick={() => handleSendSMS(patientName)}
                                 disabled={isPending}
                               >
@@ -533,7 +533,7 @@ export default function StaffDashboard() {
                               </Button>
                               <Button 
                                 size="sm" 
-                                className="bg-orange hover:bg-orange/90 text-white"
+                                className="bg-orange bg-orange/90 text-black"
                                 disabled={isPending}
                               >
                                 View Details
@@ -552,10 +552,10 @@ export default function StaffDashboard() {
           {/* Schedule Tab */}
           <TabsContent value="schedule" className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-charcoal">
+              <h3 className="text-xl font-semibold text-gray">
                 Today's Schedule - {new Date().toLocaleDateString()}
               </h3>
-              <Button variant="outline" className="border-orange text-orange hover:bg-orange hover:text-white">
+              <Button variant="outline" className="orange text-orange bg-orange text-black">
                 Export Schedule
               </Button>
             </div>
@@ -569,10 +569,10 @@ export default function StaffDashboard() {
                   </AlertDescription>
                 </Alert>
               ) : appointments.length === 0 ? (
-                <Card className="border-mint/30 bg-white/90">
+                <Card className="mint/30 bg-white/90">
                   <CardContent className="p-8 text-center">
                     <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-medium text-charcoal mb-2">No appointments today</h3>
+                    <h3 className="text-lg font-medium text-gray mb-2">No appointments today</h3>
                     <p className="text-muted-foreground">No appointments are scheduled for today</p>
                   </CardContent>
                 </Card>
@@ -588,7 +588,7 @@ export default function StaffDashboard() {
                       : 'Doctor name loading...';
 
                     return (
-                      <Card key={appointment.id} className="border-mint/30 bg-white/90 hover:border-mint/50 transition-colors">
+                      <Card key={appointment.id} className="mint/30 bg-white/90 hover:mint/50 transition-colors">
                         <CardContent className="p-6">
                           <div className="flex justify-between items-start">
                             <div className="space-y-2">
@@ -598,7 +598,7 @@ export default function StaffDashboard() {
                                 </Badge>
                                 <span className="text-sm text-muted-foreground">#{appointment.id}</span>
                               </div>
-                              <h4 className="font-semibold text-charcoal text-lg">{patientName}</h4>
+                              <h4 className="font-semibold text-gray text-lg">{patientName}</h4>
                               <p className="text-muted-foreground">
                                 ID: {('patient' in appointment) ? appointment.patient.id : 'Loading...'}
                               </p>
@@ -619,7 +619,7 @@ export default function StaffDashboard() {
                                 </div>
                               </div>
                             </div>
-                            <Button variant="outline" size="sm" className="border-orange text-orange hover:bg-orange hover:text-white">
+                            <Button variant="outline" size="sm" className="orange text-orange bg-orange text-black">
                               View Details
                             </Button>
                           </div>
