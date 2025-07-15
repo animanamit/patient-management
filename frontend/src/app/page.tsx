@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,8 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Calendar, Users, Stethoscope } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, Users, Stethoscope, Heart, UserCheck } from "lucide-react";
 import Link from "next/link";
+import { CheckInDashboard } from "@/components/check-in-dashboard";
+import { DoctorDashboard } from "@/components/doctor-dashboard";
+import { PatientDashboard } from "@/components/patient-dashboard";
+import { StaffDashboard } from "@/components/staff-dashboard";
 
 /**
  * Landing page for CarePulse
@@ -20,13 +26,15 @@ import Link from "next/link";
  * - Suspense boundaries for loading states when adding auth
  */
 export default function HomePage() {
+  const [activeTab, setActiveTab] = useState("overview");
+
   return (
-    <div className="min-h-screen bg-[#F8F4ED]">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className=" bg-[#F8F4ED]">
+      <header className="bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold text-green">CarePulse</h1>
+            <h1 className="text-2xl font-bold text-black">CarePulse</h1>
           </div>
           <nav className="hidden md:flex space-x-6">
             <Link
@@ -41,102 +49,151 @@ export default function HomePage() {
             >
               Contact
             </Link>
+            <Link
+              href="/check-in"
+              className="text-muted-foreground text-foreground transition-colors"
+            >
+              Check In
+            </Link>
           </nav>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <main className="container mx-auto px-4 py-16">
-        <div className="text-center max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray mb-6">
-            CarePulse Clinic Portal
-          </h2>
-          <p className="text-lg text-gray/70 mb-8 max-w-xl mx-auto">
-            Select your role to access the clinic management system
-          </p>
-
-          {/* Role Selection Cards */}
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
-            <Card className="green/10 hover:green/20 transition-colors cursor-pointer bg-white/90">
-              <CardHeader className="text-center">
-                <Calendar className="h-12 w-12 text-green mx-auto mb-4" />
-                <CardTitle className="text-green">Patients</CardTitle>
-                <CardDescription>
-                  Manage appointments and access medical records
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link href="/patient" className="w-full">
-                  <Button className="w-full bg-green bg-green/90 text-black">
-                    Patient Portal
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            <Card className="blue/10 hover:blue/20 transition-colors cursor-pointer bg-white/90">
-              <CardHeader className="text-center">
-                <Stethoscope className="h-12 w-12 text-dark-blue mx-auto mb-4" />
-                <CardTitle className="text-dark-blue">Doctors</CardTitle>
-                <CardDescription>
-                  View schedule, patient history, and clinical notes
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link href="/doctor" className="w-full">
-                  <Button
-                    variant="outline"
-                    className="w-full dark-blue text-dark-blue bg-dark-blue text-black"
-                  >
-                    Doctor Dashboard
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            <Card className="orange/10 hover:orange/20 transition-colors cursor-pointer bg-white/90">
-              <CardHeader className="text-center">
-                <Users className="h-12 w-12 text-orange mx-auto mb-4" />
-                <CardTitle className="text-orange">Staff</CardTitle>
-                <CardDescription>
-                  Monitor clinic operations and manage patient flow
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link href="/staff" className="w-full">
-                  <Button
-                    variant="outline"
-                    className="w-full orange text-orange bg-orange text-black"
-                  >
-                    Staff Dashboard
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* iPad Check-in Link */}
-          <div className="mt-12">
-            <Card className="light-green/30 bg-white/90">
-              <CardContent className="pt-6">
-                <h3 className="text-xl font-semibold text-light-green mb-2">
-                  Patient Check-in
-                </h3>
-                <p className="text-gray/70 mb-4">
-                  For patients arriving at the clinic
-                </p>
-                <Link href="/check-in">
-                  <Button
-                    variant="outline"
-                    className="light-green text-light-green bg-light-green text-black"
-                  >
-                    Check In Now
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-black mb-2">Healthcare Management System</h1>
+          <p className="text-gray">Digital platform for physiotherapy clinic management</p>
         </div>
+
+        {/* Tabbed Interface */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-5 bg-lightest-gray mb-8">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-white">
+              <Calendar className="h-4 w-4 mr-2" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="checkin" className="data-[state=active]:bg-white">
+              <Heart className="h-4 w-4 mr-2" />
+              Check-in
+            </TabsTrigger>
+            <TabsTrigger value="patient" className="data-[state=active]:bg-white">
+              <UserCheck className="h-4 w-4 mr-2" />
+              Patient
+            </TabsTrigger>
+            <TabsTrigger value="doctor" className="data-[state=active]:bg-white">
+              <Stethoscope className="h-4 w-4 mr-2" />
+              Doctor
+            </TabsTrigger>
+            <TabsTrigger value="staff" className="data-[state=active]:bg-white">
+              <Users className="h-4 w-4 mr-2" />
+              Staff
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-8">
+            <div className="text-center max-w-4xl mx-auto">
+              <div className="grid md:grid-cols-3 gap-6">
+                <Card className="cursor-pointer bg-lightest-gray">
+                  <CardHeader className="text-center">
+                    <UserCheck className="h-12 w-12 text-black mx-auto mb-4" />
+                    <CardTitle className="text-black">Patients</CardTitle>
+                    <CardDescription>
+                      View appointments, documents, and manage profile
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button 
+                      onClick={() => setActiveTab("patient")}
+                      className="w-full bg-black text-white"
+                    >
+                      Patient Portal
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer bg-lightest-gray">
+                  <CardHeader className="text-center">
+                    <Stethoscope className="h-12 w-12 text-black mx-auto mb-4" />
+                    <CardTitle className="text-black">Doctors</CardTitle>
+                    <CardDescription>
+                      View schedule, patient history, and clinical notes
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button
+                      onClick={() => setActiveTab("doctor")}
+                      variant="outline"
+                      className="w-full bg-lightest-gray text-black"
+                    >
+                      Doctor Dashboard
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer bg-lightest-gray">
+                  <CardHeader className="text-center">
+                    <Users className="h-12 w-12 text-black mx-auto mb-4" />
+                    <CardTitle className="text-black">Staff</CardTitle>
+                    <CardDescription>
+                      Monitor clinic operations and manage patient flow
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button
+                      onClick={() => setActiveTab("staff")}
+                      variant="outline"
+                      className="w-full bg-lightest-gray text-black"
+                    >
+                      Staff Dashboard
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div className="mt-12">
+                <Card className="bg-lightest-gray">
+                  <CardContent className="pt-6">
+                    <h3 className="text-xl font-semibold text-black mb-2">
+                      Patient Check-in
+                    </h3>
+                    <p className="text-gray mb-4">
+                      For patients arriving at the clinic
+                    </p>
+                    <Button
+                      onClick={() => setActiveTab("checkin")}
+                      variant="outline"
+                      className="bg-lightest-gray text-black"
+                    >
+                      Check In Now
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Check-in Tab */}
+          <TabsContent value="checkin">
+            <CheckInDashboard />
+          </TabsContent>
+
+          {/* Patient Tab */}
+          <TabsContent value="patient">
+            <PatientDashboard />
+          </TabsContent>
+
+          {/* Doctor Tab */}
+          <TabsContent value="doctor">
+            <DoctorDashboard />
+          </TabsContent>
+
+          {/* Staff Tab */}
+          <TabsContent value="staff">
+            <StaffDashboard />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

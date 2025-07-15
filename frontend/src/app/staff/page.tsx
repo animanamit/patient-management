@@ -1,16 +1,28 @@
 "use client";
 
-import { useState, useTransition, useDeferredValue, useMemo, Suspense } from "react";
+import {
+  useState,
+  useTransition,
+  useDeferredValue,
+  useMemo,
+  Suspense,
+} from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
-import { 
-  Users, 
-  Clock, 
+import {
+  Users,
+  Clock,
   Calendar,
   Activity,
   ArrowLeft,
@@ -21,16 +33,24 @@ import {
   AlertCircle,
   Phone,
   Loader2,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
-import { useTodayAppointments, useBulkAppointmentOperations } from "@/hooks/use-appointments";
+import {
+  useTodayAppointments,
+  useBulkAppointmentOperations,
+} from "@/hooks/use-appointments";
 import { usePatients } from "@/hooks/use-patients";
-import { AppointmentStatus, AppointmentWithDetails, Appointment, Patient } from "@/lib/api-types";
+import {
+  AppointmentStatus,
+  AppointmentWithDetails,
+  Appointment,
+  Patient,
+} from "@/lib/api-types";
 
 /**
  * Staff Dashboard - Admin portal for front desk and nursing staff
- * 
+ *
  * React 18/19 Features implemented:
  * - useTransition() for queue management updates without blocking UI
  * - startTransition() for non-urgent patient search operations
@@ -43,7 +63,7 @@ import { AppointmentStatus, AppointmentWithDetails, Appointment, Patient } from 
 const StatsSkeleton = () => (
   <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
     {[1, 2, 3, 4, 5].map((i) => (
-      <Card key={i} className="orange/15 bg-light-gray from-orange/3 to-pink/5">
+      <Card key={i} className="orange/15 bg-white from-orange/3 to-pink/5">
         <CardContent className="p-4">
           <div className="text-center">
             <Skeleton className="h-8 w-8 mx-auto mb-2" />
@@ -88,29 +108,43 @@ const QueueSkeleton = () => (
 );
 
 // Stats calculation component
-const DashboardStats = ({ appointments }: { appointments: (Appointment | AppointmentWithDetails)[] }) => {
+const DashboardStats = ({
+  appointments,
+}: {
+  appointments: (Appointment | AppointmentWithDetails)[];
+}) => {
   const stats = useMemo(() => {
     const totalAppointments = appointments.length;
-    const checkedIn = appointments.filter(apt => apt.status === "SCHEDULED").length;
-    const inProgress = appointments.filter(apt => apt.status === "IN_PROGRESS").length;
-    const completed = appointments.filter(apt => apt.status === "COMPLETED").length;
-    const noShows = appointments.filter(apt => apt.status === "NO_SHOW").length;
+    const checkedIn = appointments.filter(
+      (apt) => apt.status === "SCHEDULED"
+    ).length;
+    const inProgress = appointments.filter(
+      (apt) => apt.status === "IN_PROGRESS"
+    ).length;
+    const completed = appointments.filter(
+      (apt) => apt.status === "COMPLETED"
+    ).length;
+    const noShows = appointments.filter(
+      (apt) => apt.status === "NO_SHOW"
+    ).length;
 
     return { totalAppointments, checkedIn, inProgress, completed, noShows };
   }, [appointments]);
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-      <Card className="orange/15 bg-light-gray from-orange/3 to-pink/5">
+      <Card className="orange/15 bg-white from-orange/3 to-pink/5">
         <CardContent className="p-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-gray">{stats.totalAppointments}</p>
+            <p className="text-2xl font-bold text-gray">
+              {stats.totalAppointments}
+            </p>
             <p className="text-sm text-orange">Total Today</p>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="blue/15 bg-light-gray from-blue/3 to-light-blue/5">
+      <Card className="blue/15 bg-white from-blue/3 to-light-blue/5">
         <CardContent className="p-4">
           <div className="text-center">
             <p className="text-2xl font-bold text-gray">{stats.checkedIn}</p>
@@ -119,7 +153,7 @@ const DashboardStats = ({ appointments }: { appointments: (Appointment | Appoint
         </CardContent>
       </Card>
 
-      <Card className="orange/15 bg-light-gray from-orange/3 to-orange/5">
+      <Card className="orange/15 bg-white from-orange/3 to-orange/5">
         <CardContent className="p-4">
           <div className="text-center">
             <p className="text-2xl font-bold text-gray">{stats.inProgress}</p>
@@ -128,7 +162,7 @@ const DashboardStats = ({ appointments }: { appointments: (Appointment | Appoint
         </CardContent>
       </Card>
 
-      <Card className="light-green/15 bg-light-gray from-light-green/3 to-mint/5">
+      <Card className="light-green/15 bg-white from-light-green/3 to-mint/5">
         <CardContent className="p-4">
           <div className="text-center">
             <p className="text-2xl font-bold text-gray">{stats.completed}</p>
@@ -137,7 +171,7 @@ const DashboardStats = ({ appointments }: { appointments: (Appointment | Appoint
         </CardContent>
       </Card>
 
-      <Card className="pink/15 bg-light-gray from-pink/3 to-pink/5">
+      <Card className="pink/15 bg-white from-pink/3 to-pink/5">
         <CardContent className="p-4">
           <div className="text-center">
             <p className="text-2xl font-bold text-gray">{stats.noShows}</p>
@@ -156,7 +190,11 @@ const PatientSearchTab = () => {
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
   // Fetch patients with deferred search
-  const { data: patientsData, isLoading, error } = usePatients(
+  const {
+    data: patientsData,
+    isLoading,
+    error,
+  } = usePatients(
     deferredSearchQuery ? { firstName: deferredSearchQuery } : undefined
   );
 
@@ -180,12 +218,14 @@ const PatientSearchTab = () => {
             className="pl-9"
           />
         </div>
-        {isPending && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
+        {isPending && (
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        )}
       </div>
 
       {isLoading ? (
         <div className="space-y-4">
-          {[1, 2, 3].map(i => (
+          {[1, 2, 3].map((i) => (
             <Card key={i} className="mint/30 bg-white/90">
               <CardContent className="p-6">
                 <div className="space-y-2">
@@ -209,17 +249,22 @@ const PatientSearchTab = () => {
           <CardContent className="p-8 text-center">
             <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-lg font-medium text-gray mb-2">
-              {searchQuery ? 'No patients found' : 'Search for patients'}
+              {searchQuery ? "No patients found" : "Search for patients"}
             </h3>
             <p className="text-muted-foreground">
-              {searchQuery ? 'Try adjusting your search criteria' : 'Enter a name, ID, or phone number to search'}
+              {searchQuery
+                ? "Try adjusting your search criteria"
+                : "Enter a name, ID, or phone number to search"}
             </p>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-4">
           {patients.map((patient) => (
-            <Card key={patient.id} className="mint/30 bg-white/90 hover:mint/50 transition-colors">
+            <Card
+              key={patient.id}
+              className="mint/30 bg-white/90 hover:mint/50 transition-colors"
+            >
               <CardContent className="p-6">
                 <div className="flex justify-between items-start">
                   <div className="space-y-2">
@@ -230,22 +275,35 @@ const PatientSearchTab = () => {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Phone className="h-4 w-4" />
-                        {typeof patient.phone === 'string' ? patient.phone : patient.phone?.normalizedValue || 'N/A'}
+                        {typeof patient.phone === "string"
+                          ? patient.phone
+                          : patient.phone?.normalizedValue || "N/A"}
                       </div>
                       <div className="flex items-center gap-1">
                         <User className="h-4 w-4" />
-                        {typeof patient.email === 'string' ? patient.email : patient.email?.normalizedValue || 'N/A'}
+                        {typeof patient.email === "string"
+                          ? patient.email
+                          : patient.email?.normalizedValue || "N/A"}
                       </div>
                     </div>
                     {patient.address && (
-                      <p className="text-sm text-muted-foreground">{patient.address}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {patient.address}
+                      </p>
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="orange text-orange bg-orange text-black">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="orange text-orange bg-orange text-black"
+                    >
                       View History
                     </Button>
-                    <Button size="sm" className="bg-orange bg-orange/90 text-black">
+                    <Button
+                      size="sm"
+                      className="bg-orange bg-orange/90 text-black"
+                    >
                       Book Appointment
                     </Button>
                   </div>
@@ -265,7 +323,12 @@ export default function StaffDashboard() {
   const [isPending, startTransition] = useTransition();
 
   // Fetch today's appointments for all doctors
-  const { data: appointmentsData, isLoading: isAppointmentsLoading, error: appointmentsError, refetch } = useTodayAppointments();
+  const {
+    data: appointmentsData,
+    isLoading: isAppointmentsLoading,
+    error: appointmentsError,
+    refetch,
+  } = useTodayAppointments();
   const { bulkUpdateStatus, isBulkUpdating } = useBulkAppointmentOperations();
 
   // Handle tab switching with useTransition
@@ -279,7 +342,7 @@ export default function StaffDashboard() {
   const handleSendSMS = async (patientName: string) => {
     startTransition(async () => {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log(`SMS sent to ${patientName}`);
     });
   };
@@ -287,14 +350,19 @@ export default function StaffDashboard() {
   // Filter appointments to create a patient queue (in-progress and scheduled)
   const patientQueue = useMemo(() => {
     if (!appointmentsData?.appointments) return [];
-    
+
     return appointmentsData.appointments
-      .filter(apt => apt.status === "SCHEDULED" || apt.status === "IN_PROGRESS")
+      .filter(
+        (apt) => apt.status === "SCHEDULED" || apt.status === "IN_PROGRESS"
+      )
       .sort((a, b) => {
         // Sort by status priority: IN_PROGRESS first, then by scheduled time
         if (a.status === "IN_PROGRESS" && b.status !== "IN_PROGRESS") return -1;
         if (b.status === "IN_PROGRESS" && a.status !== "IN_PROGRESS") return 1;
-        return new Date(a.scheduledDateTime).getTime() - new Date(b.scheduledDateTime).getTime();
+        return (
+          new Date(a.scheduledDateTime).getTime() -
+          new Date(b.scheduledDateTime).getTime()
+        );
       });
   }, [appointmentsData]);
 
@@ -329,16 +397,21 @@ export default function StaffDashboard() {
   // Show loading state if appointments data is loading
   if (isAppointmentsLoading) {
     return (
-      <div className="min-h-screen bg-light-gray from-white via-orange/10 to-pink/20">
+      <div className="min-h-screen bg-white from-white via-orange/10 to-pink/20">
         <header className="b mint/20 bg-white">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center text-muted-foreground text-foreground">
+              <Link
+                href="/"
+                className="flex items-center text-muted-foreground text-foreground"
+              >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Portal
               </Link>
               <div className="h-4 w-px bg-border" />
-              <h1 className="text-xl font-semibold text-orange">Staff Dashboard</h1>
+              <h1 className="text-xl font-semibold text-orange">
+                Staff Dashboard
+              </h1>
             </div>
             <div className="flex items-center space-x-2">
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -359,23 +432,30 @@ export default function StaffDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-light-gray from-white via-orange/10 to-pink/20">
+    <div className="min-h-screen bg-white from-white via-orange/10 to-pink/20">
       {/* Navigation */}
       <header className="b mint/20 bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link href="/" className="flex items-center text-muted-foreground text-foreground">
+            <Link
+              href="/"
+              className="flex items-center text-muted-foreground text-foreground"
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Portal
             </Link>
             <div className="h-4 w-px bg-border" />
-            <h1 className="text-xl font-semibold text-orange">Staff Dashboard</h1>
+            <h1 className="text-xl font-semibold text-orange">
+              Staff Dashboard
+            </h1>
           </div>
           <div className="flex items-center space-x-2">
             <User className="h-5 w-5 text-muted-foreground" />
             <div className="text-right">
               <div className="text-sm font-medium">Staff Member</div>
-              <div className="text-xs text-muted-foreground">Front Desk Coordinator</div>
+              <div className="text-xs text-muted-foreground">
+                Front Desk Coordinator
+              </div>
             </div>
           </div>
         </div>
@@ -389,10 +469,10 @@ export default function StaffDashboard() {
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 Failed to load appointment statistics.
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => refetch()} 
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => refetch()}
                   className="ml-2"
                   disabled={isAppointmentsLoading}
                 >
@@ -406,11 +486,15 @@ export default function StaffDashboard() {
           )}
         </Suspense>
 
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={handleTabChange}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-3 bg-white border mint/20">
-            <TabsTrigger 
-              value="queue" 
-              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-orange/5 data-[state=active]:to-pink/5"
+            <TabsTrigger
+              value="queue"
+              className="data-[state=active]:bg-white data-[state=active]:from-orange/5 data-[state=active]:to-pink/5"
               disabled={isPending}
             >
               <Users className="h-4 w-4 mr-2" />
@@ -419,9 +503,9 @@ export default function StaffDashboard() {
                 <Loader2 className="h-3 w-3 ml-2 animate-spin" />
               )}
             </TabsTrigger>
-            <TabsTrigger 
-              value="schedule" 
-              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-orange/5 data-[state=active]:to-pink/5"
+            <TabsTrigger
+              value="schedule"
+              className="data-[state=active]:bg-white data-[state=active]:from-orange/5 data-[state=active]:to-pink/5"
               disabled={isPending}
             >
               <Calendar className="h-4 w-4 mr-2" />
@@ -430,9 +514,9 @@ export default function StaffDashboard() {
                 <Loader2 className="h-3 w-3 ml-2 animate-spin" />
               )}
             </TabsTrigger>
-            <TabsTrigger 
-              value="search" 
-              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-orange/5 data-[state=active]:to-pink/5"
+            <TabsTrigger
+              value="search"
+              className="data-[state=active]:bg-white data-[state=active]:from-orange/5 data-[state=active]:to-pink/5"
               disabled={isPending}
             >
               <Search className="h-4 w-4 mr-2" />
@@ -446,13 +530,15 @@ export default function StaffDashboard() {
           {/* Patient Queue Tab */}
           <TabsContent value="queue" className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-gray">Current Patient Queue</h3>
-              <Button 
-                className="bg-orange bg-orange/90 text-black" 
+              <h3 className="text-xl font-semibold text-gray">
+                Current Patient Queue
+              </h3>
+              <Button
+                className="bg-orange bg-orange/90 text-black"
                 disabled={isBulkUpdating}
               >
                 <Bell className="h-4 w-4 mr-2" />
-                {isBulkUpdating ? 'Sending...' : 'Send SMS Notification'}
+                {isBulkUpdating ? "Sending..." : "Send SMS Notification"}
               </Button>
             </div>
 
@@ -468,45 +554,71 @@ export default function StaffDashboard() {
                 <Card className="mint/30 bg-white/90">
                   <CardContent className="p-8 text-center">
                     <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-medium text-gray mb-2">No patients in queue</h3>
-                    <p className="text-muted-foreground">All appointments are completed or no patients have checked in yet</p>
+                    <h3 className="text-lg font-medium text-gray mb-2">
+                      No patients in queue
+                    </h3>
+                    <p className="text-muted-foreground">
+                      All appointments are completed or no patients have checked
+                      in yet
+                    </p>
                   </CardContent>
                 </Card>
               ) : (
                 <div className="space-y-4">
                   {patientQueue.map((appointment, index) => {
-                    const patientName = ('patient' in appointment) 
-                      ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
-                      : 'Patient name loading...';
+                    const patientName =
+                      "patient" in appointment
+                        ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
+                        : "Patient name loading...";
 
-                    const doctorName = ('doctor' in appointment)
-                      ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
-                      : 'Doctor name loading...';
+                    const doctorName =
+                      "doctor" in appointment
+                        ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
+                        : "Doctor name loading...";
 
                     return (
-                      <Card key={appointment.id} className="mint/30 bg-white/90 hover:mint/50 transition-colors">
+                      <Card
+                        key={appointment.id}
+                        className="mint/30 bg-white/90 hover:mint/50 transition-colors"
+                      >
                         <CardContent className="p-6">
                           <div className="flex justify-between items-start">
                             <div className="space-y-3">
                               <div className="flex items-center gap-3">
-                                <Badge className={`${getQueueStatusColor(appointment.status)} flex items-center gap-1`}>
+                                <Badge
+                                  className={`${getQueueStatusColor(
+                                    appointment.status
+                                  )} flex items-center gap-1`}
+                                >
                                   {getQueueStatusIcon(appointment.status)}
-                                  {appointment.status.toLowerCase().replace('_', ' ')}
+                                  {appointment.status
+                                    .toLowerCase()
+                                    .replace("_", " ")}
                                 </Badge>
                                 <div className="bg-orange/10 text-orange px-3 py-1 rounded-full text-sm font-medium">
                                   Queue #{index + 1}
                                 </div>
                               </div>
                               <div>
-                                <h4 className="font-semibold text-gray text-lg">{patientName}</h4>
-                                <p className="text-muted-foreground">ID: {('patient' in appointment) ? appointment.patient.id : 'Loading...'}</p>
+                                <h4 className="font-semibold text-gray text-lg">
+                                  {patientName}
+                                </h4>
+                                <p className="text-muted-foreground">
+                                  ID:{" "}
+                                  {"patient" in appointment
+                                    ? appointment.patient.id
+                                    : "Loading..."}
+                                </p>
                               </div>
                               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                 <div className="flex items-center gap-1">
                                   <Clock className="h-4 w-4" />
-                                  Appointment: {new Date(appointment.scheduledDateTime).toLocaleTimeString([], { 
-                                    hour: '2-digit', 
-                                    minute: '2-digit' 
+                                  Appointment:{" "}
+                                  {new Date(
+                                    appointment.scheduledDateTime
+                                  ).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
                                   })}
                                 </div>
                                 <div className="flex items-center gap-1">
@@ -516,14 +628,15 @@ export default function StaffDashboard() {
                               </div>
                               {appointment.reasonForVisit && (
                                 <p className="text-sm text-muted-foreground">
-                                  <strong>Reason:</strong> {appointment.reasonForVisit}
+                                  <strong>Reason:</strong>{" "}
+                                  {appointment.reasonForVisit}
                                 </p>
                               )}
                             </div>
                             <div className="flex gap-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
+                              <Button
+                                variant="outline"
+                                size="sm"
                                 className="dark-blue text-dark-blue bg-dark-blue text-black"
                                 onClick={() => handleSendSMS(patientName)}
                                 disabled={isPending}
@@ -531,8 +644,8 @@ export default function StaffDashboard() {
                                 <Phone className="h-4 w-4 mr-2" />
                                 SMS
                               </Button>
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 className="bg-orange bg-orange/90 text-black"
                                 disabled={isPending}
                               >
@@ -555,7 +668,10 @@ export default function StaffDashboard() {
               <h3 className="text-xl font-semibold text-gray">
                 Today's Schedule - {new Date().toLocaleDateString()}
               </h3>
-              <Button variant="outline" className="orange text-orange bg-orange text-black">
+              <Button
+                variant="outline"
+                className="orange text-orange bg-orange text-black"
+              >
                 Export Schedule
               </Button>
             </div>
@@ -572,45 +688,72 @@ export default function StaffDashboard() {
                 <Card className="mint/30 bg-white/90">
                   <CardContent className="p-8 text-center">
                     <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-medium text-gray mb-2">No appointments today</h3>
-                    <p className="text-muted-foreground">No appointments are scheduled for today</p>
+                    <h3 className="text-lg font-medium text-gray mb-2">
+                      No appointments today
+                    </h3>
+                    <p className="text-muted-foreground">
+                      No appointments are scheduled for today
+                    </p>
                   </CardContent>
                 </Card>
               ) : (
                 <div className="space-y-4">
                   {appointments.map((appointment) => {
-                    const patientName = ('patient' in appointment) 
-                      ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
-                      : 'Patient name loading...';
+                    const patientName =
+                      "patient" in appointment
+                        ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
+                        : "Patient name loading...";
 
-                    const doctorName = ('doctor' in appointment)
-                      ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
-                      : 'Doctor name loading...';
+                    const doctorName =
+                      "doctor" in appointment
+                        ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
+                        : "Doctor name loading...";
 
                     return (
-                      <Card key={appointment.id} className="mint/30 bg-white/90 hover:mint/50 transition-colors">
+                      <Card
+                        key={appointment.id}
+                        className="mint/30 bg-white/90 hover:mint/50 transition-colors"
+                      >
                         <CardContent className="p-6">
                           <div className="flex justify-between items-start">
                             <div className="space-y-2">
                               <div className="flex items-center gap-3">
-                                <Badge className={getQueueStatusColor(appointment.status)}>
-                                  {appointment.status.toLowerCase().replace('_', ' ')}
+                                <Badge
+                                  className={getQueueStatusColor(
+                                    appointment.status
+                                  )}
+                                >
+                                  {appointment.status
+                                    .toLowerCase()
+                                    .replace("_", " ")}
                                 </Badge>
-                                <span className="text-sm text-muted-foreground">#{appointment.id}</span>
+                                <span className="text-sm text-muted-foreground">
+                                  #{appointment.id}
+                                </span>
                               </div>
-                              <h4 className="font-semibold text-gray text-lg">{patientName}</h4>
+                              <h4 className="font-semibold text-gray text-lg">
+                                {patientName}
+                              </h4>
                               <p className="text-muted-foreground">
-                                ID: {('patient' in appointment) ? appointment.patient.id : 'Loading...'}
+                                ID:{" "}
+                                {"patient" in appointment
+                                  ? appointment.patient.id
+                                  : "Loading..."}
                               </p>
                               <p className="text-orange font-medium">
-                                {appointment.type.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}
+                                {appointment.type
+                                  .replace("_", " ")
+                                  .toLowerCase()
+                                  .replace(/\b\w/g, (l) => l.toUpperCase())}
                               </p>
                               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                 <div className="flex items-center gap-1">
                                   <Clock className="h-4 w-4" />
-                                  {new Date(appointment.scheduledDateTime).toLocaleTimeString([], { 
-                                    hour: '2-digit', 
-                                    minute: '2-digit' 
+                                  {new Date(
+                                    appointment.scheduledDateTime
+                                  ).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
                                   })}
                                 </div>
                                 <div className="flex items-center gap-1">
@@ -619,7 +762,11 @@ export default function StaffDashboard() {
                                 </div>
                               </div>
                             </div>
-                            <Button variant="outline" size="sm" className="orange text-orange bg-orange text-black">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="orange text-orange bg-orange text-black"
+                            >
                               View Details
                             </Button>
                           </div>

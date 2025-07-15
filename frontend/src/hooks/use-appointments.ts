@@ -75,16 +75,24 @@ export const useTodayAppointments = (doctorId?: DoctorId, options: { enabled?: b
   const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
   const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
   
+  // Type safety: ensure doctorId is a string or undefined
+  const validDoctorId = typeof doctorId === 'string' && doctorId ? doctorId : undefined;
+  
+  // Debug logging to help identify ID issues
+  if (doctorId && typeof doctorId !== 'string') {
+    console.error('useTodayAppointments: doctorId is not a string:', doctorId, typeof doctorId);
+  }
+  
   const params: AppointmentQueryParams = {
     dateFrom: startOfDay,
     dateTo: endOfDay,
-    ...(doctorId && { doctorId }),
+    ...(validDoctorId && { doctorId: validDoctorId }),
   };
 
   return useQuery({
-    queryKey: [...appointmentKeys.byDateRange(startOfDay, endOfDay), doctorId],
+    queryKey: [...appointmentKeys.byDateRange(startOfDay, endOfDay), validDoctorId],
     queryFn: () => appointmentsApi.getAppointments(params),
-    enabled: options.enabled !== false && !!doctorId,
+    enabled: options.enabled !== false && !!validDoctorId,
     staleTime: 30 * 1000, // 30 seconds - today's appointments need frequent updates
     refetchInterval: 60 * 1000, // Refetch every minute
   });

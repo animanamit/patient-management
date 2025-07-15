@@ -97,7 +97,7 @@ const StatsSkeleton = () => (
     {[1, 2, 3, 4].map((i) => (
       <Card
         key={i}
-        className="dark-blue/15 bg-light-gray from-dark-blue/3 to-blue/5"
+        className="dark-blue/15 bg-white from-dark-blue/3 to-blue/5"
       >
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
@@ -197,9 +197,7 @@ const AppointmentCard = ({
               </span>
             </div>
             <div>
-              <h4 className="font-semibold text-gray text-lg">
-                {patientName}
-              </h4>
+              <h4 className="font-semibold text-gray text-lg">{patientName}</h4>
               <p className="text-muted-foreground">ID: {patientId}</p>
             </div>
             <p className="text-dark-blue font-medium">
@@ -294,60 +292,52 @@ const DashboardStats = ({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <Card className="dark-blue/15 bg-light-gray from-dark-blue/3 to-blue/5">
+      <Card className="dark-blue/15 bg-white from-dark-blue/3 to-blue/5">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-dark-blue">
                 Today&apos;s Appointments
               </p>
-              <p className="text-2xl font-bold text-gray">
-                {stats.totalToday}
-              </p>
+              <p className="text-2xl font-bold text-gray">{stats.totalToday}</p>
             </div>
             <Calendar className="h-8 w-8 text-dark-blue" />
           </div>
         </CardContent>
       </Card>
 
-      <Card className="orange/15 bg-light-gray from-orange/3 to-orange/5">
+      <Card className="orange/15 bg-white from-orange/3 to-orange/5">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-orange">In Progress</p>
-              <p className="text-2xl font-bold text-gray">
-                {stats.inProgress}
-              </p>
+              <p className="text-2xl font-bold text-gray">{stats.inProgress}</p>
             </div>
             <Activity className="h-8 w-8 text-orange" />
           </div>
         </CardContent>
       </Card>
 
-      <Card className="light-green/15 bg-light-gray from-light-green/3 to-mint/5">
+      <Card className="light-green/15 bg-white from-light-green/3 to-mint/5">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-green">Scheduled</p>
-              <p className="text-2xl font-bold text-gray">
-                {stats.scheduled}
-              </p>
+              <p className="text-2xl font-bold text-gray">{stats.scheduled}</p>
             </div>
             <Users className="h-8 w-8 text-green" />
           </div>
         </CardContent>
       </Card>
 
-      <Card className="blue/15 bg-light-gray from-blue/3 to-light-blue/5">
+      <Card className="blue/15 bg-white from-blue/3 to-light-blue/5">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-dark-blue">
                 Completed Today
               </p>
-              <p className="text-2xl font-bold text-gray">
-                {stats.completed}
-              </p>
+              <p className="text-2xl font-bold text-gray">{stats.completed}</p>
             </div>
             <CheckCircle className="h-8 w-8 text-dark-blue" />
           </div>
@@ -433,7 +423,7 @@ export default function DoctorDashboard() {
   // Show loading state if doctor data is loading
   if (isDoctorsLoading || isDoctorLoading) {
     return (
-      <div className="min-h-screen bg-light-gray from-white via-light-blue/20 to-blue/30">
+      <div className="min-h-screen bg-white from-white via-light-blue/20 to-blue/30">
         <header className="b mint bg-white">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -469,7 +459,7 @@ export default function DoctorDashboard() {
   // Show error state if doctor data failed to load
   if (doctorsError || doctorError || !doctorData || !firstDoctorId) {
     return (
-      <div className="min-h-screen bg-light-gray from-white via-light-blue/20 to-blue/30">
+      <div className="min-h-screen bg-white from-white via-light-blue/20 to-blue/30">
         <header className="b mint bg-white">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -504,7 +494,7 @@ export default function DoctorDashboard() {
   const appointments = filteredAppointments;
 
   return (
-    <div className="min-h-screen bg-light-gray from-white via-light-blue/20 to-blue/30">
+    <div className="min-h-screen bg-white from-white via-light-blue/20 to-blue/30">
       {/* Navigation */}
       <header className="b mint bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -556,7 +546,7 @@ export default function DoctorDashboard() {
           <TabsList className="grid w-full grid-cols-3 bg-white border mint/20">
             <TabsTrigger
               value="schedule"
-              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-dark-blue/5 data-[state=active]:to-blue/5"
+              className="data-[state=active]:bg-white data-[state=active]:from-dark-blue/5 data-[state=active]:to-blue/5"
               disabled={isPending}
             >
               <Calendar className="h-4 w-4 mr-2" />
@@ -567,7 +557,7 @@ export default function DoctorDashboard() {
             </TabsTrigger>
             <TabsTrigger
               value="patients"
-              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-dark-blue/5 data-[state=active]:to-blue/5"
+              className="data-[state=active]:bg-white data-[state=active]:from-dark-blue/5 data-[state=active]:to-blue/5"
               disabled={isPending}
             >
               <Users className="h-4 w-4 mr-2" />
@@ -578,7 +568,7 @@ export default function DoctorDashboard() {
             </TabsTrigger>
             <TabsTrigger
               value="notes"
-              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-dark-blue/5 data-[state=active]:to-blue/5"
+              className="data-[state=active]:bg-white data-[state=active]:from-dark-blue/5 data-[state=active]:to-blue/5"
               disabled={isPending}
             >
               <FileText className="h-4 w-4 mr-2" />

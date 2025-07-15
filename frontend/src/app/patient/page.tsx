@@ -107,7 +107,7 @@ const DocumentsList = () => {
           <CardContent className="p-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-light-gray from-blue/10 to-light-blue/20 rounded-lg">
+                <div className="p-2 bg-white from-blue/10 to-light-blue/20 rounded-lg">
                   <FileText className="h-5 w-5 text-dark-blue" />
                 </div>
                 <div>
@@ -191,24 +191,20 @@ const AppointmentsList = ({ patientId }: { patientId: PatientId }) => {
                   <Badge
                     variant="outline"
                     className={`rounded-xs none
-                      ${
-                        appointment.status === "SCHEDULED"
-                          ? "text-gray"
-                          : ""
-                      }
+                      ${appointment.status === "SCHEDULED" ? "text-gray" : ""}
                       ${
                         appointment.status === "IN_PROGRESS"
-                          ? "bg-lightest-gray from-amber/20 to-yellow/40 text-gray amber/30"
+                          ? "bg-white from-amber/20 to-yellow/40 text-gray amber/30"
                           : ""
                       }
                       ${
                         appointment.status === "COMPLETED"
-                          ? "bg-lightest-gray from-green/20 to-light-green/40 text-gray green/30"
+                          ? "bg-white from-green/20 to-light-green/40 text-gray green/30"
                           : ""
                       }
                       ${
                         appointment.status === "CANCELLED"
-                          ? "bg-lightest-gray from-red/20 to-pink/40 text-gray red/30"
+                          ? "bg-white from-red/20 to-pink/40 text-gray red/30"
                           : ""
                       }
                     `}
@@ -304,7 +300,7 @@ export default function PatientDashboard() {
   // Show loading state if patient data is loading
   if (isPatientsLoading || isPatientLoading) {
     return (
-      <div className="min-h-screen bg-light-gray from-white via-mint/30 to-light-blue/40">
+      <div className="min-h-screen bg-white from-white via-mint/30 to-light-blue/40">
         <header className="b mint bg-white">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -329,7 +325,7 @@ export default function PatientDashboard() {
 
         <main className="container mx-auto px-4 py-8">
           <div className="mb-8">
-            <div className="bg-lightest-gray from-green/5 to-light-green/5 rounded-xl p-6 border mint/30">
+            <div className="bg-white from-green/5 to-light-green/5 rounded-xl p-6 border mint/30">
               <Skeleton className="h-8 w-64 mb-2" />
               <div className="flex flex-wrap gap-4">
                 <Skeleton className="h-4 w-32" />
@@ -350,7 +346,7 @@ export default function PatientDashboard() {
   // Show error state if patient data failed to load
   if (patientsError || patientError || !patientData || !firstPatientId) {
     return (
-      <div className="min-h-screen bg-light-gray from-white via-mint/30 to-light-blue/40">
+      <div className="min-h-screen bg-white from-white via-mint/30 to-light-blue/40">
         <header className="b mint bg-white">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -385,7 +381,7 @@ export default function PatientDashboard() {
   const patient = patientData.patient;
 
   return (
-    <div className="min-h-screen bg-light-gray from-white via-mint/30 to-light-blue/40">
+    <div className="min-h-screen bg-white from-white via-mint/30 to-light-blue/40">
       {/* Navigation */}
       <header className="b mint bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -398,9 +394,7 @@ export default function PatientDashboard() {
               Back to Portal
             </Link>
             <div className="h-4 w-px bg-border" />
-            <h1 className="text-xl font-semibold text-green">
-              Patient Portal
-            </h1>
+            <h1 className="text-xl font-semibold text-green">Patient Portal</h1>
           </div>
           <div className="flex items-center space-x-2">
             <User className="h-5 w-5 text-muted-foreground" />
@@ -414,7 +408,7 @@ export default function PatientDashboard() {
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <div className="bg-lightest-gray from-green/5 to-light-green/5 rounded-xl p-6 border mint/30">
+          <div className="bg-white from-green/5 to-light-green/5 rounded-xl p-6 border mint/30">
             <h2 className="text-2xl font-bold text-gray mb-2">
               Welcome back, {patient.firstName} {patient.lastName}
             </h2>
@@ -443,7 +437,7 @@ export default function PatientDashboard() {
           <TabsList className="grid w-full grid-cols-3 bg-white border  rounded-xs">
             <TabsTrigger
               value="appointments"
-              className=" data-[state=active]:bg-lightest-gray data-[state=active]:from-green/5 data-[state=active]:to-light-green/5"
+              className=" data-[state=active]:bg-white data-[state=active]:from-green/5 data-[state=active]:to-light-green/5"
               disabled={isPending}
             >
               <Calendar className="h-4 w-4 mr-2" />
@@ -454,7 +448,7 @@ export default function PatientDashboard() {
             </TabsTrigger>
             <TabsTrigger
               value="documents"
-              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-green/5 data-[state=active]:to-light-green/5"
+              className="data-[state=active]:bg-white data-[state=active]:from-green/5 data-[state=active]:to-light-green/5"
               disabled={isPending}
             >
               <FileText className="h-4 w-4 mr-2" />
@@ -465,7 +459,7 @@ export default function PatientDashboard() {
             </TabsTrigger>
             <TabsTrigger
               value="profile"
-              className="data-[state=active]:bg-lightest-gray data-[state=active]:from-green/5 data-[state=active]:to-light-green/5"
+              className="data-[state=active]:bg-white data-[state=active]:from-green/5 data-[state=active]:to-light-green/5"
               disabled={isPending}
             >
               <User className="h-4 w-4 mr-2" />
@@ -517,9 +511,7 @@ export default function PatientDashboard() {
           <TabsContent value="profile" className="space-y-6">
             <Card className="mint/30 bg-white/90">
               <CardHeader>
-                <CardTitle className="text-gray">
-                  Profile Information
-                </CardTitle>
+                <CardTitle className="text-gray">Profile Information</CardTitle>
                 <CardDescription>
                   Your personal details and preferences
                 </CardDescription>
