@@ -1,17 +1,18 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Calendar,
   AlertCircle,
   ArrowUpRight,
   Play,
   Search,
+  ChevronDown,
 } from "lucide-react";
 import { useDoctors, useDoctor } from "@/hooks/use-doctors";
 import { useTodayAppointments } from "@/hooks/use-appointments";
+import { NavigationBar } from "@/components/navigation-bar";
 import { Appointment, AppointmentWithDetails } from "@/lib/api-types";
 
 // Loading skeleton - Dense grid
@@ -111,17 +112,19 @@ const getStatusBg = (status: string) => {
 };
 
 export default function DoctorDashboard() {
-  // Fetch doctors to get the first doctor ID
+  // Fetch doctors to get the list
   const {
     data: doctorsData,
     isLoading: isDoctorsLoading,
     error: doctorsError,
   } = useDoctors();
+  
+  // State for selected doctor
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
+  
+  // Use the first doctor as default if no selection
   const firstDoctorId = doctorsData?.doctors?.[0]?.id || null;
-
-  // Ensure we have a valid string ID, not an object
-  const validDoctorId =
-    typeof firstDoctorId === "string" && firstDoctorId ? firstDoctorId : null;
+  const validDoctorId = selectedDoctorId || (typeof firstDoctorId === "string" && firstDoctorId ? firstDoctorId : null);
 
   // Debug logging to help identify ID issues
   if (firstDoctorId && typeof firstDoctorId !== "string") {
@@ -191,6 +194,9 @@ export default function DoctorDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <NavigationBar />
+      
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="px-6 py-3">
@@ -205,6 +211,24 @@ export default function DoctorDashboard() {
               </p>
             </div>
             <div className="flex items-center gap-2">
+              {/* Doctor Selection Dropdown */}
+              {doctorsData?.doctors && doctorsData.doctors.length > 1 && (
+                <div className="relative">
+                  <select
+                    value={validDoctorId || ""}
+                    onChange={(e) => setSelectedDoctorId(e.target.value)}
+                    className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs bg-white appearance-none pr-8"
+                  >
+                    {doctorsData.doctors.map((doctor) => (
+                      <option key={doctor.id} value={doctor.id}>
+                        Dr. {doctor.firstName} {doctor.lastName}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                </div>
+              )}
+              
               <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                 View Schedule
               </button>
@@ -226,7 +250,7 @@ export default function DoctorDashboard() {
               <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
                 Today's Overview
                 <span className="ml-2 font-mono text-gray-400 font-normal">
-                  {new Date().toLocaleDateString()}
+                  Today
                 </span>
               </h2>
               <StatsGrid appointments={appointments} />
@@ -398,23 +422,6 @@ export default function DoctorDashboard() {
               </div>
             </section>
 
-            {/* Quick Notes */}
-            <section>
-              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-                Quick Notes
-              </h2>
-              <div className="bg-white border border-gray-200 rounded-sm p-4">
-                <Textarea
-                  placeholder="Enter clinical notes, observations, or treatment plans..."
-                  className="min-h-24 text-sm bg-transparent border-0 p-0 resize-none focus:ring-0"
-                />
-                <div className="flex justify-end mt-3 pt-3 border-t border-gray-100">
-                  <button className="text-xs font-medium text-white bg-green-600 hover:bg-green-700 border border-green-600 hover:border-green-700 px-3 py-1.5 rounded-xs">
-                    Save Note
-                  </button>
-                </div>
-              </div>
-            </section>
           </div>
 
           {/* Right Column - Side Information */}
@@ -441,42 +448,6 @@ export default function DoctorDashboard() {
               </div>
             </section>
 
-            {/* Today's Summary */}
-            <section>
-              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-                Today's Summary
-              </h2>
-              <div className="bg-white border border-gray-200 rounded-sm p-4 space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-500">
-                    Total Appointments
-                  </span>
-                  <span className="text-sm font-semibold text-gray-900">
-                    {appointments.length}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-500">Completed</span>
-                  <span className="text-sm font-semibold text-green-600">
-                    {completedToday.length}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-500">Remaining</span>
-                  <span className="text-sm font-semibold text-blue-600">
-                    {upcomingAppointments.length + activeAppointments.length}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-500">
-                    Average Duration
-                  </span>
-                  <span className="text-sm font-semibold text-gray-900">
-                    45min
-                  </span>
-                </div>
-              </div>
-            </section>
 
             {/* Recent Activity */}
             <section>

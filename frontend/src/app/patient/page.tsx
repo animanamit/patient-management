@@ -18,13 +18,15 @@ import {
   XCircle,
   Plus,
   ChevronRight,
-  ArrowUpRight
+  ArrowUpRight,
+  ChevronDown
 } from "lucide-react";
 import { usePatients, usePatient } from "@/hooks/use-patients";
 import { usePatientAppointments, useOptimisticAppointmentStatusUpdate } from "@/hooks/use-appointments";
 import { usePatientDocuments, formatFileSize, getDocumentTypeStyles } from "@/hooks/use-documents";
 import { BookAppointmentModal } from "@/components/book-appointment-modal";
 import { EditPatientModal } from "@/components/edit-patient-modal";
+import { NavigationBar } from "@/components/navigation-bar";
 import { Patient, Appointment, AppointmentWithDetails } from "@/lib/api-types";
 
 // Helper function to extract value from value objects
@@ -92,26 +94,32 @@ export default function PatientDashboard() {
     }
   };
   
-  // Fetch patients to get the first patient ID
+  // Fetch patients to get the list
   const { data: patientsData, isLoading: isPatientsLoading, error: patientsError } = usePatients();
+  
+  // State for selected patient
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+  
+  // Use the first patient as default if no selection
   const firstPatientId = patientsData?.patients?.[0]?.id || null;
+  const validPatientId = selectedPatientId || firstPatientId;
 
   // Fetch patient details
   const { data: patientData, isLoading: isPatientLoading, error: patientError } = usePatient(
-    firstPatientId || undefined,
-    { enabled: !!firstPatientId }
+    validPatientId || undefined,
+    { enabled: !!validPatientId }
   );
 
   // Fetch patient appointments
   const { data: appointmentsData, isLoading: isAppointmentsLoading } = usePatientAppointments(
-    firstPatientId || undefined,
-    { enabled: !!firstPatientId }
+    validPatientId || undefined,
+    { enabled: !!validPatientId }
   );
 
   // Fetch patient documents
   const { data: documentsData, isLoading: isDocumentsLoading } = usePatientDocuments(
-    firstPatientId || undefined,
-    { enabled: !!firstPatientId }
+    validPatientId || undefined,
+    { enabled: !!validPatientId }
   );
 
   // Show loading state
@@ -156,7 +164,7 @@ export default function PatientDashboard() {
   }
   
   // Show no patients state
-  if (!firstPatientId || !patientData) {
+  if (!validPatientId || !patientData) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="p-6">
@@ -164,7 +172,7 @@ export default function PatientDashboard() {
             <User className="h-8 w-8 mx-auto mb-3 text-gray-300" />
             <h3 className="text-sm font-medium text-gray-900 mb-1">No Patient Data</h3>
             <p className="text-xs text-gray-600 mb-4">
-              {!firstPatientId ? "No patients found in the system." : "Patient information could not be loaded."}
+              {!validPatientId ? "No patients found in the system." : "Patient information could not be loaded."}
             </p>
             <button 
               onClick={() => window.location.reload()}
@@ -186,6 +194,9 @@ export default function PatientDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <NavigationBar />
+      
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="px-6 py-3">
@@ -198,12 +209,32 @@ export default function PatientDashboard() {
                 Patient ID <span className="font-mono">{patient.id.split('_')[1]}</span>
               </p>
             </div>
-            <button 
-              onClick={() => setIsBookingModalOpen(true)}
-              className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
-            >
-              Book Appointment
-            </button>
+            <div className="flex items-center gap-2">
+              {/* Patient Selection Dropdown */}
+              {patientsData?.patients && patientsData.patients.length > 1 && (
+                <div className="relative">
+                  <select
+                    value={validPatientId || ""}
+                    onChange={(e) => setSelectedPatientId(e.target.value)}
+                    className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs bg-white appearance-none pr-8"
+                  >
+                    {patientsData.patients.map((patient) => (
+                      <option key={patient.id} value={patient.id}>
+                        {patient.firstName} {patient.lastName}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                </div>
+              )}
+              
+              <button 
+                onClick={() => setIsBookingModalOpen(true)}
+                className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+              >
+                Book Appointment
+              </button>
+            </div>
           </div>
         </div>
       </div>

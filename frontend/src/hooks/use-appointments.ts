@@ -92,7 +92,7 @@ export const useTodayAppointments = (doctorId?: DoctorId, options: { enabled?: b
   return useQuery({
     queryKey: [...appointmentKeys.byDateRange(startOfDay, endOfDay), validDoctorId],
     queryFn: () => appointmentsApi.getAppointments(params),
-    enabled: options.enabled !== false && !!validDoctorId,
+    enabled: options.enabled !== false, // Remove the !!validDoctorId check to allow staff dashboard to work
     staleTime: 30 * 1000, // 30 seconds - today's appointments need frequent updates
     refetchInterval: 60 * 1000, // Refetch every minute
   });

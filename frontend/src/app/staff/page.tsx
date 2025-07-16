@@ -18,11 +18,15 @@ import {
   UserCheck,
   Plus,
   ArrowUpRight,
-  MoreVertical
+  MoreVertical,
+  Grid3X3,
+  List
 } from "lucide-react";
 import { useTodayAppointments, useBulkAppointmentOperations } from "@/hooks/use-appointments";
 import { usePatients } from "@/hooks/use-patients";
 import { AppointmentStatus, AppointmentWithDetails, Appointment, Patient } from "@/lib/api-types";
+import { AppointmentsCalendar } from "@/components/appointments-calendar";
+import { NavigationBar } from "@/components/navigation-bar";
 
 // Loading skeleton - Dense grid
 const LoadingSkeleton = () => (
@@ -194,6 +198,7 @@ const getStatusBg = (status: AppointmentStatus) => {
 
 export default function StaffDashboard() {
   const [isPending, startTransition] = useTransition();
+  const [viewMode, setViewMode] = useState<'dashboard' | 'calendar'>('dashboard');
 
   // Fetch today's appointments
   const { data: appointmentsData, isLoading: isAppointmentsLoading, error: appointmentsError, refetch } = useTodayAppointments();
@@ -241,6 +246,9 @@ export default function StaffDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <NavigationBar />
+      
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="px-6 py-3">
@@ -256,6 +264,32 @@ export default function StaffDashboard() {
               </p>
             </div>
             <div className="flex items-center gap-2">
+              {/* View toggle */}
+              <div className="flex items-center border border-gray-200 rounded-xs overflow-hidden">
+                <button
+                  onClick={() => setViewMode('dashboard')}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                    viewMode === 'dashboard'
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <List className="h-3 w-3 mr-1 inline" />
+                  Dashboard
+                </button>
+                <button
+                  onClick={() => setViewMode('calendar')}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                    viewMode === 'calendar'
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <Grid3X3 className="h-3 w-3 mr-1 inline" />
+                  Calendar
+                </button>
+              </div>
+              
               <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                 Export Data
               </button>
@@ -267,9 +301,12 @@ export default function StaffDashboard() {
         </div>
       </div>
 
-      {/* Main Grid Layout */}
+      {/* Main Content */}
       <div className="p-6">
-        <div className="grid grid-cols-12 gap-6">
+        {viewMode === 'calendar' ? (
+          <AppointmentsCalendar />
+        ) : (
+          <div className="grid grid-cols-12 gap-6">
           {/* Left Column - Main Content */}
           <div className="col-span-8 space-y-6">
             
@@ -277,7 +314,7 @@ export default function StaffDashboard() {
             <section>
               <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
                 Daily Overview
-                <span className="ml-2 font-mono text-gray-400 font-normal">{new Date().toLocaleDateString()}</span>
+                <span className="ml-2 font-mono text-gray-400 font-normal">Today</span>
               </h2>
               <Suspense fallback={<LoadingSkeleton />}>
                 {appointmentsError ? (
@@ -525,11 +562,12 @@ export default function StaffDashboard() {
                   <div className="h-2 w-2 rounded-full bg-green-500" />
                   <span className="text-xs font-medium text-gray-900">All Systems Operational</span>
                 </div>
-                <p className="text-xs text-gray-500">Last updated: {new Date().toLocaleTimeString()}</p>
+                <p className="text-xs text-gray-500">Last updated: Just now</p>
               </div>
             </section>
           </div>
         </div>
+        )}
       </div>
     </div>
   );

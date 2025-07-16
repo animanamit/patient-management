@@ -19,6 +19,7 @@ import {
   AlertCircle,
   Loader2,
   ArrowLeft,
+  Calendar,
 } from "lucide-react";
 import {
   usePatientLookupByPhone,
@@ -32,6 +33,7 @@ import {
   AppointmentWithDetails,
   AppointmentId,
 } from "@/lib/api-types";
+import { NavigationBar } from "@/components/navigation-bar";
 
 // Loading skeleton components - Dense grid
 const QueueSkeleton = () => (
@@ -325,20 +327,8 @@ export default function CheckInPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-6 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-6 h-6 bg-blue-500  flex items-center justify-center">
-                <Heart className="h-3.5 w-3.5 text-white" />
-              </div>
-              <h1 className="text-base font-semibold text-gray-900">CarePulse</h1>
-            </div>
-            <p className="text-xs text-gray-500">Digital Check-in System</p>
-          </div>
-        </div>
-      </div>
+      {/* Navigation Bar */}
+      <NavigationBar />
 
       {/* Main Content */}
       <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-6">
@@ -430,7 +420,7 @@ export default function CheckInPage() {
               <div className="bg-white border border-gray-200 ">
                 <div className="px-4 py-3 border-b border-gray-100">
                   <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Today's Appointments
+                    Select Check-in Type
                   </h3>
                 </div>
                 <div className="divide-y divide-gray-100">
@@ -441,7 +431,13 @@ export default function CheckInPage() {
                       </div>
                     ) : appointmentsData?.appointments &&
                       appointmentsData.appointments.length > 0 ? (
-                      appointmentsData.appointments.map((appointment) => {
+                      <>
+                        <div className="px-4 py-3 bg-gray-50">
+                          <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Scheduled Appointments
+                          </p>
+                        </div>
+                        {appointmentsData.appointments.map((appointment) => {
                         const doctorName =
                           "doctor" in appointment
                             ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
@@ -511,17 +507,63 @@ export default function CheckInPage() {
                             </div>
                           </div>
                         );
-                      })
-                    ) : (
-                      <div className="px-4 py-8 text-center">
-                        <AlertCircle className="h-6 w-6 mx-auto mb-2 text-red-500" />
-                        <p className="text-sm text-red-600">
-                          No appointments found for today. Please check with our
-                          front desk staff.
-                        </p>
-                      </div>
-                    )}
+                      })}
+                      </>
+                    ) : null}
                   </Suspense>
+                  
+                  {/* Walk-in Option */}
+                  <div className="bg-gray-50">
+                    <div className="px-4 py-3">
+                      <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
+                        Don't have an appointment?
+                      </p>
+                      <div className="bg-white border border-gray-200 rounded-xs">
+                        <div className="px-4 py-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="text-sm font-medium text-gray-900 mb-1">
+                                Walk-in Consultation
+                              </h4>
+                              <p className="text-xs text-gray-600 mb-2">
+                                Register for a walk-in appointment. You'll be added to the queue based on availability.
+                              </p>
+                              <div className="flex items-center gap-3 text-xs text-gray-500">
+                                <div className="flex items-center gap-1">
+                                  <Users className="h-3 w-3" />
+                                  <span>Subject to doctor availability</span>
+                                </div>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => {
+                                // TODO: Implement walk-in registration
+                                alert("Walk-in registration coming soon!");
+                              }}
+                              className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-3 py-1.5 transition-colors ml-4 rounded-xs"
+                            >
+                              <span className="flex items-center gap-1">
+                                Register Walk-in
+                                <ArrowRight className="h-3 w-3" />
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {!appointmentsData?.appointments?.length && !isLoadingAppointments && (
+                    <div className="px-4 py-8 text-center">
+                      <Calendar className="h-6 w-6 mx-auto mb-2 text-gray-300" />
+                      <p className="text-sm text-gray-600 mb-2">
+                        No scheduled appointments for today
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        You can still register as a walk-in patient above
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 

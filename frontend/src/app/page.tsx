@@ -297,7 +297,7 @@ export default function HomePage() {
                 </span>
               </div>
               <span className="text-xs text-gray-500">
-                Last updated: {new Date().toLocaleTimeString()}
+                Last updated: Just now
               </span>
             </div>
           </div>
