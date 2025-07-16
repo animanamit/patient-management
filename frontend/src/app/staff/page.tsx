@@ -149,7 +149,7 @@ const PatientSearchSection = () => {
                     <span className="text-xs text-gray-500">{typeof patient.phone === 'string' ? patient.phone : 'N/A'}</span>
                   </div>
                 </div>
-                <button className="text-xs font-medium text-blue-600 hover:text-blue-800">
+                <button className="text-xs font-medium text-blue-600 hover:text-blue-800 px-2 py-1 border border-blue-200 rounded-xs hover:bg-blue-50 transition-colors">
                   Book
                 </button>
               </div>
@@ -256,10 +256,10 @@ export default function StaffDashboard() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+              <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                 Export Data
               </button>
-              <button className="text-xs font-medium text-white bg-gray-900 hover:bg-gray-800 px-3 py-1.5 rounded-sm transition-colors">
+              <button className="text-xs font-medium text-white bg-gray-900 hover:bg-gray-800 border border-gray-900 hover:border-gray-800 px-3 py-1.5 transition-colors rounded-xs">
                 Add Patient
               </button>
             </div>
@@ -287,7 +287,7 @@ export default function StaffDashboard() {
                     <button 
                       onClick={() => refetch()} 
                       disabled={isAppointmentsLoading}
-                      className="text-xs font-medium text-red-700 hover:text-red-900 px-3 py-1.5 border border-red-200 rounded-sm hover:bg-red-50 transition-colors"
+                      className="text-xs font-medium text-red-700 hover:text-red-900 px-3 py-1.5 border border-red-200 rounded-xs hover:bg-red-50 transition-colors"
                     >
                       <RefreshCw className="h-3 w-3 mr-1 inline" />
                       Retry
@@ -307,7 +307,7 @@ export default function StaffDashboard() {
                   <span className="ml-2 font-mono text-gray-400 font-normal">{patientQueue.length}</span>
                 </h2>
                 <button 
-                  className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors"
+                  className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
                   disabled={isBulkUpdating}
                 >
                   <Bell className="h-3 w-3 mr-1 inline" />
@@ -378,7 +378,7 @@ export default function StaffDashboard() {
                                   <Phone className="h-3 w-3 mr-1 inline" />
                                   SMS
                                 </button>
-                                <button className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded-sm">
+                                <button className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-2 py-1 rounded-xs">
                                   Details
                                 </button>
                               </div>
@@ -502,16 +502,16 @@ export default function StaffDashboard() {
             <section>
               <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Quick Actions</h2>
               <div className="space-y-2">
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                   <span className="text-sm font-medium text-gray-900">Check In Patient</span>
                 </button>
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                   <span className="text-sm font-medium text-gray-900">Schedule Appointment</span>
                 </button>
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                   <span className="text-sm font-medium text-gray-900">Print Reports</span>
                 </button>
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                   <span className="text-sm font-medium text-gray-900">Manage Rooms</span>
                 </button>
               </div>

@@ -48,7 +48,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/check-in"
-                className="bg-gray-900 text-white px-3 py-1.5 rounded-sm text-xs font-medium hover:bg-gray-800 transition-colors"
+                className="bg-gray-900 text-white px-3 py-1.5 text-xs font-medium hover:bg-gray-800 border border-gray-900 hover:border-gray-800 transition-colors rounded-xs"
               >
                 Check In
               </Link>
@@ -96,7 +96,7 @@ export default function HomePage() {
                 </p>
                 <Link
                   href="/check-in"
-                  className="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-sm text-xs font-medium hover:bg-blue-700 transition-colors w-full justify-center"
+                  className="inline-flex items-center bg-blue-600 text-white px-4 py-2 text-xs font-medium hover:bg-blue-700 border border-blue-600 hover:border-blue-700 transition-colors w-full justify-center rounded-xs"
                 >
                   Start Check-in
                   <ArrowRight className="h-3 w-3 ml-2" />
@@ -123,7 +123,7 @@ export default function HomePage() {
                   </p>
                   <Link
                     href="/patient"
-                    className="inline-flex items-center bg-green-600 text-white px-3 py-1.5 rounded-sm text-xs font-medium hover:bg-green-700 transition-colors w-full justify-center"
+                    className="inline-flex items-center bg-green-600 text-white px-3 py-1.5 text-xs font-medium hover:bg-green-700 border border-green-600 hover:border-green-700 transition-colors w-full justify-center rounded-xs"
                   >
                     Access Portal
                     <ArrowRight className="h-3 w-3 ml-1" />
@@ -145,7 +145,7 @@ export default function HomePage() {
                   </p>
                   <Link
                     href="/doctor"
-                    className="inline-flex items-center bg-purple-600 text-white px-3 py-1.5 rounded-sm text-xs font-medium hover:bg-purple-700 transition-colors w-full justify-center"
+                    className="inline-flex items-center bg-purple-600 text-white px-3 py-1.5 text-xs font-medium hover:bg-purple-700 border border-purple-600 hover:border-purple-700 transition-colors w-full justify-center rounded-xs"
                   >
                     Access Dashboard
                     <ArrowRight className="h-3 w-3 ml-1" />
@@ -167,7 +167,7 @@ export default function HomePage() {
                   </p>
                   <Link
                     href="/staff"
-                    className="inline-flex items-center bg-orange-600 text-white px-3 py-1.5 rounded-sm text-xs font-medium hover:bg-orange-700 transition-colors w-full justify-center"
+                    className="inline-flex items-center bg-orange-600 text-white px-3 py-1.5 text-xs font-medium hover:bg-orange-700 border border-orange-600 hover:border-orange-700 transition-colors w-full justify-center rounded-xs"
                   >
                     Access Dashboard
                     <ArrowRight className="h-3 w-3 ml-1" />

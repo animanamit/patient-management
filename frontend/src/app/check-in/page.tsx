@@ -7,17 +7,7 @@ import {
   useMemo,
   Suspense,
 } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Heart,
@@ -28,6 +18,7 @@ import {
   Users,
   AlertCircle,
   Loader2,
+  ArrowLeft,
 } from "lucide-react";
 import {
   usePatientLookupByPhone,
@@ -42,34 +33,21 @@ import {
   AppointmentId,
 } from "@/lib/api-types";
 
-/**
- * iPad Check-in Interface - For patients arriving at the clinic
- *
- * React 18/19 Features implemented:
- * - useTransition() for phone number submission without blocking UI
- * - startTransition() for search operations
- * - useDeferredValue() for real-time phone number formatting
- * - Suspense for patient lookup and queue position loading
- * - useOptimistic() for immediate check-in feedback (via custom hook)
- * - useMemo() for expensive phone number formatting computations
- */
-// Loading skeleton components
+// Loading skeleton components - Dense grid
 const QueueSkeleton = () => (
-  <Card className=" bg-white">
-    <CardContent className="py-12">
-      <div className="text-center space-y-4">
-        <Skeleton className="h-16 w-16 rounded-full mx-auto" />
-        <Skeleton className="h-6 w-48 mx-auto" />
-        <Skeleton className="h-4 w-64 mx-auto" />
-      </div>
-    </CardContent>
-  </Card>
+  <div className="bg-white border border-gray-200  p-6">
+    <div className="text-center space-y-3">
+      <Skeleton className="h-12 w-12  mx-auto bg-gray-200" />
+      <Skeleton className="h-4 w-32 mx-auto bg-gray-100" />
+      <Skeleton className="h-3 w-48 mx-auto bg-gray-100" />
+    </div>
+  </div>
 );
 
 const AppointmentSkeleton = () => (
-  <div className="space-y-4">
-    <Skeleton className="h-24 w-full" />
-    <Skeleton className="h-24 w-full" />
+  <div className="space-y-3">
+    <div className="h-16 bg-gray-100  animate-pulse" />
+    <div className="h-16 bg-gray-100  animate-pulse" />
   </div>
 );
 
@@ -94,34 +72,38 @@ const CheckInSuccess = ({
       : "Doctor information loading...";
 
   return (
-    <Card className="bg-white">
-      <CardHeader className="text-center pb-6">
-        <div className="flex justify-center mb-4">
-          <div className="bg-white from-light-gray/20 to-lightest-gray/40 p-4 rounded-full">
-            <CheckCircle className="h-12 w-12 text-black" />
-          </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="text-center">
+        <div className="w-12 h-12 bg-green-50  flex items-center justify-center mx-auto mb-3">
+          <CheckCircle className="h-6 w-6 text-green-600" />
         </div>
-        <CardTitle className="text-2xl text-black">
+        <h2 className="text-lg font-semibold text-gray-900 mb-1">
           Check-in Successful!
-        </CardTitle>
-        <CardDescription className="text-lg">
+        </h2>
+        <p className="text-sm text-gray-600">
           Welcome, {patient.firstName} {patient.lastName}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Patient Info */}
-        <div className="bg-white from-black/5 to-dark-gray/5 rounded-xl p-6 border ">
-          <h4 className="font-semibold text-dark-gray mb-3">
+        </p>
+      </div>
+
+      {/* Appointment Details */}
+      <div className="bg-white border border-gray-200 ">
+        <div className="px-4 py-3 border-b border-gray-100">
+          <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
             Appointment Details
-          </h4>
+          </h3>
+        </div>
+        <div className="px-4 py-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-muted-foreground">Patient ID:</span>
-              <p className="font-medium">{patient.id}</p>
+              <span className="text-xs text-gray-500">Patient ID</span>
+              <p className="text-sm font-medium text-gray-900 font-mono">
+                #{patient.id.split('_')[1]}
+              </p>
             </div>
             <div>
-              <span className="text-muted-foreground">Appointment Time:</span>
-              <p className="font-medium">
+              <span className="text-xs text-gray-500">Time</span>
+              <p className="text-sm font-medium text-gray-900">
                 {new Date(appointment.scheduledDateTime).toLocaleTimeString(
                   [],
                   {
@@ -131,13 +113,13 @@ const CheckInSuccess = ({
                 )}
               </p>
             </div>
-            <div className="col-span-2">
-              <span className="text-muted-foreground">Doctor:</span>
-              <p className="font-medium">{doctorName}</p>
+            <div>
+              <span className="text-xs text-gray-500">Doctor</span>
+              <p className="text-sm font-medium text-gray-900">{doctorName}</p>
             </div>
-            <div className="col-span-2">
-              <span className="text-muted-foreground">Appointment Type:</span>
-              <p className="font-medium">
+            <div>
+              <span className="text-xs text-gray-500">Type</span>
+              <p className="text-sm font-medium text-gray-900">
                 {appointment.type
                   .replace("_", " ")
                   .toLowerCase()
@@ -146,66 +128,86 @@ const CheckInSuccess = ({
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Queue Info */}
-        <Suspense fallback={<QueueSkeleton />}>
-          {isQueueLoading ? (
-            <QueueSkeleton />
-          ) : queueData ? (
-            <div className="bg-white  rounded-xl p-6 border orange/20">
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="font-semibold text-dark-gray">
-                  Your Queue Status
-                </h4>
-                <Badge className="bg-orange/20 text-orange orange/30 text-lg px-4 py-2">
+      {/* Queue Status */}
+      <Suspense fallback={<QueueSkeleton />}>
+        {isQueueLoading ? (
+          <QueueSkeleton />
+        ) : queueData ? (
+          <div className="bg-white border border-gray-200 ">
+            <div className="px-4 py-3 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Queue Status
+                </h3>
+                <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-medium border border-blue-200 rounded-xs">
                   #{queueData.queueNumber}
-                </Badge>
+                </span>
               </div>
+            </div>
+            <div className="px-4 py-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-orange" />
-                  <span className="text-muted-foreground">
+                  <Users className="h-3.5 w-3.5 text-gray-400" />
+                  <span className="text-xs text-gray-500">Position</span>
+                  <span className="text-sm font-medium text-gray-900">
                     {queueData.position}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-orange" />
-                  <span className="text-muted-foreground">
-                    Est. wait: {queueData.estimatedWait}
+                  <Clock className="h-3.5 w-3.5 text-gray-400" />
+                  <span className="text-xs text-gray-500">Est. wait</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {queueData.estimatedWait}
                   </span>
                 </div>
               </div>
             </div>
-          ) : (
-            <div className="bg-white from-blue/5 to-light-blue/10 rounded-xl p-6 border blue/20">
-              <h4 className="font-semibold text-dark-gray mb-3">
-                Queue Information
-              </h4>
-              <p className="text-muted-foreground">Loading queue position...</p>
-            </div>
-          )}
-        </Suspense>
+          </div>
+        ) : (
+          <div className="bg-white border border-gray-200  p-4">
+            <p className="text-sm text-gray-600">Loading queue position...</p>
+          </div>
+        )}
+      </Suspense>
 
-        {/* Instructions */}
-        <div className="bg-white from-blue/5 to-light-blue/10 rounded-xl p-6 border blue/20">
-          <h4 className="font-semibold text-dark-gray mb-3">What's Next?</h4>
-          <div className="space-y-2 text-sm text-dark-gray/70">
-            <p>✓ You're successfully checked in</p>
-            <p>✓ You'll receive an SMS when it's your turn</p>
-            <p>✓ Feel free to wait in our comfortable lounge or nearby area</p>
-            <p>✓ Please return when you receive the notification</p>
+      {/* Instructions */}
+      <div className="bg-white border border-gray-200 ">
+        <div className="px-4 py-3 border-b border-gray-100">
+          <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+            What's Next?
+          </h3>
+        </div>
+        <div className="px-4 py-4">
+          <div className="space-y-2 text-sm text-gray-600">
+            <div className="flex items-start gap-2">
+              <CheckCircle className="h-3.5 w-3.5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span>You're successfully checked in</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <CheckCircle className="h-3.5 w-3.5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span>You'll receive an SMS when it's your turn</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <CheckCircle className="h-3.5 w-3.5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span>Feel free to wait in our comfortable lounge</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <CheckCircle className="h-3.5 w-3.5 text-green-500 mt-0.5 flex-shrink-0" />
+              <span>Please return when you receive the notification</span>
+            </div>
           </div>
         </div>
+      </div>
 
-        <Button
-          onClick={onReset}
-          variant="outline"
-          className="w-full h-12 green text-black bg-white"
-        >
-          Check In Another Patient
-        </Button>
-      </CardContent>
-    </Card>
+      <button
+        onClick={onReset}
+        className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+      >
+        Check In Another Patient
+      </button>
+    </div>
   );
 };
 
@@ -327,130 +329,155 @@ export default function CheckInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white from-mint to-light-blue flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Heart className="h-12 w-12 text-black mr-3" />
-            <h1 className="text-4xl font-bold text-black">CarePulse</h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="px-6 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 bg-blue-500  flex items-center justify-center">
+                <Heart className="h-3.5 w-3.5 text-white" />
+              </div>
+              <h1 className="text-base font-semibold text-gray-900">CarePulse</h1>
+            </div>
+            <p className="text-xs text-gray-500">Digital Check-in System</p>
           </div>
-          <p className="text-xl text-dark-gray/70">Digital Check-in System</p>
         </div>
+      </div>
 
-        {/* Idle State - Phone Input */}
-        {checkInStatus === "idle" && (
-          <Card className=" bg-white">
-            <CardHeader className="text-center pb-6">
-              <CardTitle className="text-2xl text-dark-gray">
-                Welcome to Our Clinic
-              </CardTitle>
-              <CardDescription className="text-lg">
-                Please enter your phone number to check in for your appointment
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-dark-gray">
-                  Phone Number
-                </label>
-                <div className="relative">
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
-                    <Phone className="h-5 w-5 text-muted-foreground" />
-                    <span className="text-muted-foreground">+65</span>
-                  </div>
-                  <Input
-                    type="tel"
-                    placeholder="XXXX XXXX"
-                    value={formattedPhone}
-                    onChange={handlePhoneChange}
-                    className="pl-20 text-lg h-14 mint/40 focus:green"
-                    maxLength={11}
-                  />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Enter your Singapore mobile number (8 digits)
+      {/* Main Content */}
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-6">
+        <div className="w-full max-w-lg">
+
+          {/* Idle State - Phone Input */}
+          {checkInStatus === "idle" && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                  Welcome to Our Clinic
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Please enter your phone number to check in for your appointment
                 </p>
-                {isPending && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Processing...</span>
-                  </div>
-                )}
               </div>
 
-              <Button
+              <div className="bg-white border border-gray-200 ">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Phone Number
+                  </h3>
+                </div>
+                <div className="px-4 py-4 space-y-4">
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-gray-400" />
+                      <span className="text-sm text-gray-500">+65</span>
+                    </div>
+                    <Input
+                      type="tel"
+                      placeholder="XXXX XXXX"
+                      value={formattedPhone}
+                      onChange={handlePhoneChange}
+                      className="pl-16 h-10 border-gray-200  focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      maxLength={11}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Enter your Singapore mobile number (8 digits)
+                  </p>
+                  {isPending && (
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <span>Processing...</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <button
                 onClick={handleLookupPatient}
                 disabled={formattedPhone.length < 7 || isLookingUp || isPending}
-                className="w-full h-14 text-lg bg-green bg-green/90 text-white"
+                className="w-full text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 border border-blue-600 hover:border-blue-700 disabled:border-gray-300 px-4 py-3 transition-colors rounded-xs"
               >
                 {isLookingUp ? (
-                  <>
-                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Looking up...
-                  </>
+                  </span>
                 ) : (
-                  <>
+                  <span className="flex items-center justify-center gap-2">
                     Check In
-                    <ArrowRight className="h-5 w-5 ml-2" />
-                  </>
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
                 )}
-              </Button>
+              </button>
 
-              <div className="text-center pt-4">
-                <p className="text-sm text-muted-foreground">
-                  Having trouble? Please ask our front desk staff for
-                  assistance.
+              <div className="text-center">
+                <p className="text-xs text-gray-500">
+                  Having trouble? Please ask our front desk staff for assistance.
                 </p>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          )}
 
-        {/* Found Patient - Show Appointments */}
-        {checkInStatus === "found" && selectedPatient && (
-          <Card className="blue/30 bg-white">
-            <CardHeader className="text-center pb-6">
-              <CardTitle className="text-2xl text-dark-gray">
-                Welcome, {selectedPatient.firstName} {selectedPatient.lastName}!
-              </CardTitle>
-              <CardDescription className="text-lg">
-                Please select your appointment to check in
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <Suspense fallback={<AppointmentSkeleton />}>
-                {isLoadingAppointments ? (
-                  <AppointmentSkeleton />
-                ) : appointmentsData?.appointments &&
-                  appointmentsData.appointments.length > 0 ? (
-                  <div className="space-y-4">
-                    {appointmentsData.appointments.map((appointment) => {
-                      const doctorName =
-                        "doctor" in appointment
-                          ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
-                          : "Doctor information loading...";
+          {/* Found Patient - Show Appointments */}
+          {checkInStatus === "found" && selectedPatient && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                  Welcome, {selectedPatient.firstName} {selectedPatient.lastName}!
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Please select your appointment to check in
+                </p>
+              </div>
 
-                      return (
-                        <Card
-                          key={appointment.id}
-                          className=" bg-white/90 hover:mint/50 transition-colors"
-                        >
-                          <CardContent className="p-6">
-                            <div className="flex justify-between items-start">
-                              <div className="space-y-2">
-                                <h4 className="font-semibold text-dark-gray text-lg">
-                                  {appointment.type
-                                    .replace("_", " ")
-                                    .toLowerCase()
-                                    .replace(/\b\w/g, (l) => l.toUpperCase())}
-                                </h4>
-                                <p className="text-muted-foreground">
+              <div className="bg-white border border-gray-200 ">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Today's Appointments
+                  </h3>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  <Suspense fallback={<AppointmentSkeleton />}>
+                    {isLoadingAppointments ? (
+                      <div className="px-4 py-6">
+                        <AppointmentSkeleton />
+                      </div>
+                    ) : appointmentsData?.appointments &&
+                      appointmentsData.appointments.length > 0 ? (
+                      appointmentsData.appointments.map((appointment) => {
+                        const doctorName =
+                          "doctor" in appointment
+                            ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
+                            : "Doctor information loading...";
+
+                        return (
+                          <div
+                            key={appointment.id}
+                            className="px-4 py-4 hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="text-sm font-medium text-gray-900">
+                                    {appointment.type
+                                      .replace("_", " ")
+                                      .toLowerCase()
+                                      .replace(/\b\w/g, (l) => l.toUpperCase())}
+                                  </h4>
+                                  <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs font-medium border border-blue-200 rounded-xs">
+                                    {appointment.status
+                                      .toLowerCase()
+                                      .replace("_", " ")}
+                                  </span>
+                                </div>
+                                <p className="text-sm text-gray-600 mb-2">
                                   {doctorName}
                                 </p>
-                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                <div className="flex items-center gap-3 text-xs text-gray-500">
                                   <div className="flex items-center gap-1">
-                                    <Clock className="h-4 w-4" />
+                                    <Clock className="h-3 w-3" />
                                     {new Date(
                                       appointment.scheduledDateTime
                                     ).toLocaleTimeString([], {
@@ -458,141 +485,155 @@ export default function CheckInPage() {
                                       minute: "2-digit",
                                     })}
                                   </div>
-                                  <Badge className="bg-blue/20 text-dark-blue blue/30">
-                                    {appointment.status
-                                      .toLowerCase()
-                                      .replace("_", " ")}
-                                  </Badge>
                                 </div>
                                 {appointment.reasonForVisit && (
-                                  <p className="text-sm text-muted-foreground">
+                                  <p className="text-xs text-gray-500 mt-1">
                                     <strong>Reason:</strong>{" "}
                                     {appointment.reasonForVisit}
                                   </p>
                                 )}
                               </div>
-                              <Button
+                              <button
                                 onClick={() => {
                                   setSelectedAppointment(appointment);
                                   handleCheckIn(appointment.id);
                                 }}
                                 disabled={isCheckingIn || isPending}
-                                className="bg-green bg-green/90 text-white"
+                                className="text-xs font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-300 border border-green-600 hover:border-green-700 disabled:border-gray-300 px-3 py-1.5 transition-colors ml-4 rounded-xs"
                               >
                                 {isCheckingIn ? (
-                                  <>
-                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                  <span className="flex items-center gap-1">
+                                    <Loader2 className="h-3 w-3 animate-spin" />
                                     Checking in...
-                                  </>
+                                  </span>
                                 ) : (
-                                  <>
+                                  <span className="flex items-center gap-1">
                                     Check In
-                                    <CheckCircle className="h-4 w-4 ml-2" />
-                                  </>
+                                    <CheckCircle className="h-3 w-3" />
+                                  </span>
                                 )}
-                              </Button>
+                              </button>
                             </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      No appointments found for today. Please check with our
-                      front desk staff.
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </Suspense>
-
-              <Button
-                onClick={resetCheckIn}
-                variant="outline"
-                className="w-full gray text-dark-gray bg-gray text-white"
-              >
-                Back to Phone Entry
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Success State */}
-        {checkInStatus === "success" &&
-          selectedPatient &&
-          selectedAppointment && (
-            <CheckInSuccess
-              patient={selectedPatient}
-              appointment={selectedAppointment}
-              appointmentId={selectedAppointment.id}
-              onReset={resetCheckIn}
-            />
-          )}
-
-        {/* Error State */}
-        {checkInStatus === "error" && (
-          <Card className="pink/30 bg-white">
-            <CardHeader className="text-center pb-6">
-              <div className="flex justify-center mb-4">
-                <div className="bg-white from-pink/20 to-pink/40 p-4 rounded-full">
-                  <AlertCircle className="h-12 w-12 text-pink" />
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="px-4 py-8 text-center">
+                        <AlertCircle className="h-6 w-6 mx-auto mb-2 text-red-500" />
+                        <p className="text-sm text-red-600">
+                          No appointments found for today. Please check with our
+                          front desk staff.
+                        </p>
+                      </div>
+                    )}
+                  </Suspense>
                 </div>
               </div>
-              <CardTitle className="text-2xl text-pink">
-                Check-in Failed
-              </CardTitle>
-              <CardDescription className="text-lg">
-                {lookupError
-                  ? "There was a problem looking up your information"
-                  : "We couldn't find an appointment with this phone number"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+
+              <button
+                onClick={resetCheckIn}
+                className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <ArrowLeft className="h-3 w-3" />
+                  Back to Phone Entry
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* Success State */}
+          {checkInStatus === "success" &&
+            selectedPatient &&
+            selectedAppointment && (
+              <CheckInSuccess
+                patient={selectedPatient}
+                appointment={selectedAppointment}
+                appointmentId={selectedAppointment.id}
+                onReset={resetCheckIn}
+              />
+            )}
+
+          {/* Error State */}
+          {checkInStatus === "error" && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-red-50  flex items-center justify-center mx-auto mb-3">
+                  <AlertCircle className="h-6 w-6 text-red-600" />
+                </div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                  Check-in Failed
+                </h2>
+                <p className="text-sm text-gray-600">
+                  {lookupError
+                    ? "There was a problem looking up your information"
+                    : "We couldn't find an appointment with this phone number"}
+                </p>
+              </div>
+
               {lookupError && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    Error:{" "}
-                    {lookupError instanceof Error
-                      ? lookupError.message
-                      : "Unknown error occurred"}
-                  </AlertDescription>
-                </Alert>
+                <div className="bg-red-50 border border-red-200  p-4">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 text-red-600" />
+                    <span className="text-sm text-red-600">
+                      Error:{" "}
+                      {lookupError instanceof Error
+                        ? lookupError.message
+                        : "Unknown error occurred"}
+                    </span>
+                  </div>
+                </div>
               )}
 
-              <div className="bg-white from-pink/5 to-pink/10 rounded-xl p-6 border pink/20">
-                <h4 className="font-semibold text-dark-gray mb-3">
-                  Possible Reasons:
-                </h4>
-                <div className="space-y-2 text-sm text-dark-gray/70">
-                  <p>• No appointment scheduled for today</p>
-                  <p>• Different phone number used for booking</p>
-                  <p>• Appointment may have been rescheduled</p>
-                  <p>• Already checked in</p>
-                  <p>• System connectivity issues</p>
+              <div className="bg-white border border-gray-200 ">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Possible Reasons
+                  </h3>
+                </div>
+                <div className="px-4 py-4">
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <div className="flex items-start gap-2">
+                      <span className="text-gray-400">•</span>
+                      <span>No appointment scheduled for today</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-gray-400">•</span>
+                      <span>Different phone number used for booking</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-gray-400">•</span>
+                      <span>Appointment may have been rescheduled</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-gray-400">•</span>
+                      <span>Already checked in</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-gray-400">•</span>
+                      <span>System connectivity issues</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Button
+                <button
                   onClick={resetCheckIn}
-                  variant="outline"
-                  className="pink text-pink bg-pink text-white"
+                  className="text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
                 >
                   Try Again
-                </Button>
-                <Button
+                </button>
+                <button
                   onClick={() => (window.location.href = "/staff")}
-                  className="bg-green bg-green/90 text-white"
+                  className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-4 py-3 transition-colors rounded-xs"
                 >
                   Get Help
-                </Button>
+                </button>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

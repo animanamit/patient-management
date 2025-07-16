@@ -205,10 +205,10 @@ export default function DoctorDashboard() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+              <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                 View Schedule
               </button>
-              <button className="text-xs font-medium text-white bg-gray-900 hover:bg-gray-800 px-3 py-1.5 rounded-sm transition-colors">
+              <button className="text-xs font-medium text-white bg-gray-900 hover:bg-gray-800 border border-gray-900 hover:border-gray-800 px-3 py-1.5 transition-colors rounded-xs">
                 New Appointment
               </button>
             </div>
@@ -291,7 +291,7 @@ export default function DoctorDashboard() {
                                 </span>
                               </div>
                             </div>
-                            <button className="flex items-center gap-1 text-xs font-medium text-orange-700 hover:text-orange-900">
+                            <button className="flex items-center gap-1 text-xs font-medium text-orange-700 hover:text-orange-900 px-2 py-1 border border-orange-200 rounded-xs hover:bg-orange-50 transition-colors">
                               Continue Session
                               <ArrowUpRight className="h-3 w-3" />
                             </button>
@@ -313,7 +313,7 @@ export default function DoctorDashboard() {
                     {upcomingAppointments.length}
                   </span>
                 </h2>
-                <button className="text-xs font-medium text-gray-700 hover:text-gray-900">
+                <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border border-gray-200 rounded-xs hover:bg-gray-50 transition-colors">
                   View Full Schedule
                 </button>
               </div>
@@ -381,10 +381,10 @@ export default function DoctorDashboard() {
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <button className="text-xs font-medium text-gray-700 hover:text-gray-900">
+                              <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border border-gray-200 rounded-xs hover:bg-gray-50 transition-colors">
                                 View Patient
                               </button>
-                              <button className="flex items-center gap-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded-sm">
+                              <button className="flex items-center gap-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-2 py-1 rounded-xs">
                                 <Play className="h-3 w-3" />
                                 Start
                               </button>
@@ -409,7 +409,7 @@ export default function DoctorDashboard() {
                   className="min-h-24 text-sm bg-transparent border-0 p-0 resize-none focus:ring-0"
                 />
                 <div className="flex justify-end mt-3 pt-3 border-t border-gray-100">
-                  <button className="text-xs font-medium text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-sm">
+                  <button className="text-xs font-medium text-white bg-green-600 hover:bg-green-700 border border-green-600 hover:border-green-700 px-3 py-1.5 rounded-xs">
                     Save Note
                   </button>
                 </div>
@@ -430,11 +430,11 @@ export default function DoctorDashboard() {
                   <input
                     type="text"
                     placeholder="Search patients..."
-                    className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xs focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div className="mt-3 pt-3 border-t border-gray-100">
-                  <button className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-2 border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                  <button className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-2 border border-gray-200 rounded-xs hover:bg-gray-50 transition-colors">
                     View All Patients
                   </button>
                 </div>
@@ -533,17 +533,17 @@ export default function DoctorDashboard() {
                 Quick Actions
               </h2>
               <div className="space-y-2">
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                   <span className="text-sm font-medium text-gray-900">
                     Schedule Appointment
                   </span>
                 </button>
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                   <span className="text-sm font-medium text-gray-900">
                     Add Patient
                   </span>
                 </button>
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                   <span className="text-sm font-medium text-gray-900">
                     Clinical Notes
                   </span>

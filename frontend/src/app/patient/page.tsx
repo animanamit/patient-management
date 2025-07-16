@@ -87,13 +87,13 @@ const getStatusColor = (status: string) => {
 const getDocTypeColor = (type: string) => {
   switch (type) {
     case "LAB":
-      return "text-purple-600 bg-purple-50";
+      return "text-purple-700 border-purple-200 bg-purple-50";
     case "IMG":
-      return "text-blue-600 bg-blue-50";
+      return "text-blue-700 border-blue-200 bg-blue-50";
     case "RX":
-      return "text-green-600 bg-green-50";
+      return "text-green-700 border-green-200 bg-green-50";
     default:
-      return "text-gray-600 bg-gray-50";
+      return "text-gray-700 border-gray-200 bg-gray-50";
   }
 };
 
@@ -164,7 +164,7 @@ export default function PatientDashboard() {
                 Patient ID <span className="font-mono">{patient.id.split('_')[1]}</span>
               </p>
             </div>
-            <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+            <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
               Book Appointment
             </button>
           </div>
@@ -294,7 +294,7 @@ export default function PatientDashboard() {
                     <div key={doc.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <span className={`px-1.5 py-0.5 rounded-sm text-xs font-mono ${getDocTypeColor(doc.type)}`}>
+                          <span className={`px-2 py-1 text-xs font-mono border rounded-xs ${getDocTypeColor(doc.type)}`}>
                             {doc.type}
                           </span>
                           <div className="flex-1">
@@ -376,13 +376,13 @@ export default function PatientDashboard() {
             <section>
               <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Quick Actions</h2>
               <div className="space-y-2">
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                   <span className="text-sm font-medium text-gray-900">Book Appointment</span>
                 </button>
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                   <span className="text-sm font-medium text-gray-900">Request Document</span>
                 </button>
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                   <span className="text-sm font-medium text-gray-900">Update Profile</span>
                 </button>
               </div>
