@@ -1,32 +1,13 @@
 "use client";
 
-import {
-  useState,
-  useTransition,
-  useDeferredValue,
-  useMemo,
-  Suspense,
-} from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useTransition, useDeferredValue, useMemo, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
-import {
+import { 
   Users,
   Clock,
   Calendar,
   Activity,
-  ArrowLeft,
-  User,
   Bell,
   Search,
   CheckCircle,
@@ -34,167 +15,76 @@ import {
   Phone,
   Loader2,
   RefreshCw,
+  UserCheck,
+  Plus,
+  ArrowUpRight,
+  MoreVertical
 } from "lucide-react";
-import Link from "next/link";
-import {
-  useTodayAppointments,
-  useBulkAppointmentOperations,
-} from "@/hooks/use-appointments";
+import { useTodayAppointments, useBulkAppointmentOperations } from "@/hooks/use-appointments";
 import { usePatients } from "@/hooks/use-patients";
-import {
-  AppointmentStatus,
-  AppointmentWithDetails,
-  Appointment,
-  Patient,
-} from "@/lib/api-types";
+import { AppointmentStatus, AppointmentWithDetails, Appointment, Patient } from "@/lib/api-types";
 
-/**
- * Staff Dashboard - Admin portal for front desk and nursing staff
- *
- * React 18/19 Features implemented:
- * - useTransition() for queue management updates without blocking UI
- * - startTransition() for non-urgent patient search operations
- * - useDeferredValue() for real-time patient search filtering
- * - Suspense for appointment and patient data loading
- * - useOptimistic() for queue status changes and SMS notifications
- */
-
-// Loading skeletons
-const StatsSkeleton = () => (
-  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-    {[1, 2, 3, 4, 5].map((i) => (
-      <Card key={i} className="orange/15 bg-white from-orange/3 to-pink/5">
-        <CardContent className="p-4">
-          <div className="text-center">
-            <Skeleton className="h-8 w-8 mx-auto mb-2" />
-            <Skeleton className="h-4 w-16 mx-auto" />
-          </div>
-        </CardContent>
-      </Card>
-    ))}
+// Loading skeleton - Dense grid
+const LoadingSkeleton = () => (
+  <div className="grid grid-cols-12 gap-6">
+    <div className="col-span-8 space-y-3">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-16 bg-gray-100 rounded-sm animate-pulse" />
+      ))}
+    </div>
+    <div className="col-span-4 space-y-3">
+      {[1, 2].map((i) => (
+        <div key={i} className="h-24 bg-gray-100 rounded-sm animate-pulse" />
+      ))}
+    </div>
   </div>
 );
 
-const QueueSkeleton = () => (
-  <div className="space-y-4">
-    {[1, 2, 3].map((i) => (
-      <Card key={i} className="mint/30 bg-white/90">
-        <CardContent className="p-6">
-          <div className="flex justify-between items-start">
-            <div className="space-y-3 flex-1">
-              <div className="flex items-center gap-3">
-                <Skeleton className="h-6 w-24" />
-                <Skeleton className="h-6 w-16" />
-              </div>
-              <div>
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-4 w-24" />
-              </div>
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-4 w-28" />
-                <Skeleton className="h-4 w-24" />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Skeleton className="h-9 w-16" />
-              <Skeleton className="h-9 w-32" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    ))}
-  </div>
-);
-
-// Stats calculation component
-const DashboardStats = ({
-  appointments,
-}: {
-  appointments: (Appointment | AppointmentWithDetails)[];
-}) => {
+// Stats calculation component - Dense grid
+const DashboardStats = ({ appointments }: { appointments: (Appointment | AppointmentWithDetails)[] }) => {
   const stats = useMemo(() => {
     const totalAppointments = appointments.length;
-    const checkedIn = appointments.filter(
-      (apt) => apt.status === "SCHEDULED"
-    ).length;
-    const inProgress = appointments.filter(
-      (apt) => apt.status === "IN_PROGRESS"
-    ).length;
-    const completed = appointments.filter(
-      (apt) => apt.status === "COMPLETED"
-    ).length;
-    const noShows = appointments.filter(
-      (apt) => apt.status === "NO_SHOW"
-    ).length;
+    const checkedIn = appointments.filter(apt => apt.status === "SCHEDULED").length;
+    const inProgress = appointments.filter(apt => apt.status === "IN_PROGRESS").length;
+    const completed = appointments.filter(apt => apt.status === "COMPLETED").length;
+    const noShows = appointments.filter(apt => apt.status === "NO_SHOW").length;
 
     return { totalAppointments, checkedIn, inProgress, completed, noShows };
   }, [appointments]);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-      <Card className="orange/15 bg-white from-orange/3 to-pink/5">
-        <CardContent className="p-4">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-gray">
-              {stats.totalAppointments}
-            </p>
-            <p className="text-sm text-orange">Total Today</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="blue/15 bg-white from-blue/3 to-light-blue/5">
-        <CardContent className="p-4">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-gray">{stats.checkedIn}</p>
-            <p className="text-sm text-dark-blue">Checked In</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="orange/15 bg-white from-orange/3 to-orange/5">
-        <CardContent className="p-4">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-gray">{stats.inProgress}</p>
-            <p className="text-sm text-orange">In Progress</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="light-green/15 bg-white from-light-green/3 to-mint/5">
-        <CardContent className="p-4">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-gray">{stats.completed}</p>
-            <p className="text-sm text-green">Completed</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="pink/15 bg-white from-pink/3 to-pink/5">
-        <CardContent className="p-4">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-gray">{stats.noShows}</p>
-            <p className="text-sm text-pink">No Shows</p>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="grid grid-cols-5 gap-4">
+      <div className="bg-white border border-gray-200 rounded-sm p-3">
+        <p className="text-xs text-gray-500">Total Today</p>
+        <p className="text-lg font-semibold text-gray-900">{stats.totalAppointments}</p>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-sm p-3">
+        <p className="text-xs text-gray-500">Checked In</p>
+        <p className="text-lg font-semibold text-blue-600">{stats.checkedIn}</p>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-sm p-3">
+        <p className="text-xs text-gray-500">In Progress</p>
+        <p className="text-lg font-semibold text-orange-600">{stats.inProgress}</p>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-sm p-3">
+        <p className="text-xs text-gray-500">Completed</p>
+        <p className="text-lg font-semibold text-green-600">{stats.completed}</p>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-sm p-3">
+        <p className="text-xs text-gray-500">No Shows</p>
+        <p className="text-lg font-semibold text-red-600">{stats.noShows}</p>
+      </div>
     </div>
   );
 };
 
-// Patient search component with deferred value
-const PatientSearchTab = () => {
+// Patient search component - Condensed
+const PatientSearchSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isPending, startTransition] = useTransition();
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
-  // Fetch patients with deferred search
-  const {
-    data: patientsData,
-    isLoading,
-    error,
-  } = usePatients(
+  const { data: patientsData, isLoading, error } = usePatients(
     deferredSearchQuery ? { firstName: deferredSearchQuery } : undefined
   );
 
@@ -207,109 +97,63 @@ const PatientSearchTab = () => {
   const patients = patientsData?.patients || [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex gap-4 items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+    <div className="bg-white border border-gray-200 rounded-sm">
+      <div className="px-4 py-3 border-b border-gray-200">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Patient Search</h2>
+          <button className="text-xs font-medium text-gray-700 hover:text-gray-900">
+            Add Patient
+          </button>
+        </div>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
           <Input
-            placeholder="Search patients by name, ID, or phone..."
+            placeholder="Search patients..."
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
-            className="pl-9"
+            className="pl-9 h-8 text-xs border-gray-200 rounded-sm"
           />
         </div>
-        {isPending && (
-          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-        )}
       </div>
 
       {isLoading ? (
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="mint/30 bg-white/90">
-              <CardContent className="p-6">
-                <div className="space-y-2">
-                  <Skeleton className="h-6 w-48" />
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-4 w-40" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="px-4 py-3">
+          <div className="animate-pulse space-y-2">
+            <div className="h-4 bg-gray-100 rounded-sm w-3/4"></div>
+            <div className="h-3 bg-gray-100 rounded-sm w-1/2"></div>
+          </div>
         </div>
       ) : error ? (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Failed to load patients. Please try again later.
-          </AlertDescription>
-        </Alert>
+        <div className="px-4 py-6 text-center">
+          <AlertCircle className="h-4 w-4 mx-auto mb-2 text-red-500" />
+          <p className="text-xs text-red-600">Failed to load patients</p>
+        </div>
       ) : patients.length === 0 ? (
-        <Card className="mint/30 bg-white/90">
-          <CardContent className="p-8 text-center">
-            <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-medium text-gray mb-2">
-              {searchQuery ? "No patients found" : "Search for patients"}
-            </h3>
-            <p className="text-muted-foreground">
-              {searchQuery
-                ? "Try adjusting your search criteria"
-                : "Enter a name, ID, or phone number to search"}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="px-4 py-6 text-center">
+          <p className="text-xs text-gray-500">
+            {searchQuery ? "No patients found" : "Enter search terms"}
+          </p>
+        </div>
       ) : (
-        <div className="space-y-4">
-          {patients.map((patient) => (
-            <Card
-              key={patient.id}
-              className="mint/30 bg-white/90 hover:mint/50 transition-colors"
-            >
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start">
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-gray text-lg">
-                      {patient.firstName} {patient.lastName}
-                    </h4>
-                    <p className="text-muted-foreground">ID: {patient.id}</p>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Phone className="h-4 w-4" />
-                        {typeof patient.phone === "string"
-                          ? patient.phone
-                          : patient.phone?.normalizedValue || "N/A"}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <User className="h-4 w-4" />
-                        {typeof patient.email === "string"
-                          ? patient.email
-                          : patient.email?.normalizedValue || "N/A"}
-                      </div>
-                    </div>
-                    {patient.address && (
-                      <p className="text-sm text-muted-foreground">
-                        {patient.address}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="orange text-orange bg-orange text-black"
-                    >
-                      View History
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="bg-orange bg-orange/90 text-black"
-                    >
-                      Book Appointment
-                    </Button>
+        <div className="divide-y divide-gray-100">
+          {patients.slice(0, 4).map((patient) => (
+            <div key={patient.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-medium text-gray-900 truncate">
+                    {patient.firstName} {patient.lastName}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-xs text-gray-500 font-mono">#{patient.id.split('_')[1]}</span>
+                    <span className="text-xs text-gray-400">•</span>
+                    <span className="text-xs text-gray-500">{typeof patient.phone === 'string' ? patient.phone : 'N/A'}</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <button className="text-xs font-medium text-blue-600 hover:text-blue-800">
+                  Book
+                </button>
+              </div>
+            </div>
           ))}
         </div>
       )}
@@ -317,28 +161,44 @@ const PatientSearchTab = () => {
   );
 };
 
+// Status configuration helper
+const getStatusColor = (status: AppointmentStatus) => {
+  switch (status) {
+    case "SCHEDULED":
+      return "text-blue-600";
+    case "IN_PROGRESS":
+      return "text-orange-600";
+    case "COMPLETED":
+      return "text-green-600";
+    case "NO_SHOW":
+      return "text-red-600";
+    default:
+      return "text-gray-600";
+  }
+};
+
+const getStatusBg = (status: AppointmentStatus) => {
+  switch (status) {
+    case "SCHEDULED":
+      return "bg-blue-50";
+    case "IN_PROGRESS":
+      return "bg-orange-50";
+    case "COMPLETED":
+      return "bg-green-50";
+    case "NO_SHOW":
+      return "bg-red-50";
+    default:
+      return "bg-gray-50";
+  }
+};
+
 export default function StaffDashboard() {
-  // React 18/19 hooks for enhanced UX
-  const [activeTab, setActiveTab] = useState("queue");
   const [isPending, startTransition] = useTransition();
 
-  // Fetch today's appointments for all doctors
-  const {
-    data: appointmentsData,
-    isLoading: isAppointmentsLoading,
-    error: appointmentsError,
-    refetch,
-  } = useTodayAppointments();
+  // Fetch today's appointments
+  const { data: appointmentsData, isLoading: isAppointmentsLoading, error: appointmentsError, refetch } = useTodayAppointments();
   const { bulkUpdateStatus, isBulkUpdating } = useBulkAppointmentOperations();
 
-  // Handle tab switching with useTransition
-  const handleTabChange = (newTab: string) => {
-    startTransition(() => {
-      setActiveTab(newTab);
-    });
-  };
-
-  // Simulate sending SMS notification
   const handleSendSMS = async (patientName: string) => {
     startTransition(async () => {
       // Simulate API call
@@ -347,446 +207,330 @@ export default function StaffDashboard() {
     });
   };
 
-  // Filter appointments to create a patient queue (in-progress and scheduled)
+  // Filter appointments for patient queue
   const patientQueue = useMemo(() => {
     if (!appointmentsData?.appointments) return [];
 
     return appointmentsData.appointments
-      .filter(
-        (apt) => apt.status === "SCHEDULED" || apt.status === "IN_PROGRESS"
-      )
+      .filter(apt => apt.status === "SCHEDULED" || apt.status === "IN_PROGRESS")
       .sort((a, b) => {
-        // Sort by status priority: IN_PROGRESS first, then by scheduled time
         if (a.status === "IN_PROGRESS" && b.status !== "IN_PROGRESS") return -1;
         if (b.status === "IN_PROGRESS" && a.status !== "IN_PROGRESS") return 1;
-        return (
-          new Date(a.scheduledDateTime).getTime() -
-          new Date(b.scheduledDateTime).getTime()
-        );
+        return new Date(a.scheduledDateTime).getTime() - new Date(b.scheduledDateTime).getTime();
       });
   }, [appointmentsData]);
 
   const appointments = appointmentsData?.appointments || [];
 
-  const getQueueStatusIcon = (status: AppointmentStatus) => {
-    switch (status) {
-      case "SCHEDULED":
-        return <Clock className="h-4 w-4" />;
-      case "IN_PROGRESS":
-        return <Activity className="h-4 w-4" />;
-      case "COMPLETED":
-        return <CheckCircle className="h-4 w-4" />;
-      default:
-        return <AlertCircle className="h-4 w-4" />;
-    }
-  };
-
-  const getQueueStatusColor = (status: AppointmentStatus) => {
-    switch (status) {
-      case "SCHEDULED":
-        return "bg-blue/15 text-dark-blue blue/30";
-      case "IN_PROGRESS":
-        return "bg-orange/15 text-orange orange/30";
-      case "COMPLETED":
-        return "bg-light-green/15 text-green light-green/30";
-      default:
-        return "bg-pink/15 text-pink pink/30";
-    }
-  };
-
-  // Show loading state if appointments data is loading
+  // Show loading state
   if (isAppointmentsLoading) {
     return (
-      <div className="min-h-screen bg-white from-white via-orange/10 to-pink/20">
-        <header className="b mint/20 bg-white">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/"
-                className="flex items-center text-muted-foreground text-foreground"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Portal
-              </Link>
-              <div className="h-4 w-px bg-border" />
-              <h1 className="text-xl font-semibold text-orange">
-                Staff Dashboard
-              </h1>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-              <span className="text-sm font-medium">Loading...</span>
-            </div>
+      <div className="min-h-screen bg-gray-50">
+        <div className="border-b border-gray-200">
+          <div className="px-6 py-3">
+            <Skeleton className="h-5 w-32 bg-gray-200" />
+            <Skeleton className="h-3 w-40 bg-gray-100 mt-1" />
           </div>
-        </header>
-
-        <main className="container mx-auto px-4 py-8">
-          <StatsSkeleton />
-          <div className="space-y-6">
-            <Skeleton className="h-12 w-full" />
-            <QueueSkeleton />
-          </div>
-        </main>
+        </div>
+        <div className="p-6">
+          <LoadingSkeleton />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white from-white via-orange/10 to-pink/20">
-      {/* Navigation */}
-      <header className="b mint/20 bg-white">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link
-              href="/"
-              className="flex items-center text-muted-foreground text-foreground"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Portal
-            </Link>
-            <div className="h-4 w-px bg-border" />
-            <h1 className="text-xl font-semibold text-orange">
-              Staff Dashboard
-            </h1>
-          </div>
-          <div className="flex items-center space-x-2">
-            <User className="h-5 w-5 text-muted-foreground" />
-            <div className="text-right">
-              <div className="text-sm font-medium">Staff Member</div>
-              <div className="text-xs text-muted-foreground">
-                Front Desk Coordinator
-              </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="px-6 py-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-base font-semibold text-gray-900">Staff Dashboard</h1>
+              <p className="text-xs text-gray-500">
+                Front desk operations • {new Date().toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  month: 'short', 
+                  day: 'numeric' 
+                })}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                Export Data
+              </button>
+              <button className="text-xs font-medium text-white bg-gray-900 hover:bg-gray-800 px-3 py-1.5 rounded-sm transition-colors">
+                Add Patient
+              </button>
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
-      <main className="container mx-auto px-4 py-8">
-        {/* Daily Overview */}
-        <Suspense fallback={<StatsSkeleton />}>
-          {appointmentsError ? (
-            <Alert variant="destructive" className="mb-8">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Failed to load appointment statistics.
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => refetch()}
-                  className="ml-2"
-                  disabled={isAppointmentsLoading}
+      {/* Main Grid Layout */}
+      <div className="p-6">
+        <div className="grid grid-cols-12 gap-6">
+          {/* Left Column - Main Content */}
+          <div className="col-span-8 space-y-6">
+            
+            {/* Daily Overview */}
+            <section>
+              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
+                Daily Overview
+                <span className="ml-2 font-mono text-gray-400 font-normal">{new Date().toLocaleDateString()}</span>
+              </h2>
+              <Suspense fallback={<LoadingSkeleton />}>
+                {appointmentsError ? (
+                  <div className="bg-white border border-gray-200 rounded-sm p-6 text-center">
+                    <AlertCircle className="h-6 w-6 mx-auto mb-2 text-red-500" />
+                    <p className="text-sm text-red-600 mb-3">Failed to load appointment statistics</p>
+                    <button 
+                      onClick={() => refetch()} 
+                      disabled={isAppointmentsLoading}
+                      className="text-xs font-medium text-red-700 hover:text-red-900 px-3 py-1.5 border border-red-200 rounded-sm hover:bg-red-50 transition-colors"
+                    >
+                      <RefreshCw className="h-3 w-3 mr-1 inline" />
+                      Retry
+                    </button>
+                  </div>
+                ) : (
+                  <DashboardStats appointments={appointments} />
+                )}
+              </Suspense>
+            </section>
+
+            {/* Patient Queue */}
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Patient Queue
+                  <span className="ml-2 font-mono text-gray-400 font-normal">{patientQueue.length}</span>
+                </h2>
+                <button 
+                  className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors"
+                  disabled={isBulkUpdating}
                 >
-                  <RefreshCw className="h-4 w-4 mr-1" />
-                  Retry
-                </Button>
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <DashboardStats appointments={appointments} />
-          )}
-        </Suspense>
+                  <Bell className="h-3 w-3 mr-1 inline" />
+                  {isBulkUpdating ? "Notifying..." : "Notify All"}
+                </button>
+              </div>
+              
+              <div className="bg-white border border-gray-200 rounded-sm">
+                <Suspense fallback={<LoadingSkeleton />}>
+                  {appointmentsError ? (
+                    <div className="px-4 py-8 text-center">
+                      <AlertCircle className="h-6 w-6 mx-auto mb-2 text-red-500" />
+                      <p className="text-sm text-red-600">Failed to load patient queue</p>
+                    </div>
+                  ) : patientQueue.length === 0 ? (
+                    <div className="px-4 py-8 text-center">
+                      <Users className="h-6 w-6 mx-auto mb-2 text-gray-300" />
+                      <p className="text-sm text-gray-600 mb-1">No patients in queue</p>
+                      <p className="text-xs text-gray-500">All appointments completed or no check-ins yet</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-gray-100">
+                      {patientQueue.map((appointment, index) => {
+                        const patientName = ('patient' in appointment)
+                          ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
+                          : 'Loading...';
 
-        <Tabs
-          value={activeTab}
-          onValueChange={handleTabChange}
-          className="space-y-6"
-        >
-          <TabsList className="grid w-full grid-cols-3 bg-white border mint/20">
-            <TabsTrigger
-              value="queue"
-              className="data-[state=active]:bg-white data-[state=active]:from-orange/5 data-[state=active]:to-pink/5"
-              disabled={isPending}
-            >
-              <Users className="h-4 w-4 mr-2" />
-              Patient Queue
-              {isPending && activeTab !== "queue" && (
-                <Loader2 className="h-3 w-3 ml-2 animate-spin" />
-              )}
-            </TabsTrigger>
-            <TabsTrigger
-              value="schedule"
-              className="data-[state=active]:bg-white data-[state=active]:from-orange/5 data-[state=active]:to-pink/5"
-              disabled={isPending}
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              Today's Schedule
-              {isPending && activeTab !== "schedule" && (
-                <Loader2 className="h-3 w-3 ml-2 animate-spin" />
-              )}
-            </TabsTrigger>
-            <TabsTrigger
-              value="search"
-              className="data-[state=active]:bg-white data-[state=active]:from-orange/5 data-[state=active]:to-pink/5"
-              disabled={isPending}
-            >
-              <Search className="h-4 w-4 mr-2" />
-              Patient Search
-              {isPending && activeTab !== "search" && (
-                <Loader2 className="h-3 w-3 ml-2 animate-spin" />
-              )}
-            </TabsTrigger>
-          </TabsList>
+                        const doctorName = ('doctor' in appointment)
+                          ? `Dr. ${appointment.doctor.lastName}`
+                          : 'Doctor';
 
-          {/* Patient Queue Tab */}
-          <TabsContent value="queue" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-gray">
-                Current Patient Queue
-              </h3>
-              <Button
-                className="bg-orange bg-orange/90 text-black"
-                disabled={isBulkUpdating}
-              >
-                <Bell className="h-4 w-4 mr-2" />
-                {isBulkUpdating ? "Sending..." : "Send SMS Notification"}
-              </Button>
-            </div>
-
-            <Suspense fallback={<QueueSkeleton />}>
-              {appointmentsError ? (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    Failed to load patient queue. Please try again later.
-                  </AlertDescription>
-                </Alert>
-              ) : patientQueue.length === 0 ? (
-                <Card className="mint/30 bg-white/90">
-                  <CardContent className="p-8 text-center">
-                    <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-medium text-gray mb-2">
-                      No patients in queue
-                    </h3>
-                    <p className="text-muted-foreground">
-                      All appointments are completed or no patients have checked
-                      in yet
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {patientQueue.map((appointment, index) => {
-                    const patientName =
-                      "patient" in appointment
-                        ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
-                        : "Patient name loading...";
-
-                    const doctorName =
-                      "doctor" in appointment
-                        ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
-                        : "Doctor name loading...";
-
-                    return (
-                      <Card
-                        key={appointment.id}
-                        className="mint/30 bg-white/90 hover:mint/50 transition-colors"
-                      >
-                        <CardContent className="p-6">
-                          <div className="flex justify-between items-start">
-                            <div className="space-y-3">
-                              <div className="flex items-center gap-3">
-                                <Badge
-                                  className={`${getQueueStatusColor(
-                                    appointment.status
-                                  )} flex items-center gap-1`}
+                        return (
+                          <div key={appointment.id} className={`px-4 py-3 ${appointment.status === 'IN_PROGRESS' ? 'bg-orange-50 border-l-2 border-orange-400' : 'hover:bg-gray-50'} transition-colors`}>
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 bg-gray-100 rounded-sm flex items-center justify-center text-xs font-semibold text-gray-600">
+                                  {index + 1}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-sm font-medium text-gray-900">{patientName}</span>
+                                    <span className={`text-xs font-medium ${getStatusColor(appointment.status)}`}>
+                                      {appointment.status === 'IN_PROGRESS' ? 'IN PROGRESS' : '•'}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-3 text-xs text-gray-600">
+                                    <span>{doctorName}</span>
+                                    <span className="text-gray-400">•</span>
+                                    <span>
+                                      {new Date(appointment.scheduledDateTime).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })}
+                                    </span>
+                                    <span className="text-gray-400">•</span>
+                                    <span className="font-mono">
+                                      #{('patient' in appointment) ? appointment.patient.id.split('_')[1] : 'Loading...'}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => handleSendSMS(patientName)}
+                                  disabled={isPending}
+                                  className="text-xs font-medium text-gray-700 hover:text-gray-900"
                                 >
-                                  {getQueueStatusIcon(appointment.status)}
-                                  {appointment.status
-                                    .toLowerCase()
-                                    .replace("_", " ")}
-                                </Badge>
-                                <div className="bg-orange/10 text-orange px-3 py-1 rounded-full text-sm font-medium">
-                                  Queue #{index + 1}
-                                </div>
+                                  <Phone className="h-3 w-3 mr-1 inline" />
+                                  SMS
+                                </button>
+                                <button className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded-sm">
+                                  Details
+                                </button>
                               </div>
-                              <div>
-                                <h4 className="font-semibold text-gray text-lg">
-                                  {patientName}
-                                </h4>
-                                <p className="text-muted-foreground">
-                                  ID:{" "}
-                                  {"patient" in appointment
-                                    ? appointment.patient.id
-                                    : "Loading..."}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                <div className="flex items-center gap-1">
-                                  <Clock className="h-4 w-4" />
-                                  Appointment:{" "}
-                                  {new Date(
-                                    appointment.scheduledDateTime
-                                  ).toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  <User className="h-4 w-4" />
-                                  {doctorName}
-                                </div>
-                              </div>
-                              {appointment.reasonForVisit && (
-                                <p className="text-sm text-muted-foreground">
-                                  <strong>Reason:</strong>{" "}
-                                  {appointment.reasonForVisit}
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="dark-blue text-dark-blue bg-dark-blue text-black"
-                                onClick={() => handleSendSMS(patientName)}
-                                disabled={isPending}
-                              >
-                                <Phone className="h-4 w-4 mr-2" />
-                                SMS
-                              </Button>
-                              <Button
-                                size="sm"
-                                className="bg-orange bg-orange/90 text-black"
-                                disabled={isPending}
-                              >
-                                View Details
-                              </Button>
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              )}
-            </Suspense>
-          </TabsContent>
+                        );
+                      })}
+                    </div>
+                  )}
+                </Suspense>
+              </div>
+            </section>
 
-          {/* Schedule Tab */}
-          <TabsContent value="schedule" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-gray">
-                Today's Schedule - {new Date().toLocaleDateString()}
-              </h3>
-              <Button
-                variant="outline"
-                className="orange text-orange bg-orange text-black"
-              >
-                Export Schedule
-              </Button>
-            </div>
+            {/* Today's Schedule */}
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Today's Schedule
+                  <span className="ml-2 font-mono text-gray-400 font-normal">{appointments.length}</span>
+                </h2>
+                <button className="text-xs font-medium text-gray-700 hover:text-gray-900">
+                  View Full Schedule
+                </button>
+              </div>
+              
+              <div className="bg-white border border-gray-200 rounded-sm">
+                <Suspense fallback={<LoadingSkeleton />}>
+                  {appointmentsError ? (
+                    <div className="px-4 py-8 text-center">
+                      <AlertCircle className="h-6 w-6 mx-auto mb-2 text-red-500" />
+                      <p className="text-sm text-red-600">Failed to load today's schedule</p>
+                    </div>
+                  ) : appointments.length === 0 ? (
+                    <div className="px-4 py-8 text-center">
+                      <Calendar className="h-6 w-6 mx-auto mb-2 text-gray-300" />
+                      <p className="text-sm text-gray-600 mb-1">No appointments today</p>
+                      <p className="text-xs text-gray-500">No appointments scheduled for today</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-gray-100">
+                      {appointments.slice(0, 6).map((appointment) => {
+                        const patientName = ('patient' in appointment)
+                          ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
+                          : 'Loading...';
 
-            <Suspense fallback={<QueueSkeleton />}>
-              {appointmentsError ? (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    Failed to load today's schedule. Please try again later.
-                  </AlertDescription>
-                </Alert>
-              ) : appointments.length === 0 ? (
-                <Card className="mint/30 bg-white/90">
-                  <CardContent className="p-8 text-center">
-                    <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-medium text-gray mb-2">
-                      No appointments today
-                    </h3>
-                    <p className="text-muted-foreground">
-                      No appointments are scheduled for today
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {appointments.map((appointment) => {
-                    const patientName =
-                      "patient" in appointment
-                        ? `${appointment.patient.firstName} ${appointment.patient.lastName}`
-                        : "Patient name loading...";
+                        const doctorName = ('doctor' in appointment)
+                          ? `Dr. ${appointment.doctor.lastName}`
+                          : 'Doctor';
 
-                    const doctorName =
-                      "doctor" in appointment
-                        ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
-                        : "Doctor name loading...";
-
-                    return (
-                      <Card
-                        key={appointment.id}
-                        className="mint/30 bg-white/90 hover:mint/50 transition-colors"
-                      >
-                        <CardContent className="p-6">
-                          <div className="flex justify-between items-start">
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-3">
-                                <Badge
-                                  className={getQueueStatusColor(
-                                    appointment.status
-                                  )}
-                                >
-                                  {appointment.status
-                                    .toLowerCase()
-                                    .replace("_", " ")}
-                                </Badge>
-                                <span className="text-sm text-muted-foreground">
-                                  #{appointment.id}
-                                </span>
-                              </div>
-                              <h4 className="font-semibold text-gray text-lg">
-                                {patientName}
-                              </h4>
-                              <p className="text-muted-foreground">
-                                ID:{" "}
-                                {"patient" in appointment
-                                  ? appointment.patient.id
-                                  : "Loading..."}
-                              </p>
-                              <p className="text-orange font-medium">
-                                {appointment.type
-                                  .replace("_", " ")
-                                  .toLowerCase()
-                                  .replace(/\b\w/g, (l) => l.toUpperCase())}
-                              </p>
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                <div className="flex items-center gap-1">
-                                  <Clock className="h-4 w-4" />
-                                  {new Date(
-                                    appointment.scheduledDateTime
-                                  ).toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
+                        return (
+                          <div key={appointment.id} className="px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-sm font-medium text-gray-900">{patientName}</span>
+                                  <span className={`text-xs font-medium ${getStatusColor(appointment.status)}`}>
+                                    •
+                                  </span>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                  <User className="h-4 w-4" />
-                                  {doctorName}
+                                <div className="flex items-center gap-3 text-xs text-gray-600">
+                                  <span>{doctorName}</span>
+                                  <span className="text-gray-400">•</span>
+                                  <span>{appointment.type.replace("_", " ").toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase())}</span>
+                                  <span className="text-gray-400">•</span>
+                                  <span>
+                                    {new Date(appointment.scheduledDateTime).toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                  <span className="text-gray-400">•</span>
+                                  <span className="font-mono">
+                                    #{('patient' in appointment) ? appointment.patient.id.split('_')[1] : 'Loading...'}
+                                  </span>
                                 </div>
                               </div>
+                              <ArrowUpRight className="h-3 w-3 text-gray-400" />
                             </div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="orange text-orange bg-orange text-black"
-                            >
-                              View Details
-                            </Button>
                           </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              )}
-            </Suspense>
-          </TabsContent>
+                        );
+                      })}
+                    </div>
+                  )}
+                </Suspense>
+              </div>
+            </section>
+          </div>
 
-          {/* Patient Search Tab */}
-          <TabsContent value="search" className="space-y-6">
-            <Suspense fallback={<QueueSkeleton />}>
-              <PatientSearchTab />
+          {/* Right Column - Side Information */}
+          <div className="col-span-4 space-y-6">
+            
+            {/* Patient Search */}
+            <Suspense fallback={<LoadingSkeleton />}>
+              <PatientSearchSection />
             </Suspense>
-          </TabsContent>
-        </Tabs>
-      </main>
+
+            {/* Quick Stats */}
+            <section>
+              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Quick Stats</h2>
+              <div className="bg-white border border-gray-200 rounded-sm p-4 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500">Avg Wait Time</span>
+                  <span className="text-sm font-semibold text-gray-900">12min</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500">On Time Rate</span>
+                  <span className="text-sm font-semibold text-green-600">84%</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500">No Show Rate</span>
+                  <span className="text-sm font-semibold text-red-600">8%</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500">Utilization</span>
+                  <span className="text-sm font-semibold text-blue-600">92%</span>
+                </div>
+              </div>
+            </section>
+
+            {/* Quick Actions */}
+            <section>
+              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Quick Actions</h2>
+              <div className="space-y-2">
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                  <span className="text-sm font-medium text-gray-900">Check In Patient</span>
+                </button>
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                  <span className="text-sm font-medium text-gray-900">Schedule Appointment</span>
+                </button>
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                  <span className="text-sm font-medium text-gray-900">Print Reports</span>
+                </button>
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                  <span className="text-sm font-medium text-gray-900">Manage Rooms</span>
+                </button>
+              </div>
+            </section>
+
+            {/* System Status */}
+            <section>
+              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">System Status</h2>
+              <div className="bg-white border border-gray-200 rounded-sm p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-2 w-2 rounded-full bg-green-500" />
+                  <span className="text-xs font-medium text-gray-900">All Systems Operational</span>
+                </div>
+                <p className="text-xs text-gray-500">Last updated: {new Date().toLocaleTimeString()}</p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

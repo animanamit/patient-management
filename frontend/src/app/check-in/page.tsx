@@ -28,7 +28,6 @@ import {
   Users,
   AlertCircle,
   Loader2,
-  RefreshCw,
 } from "lucide-react";
 import {
   usePatientLookupByPhone,
@@ -40,7 +39,6 @@ import {
   Patient,
   Appointment,
   AppointmentWithDetails,
-  PatientId,
   AppointmentId,
 } from "@/lib/api-types";
 

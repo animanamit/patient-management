@@ -1,587 +1,395 @@
 "use client";
 
-import {
-  useState,
-  useTransition,
-  useDeferredValue,
-  useMemo,
-  Suspense,
-} from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useTransition, useMemo, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
+import { 
   Calendar,
-  Clock,
   FileText,
-  Download,
-  Plus,
-  ArrowLeft,
   User,
+  Clock,
   Phone,
   Mail,
+  MapPin,
   AlertCircle,
   Loader2,
+  Download,
+  Activity,
+  CheckCircle2,
+  XCircle,
+  Plus,
+  ChevronRight,
+  ArrowUpRight
 } from "lucide-react";
-import Link from "next/link";
 import { usePatients, usePatient } from "@/hooks/use-patients";
 import { usePatientAppointments } from "@/hooks/use-appointments";
-import { useDoctor } from "@/hooks/use-doctors";
-import { PatientId, AppointmentStatus } from "@/lib/api-types";
+import { Patient, Appointment, AppointmentWithDetails } from "@/lib/api-types";
 
-/**
- * Patient Dashboard - Main portal for patients
- *
- * React 18/19 Features implemented:
- * - useTransition() for smooth tab switching without blocking UI
- * - useDeferredValue() for search/filter operations
- * - Suspense for appointment history loading
- * - Error boundaries and loading states
- */
-
-// For demo purposes, we'll fetch all patients and use the first one
-// In a real app, this would come from authentication/routing
-
-// Loading skeleton component for appointments
-const AppointmentSkeleton = () => (
-  <div className="space-y-4">
-    {[1, 2, 3].map((i) => (
-      <Card key={i} className="mint/30 bg-white/90">
-        <CardContent className="p-6">
-          <div className="flex justify-between items-start">
-            <div className="space-y-2 flex-1">
-              <div className="flex items-center gap-3">
-                <Skeleton className="h-6 w-20" />
-                <Skeleton className="h-4 w-16" />
-              </div>
-              <Skeleton className="h-5 w-48" />
-              <Skeleton className="h-4 w-32" />
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-4 w-20" />
-              </div>
-            </div>
-            <Skeleton className="h-9 w-24" />
-          </div>
-        </CardContent>
-      </Card>
-    ))}
+// Loading skeleton - Dense grid
+const LoadingSkeleton = () => (
+  <div className="grid grid-cols-12 gap-6">
+    <div className="col-span-8 space-y-3">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-16 bg-gray-100 rounded-sm animate-pulse" />
+      ))}
+    </div>
+    <div className="col-span-4 space-y-3">
+      {[1, 2].map((i) => (
+        <div key={i} className="h-24 bg-gray-100 rounded-sm animate-pulse" />
+      ))}
+    </div>
   </div>
 );
 
-// Document list component (mock data for now)
-const DocumentsList = () => {
-  const documents = [
-    {
-      id: "D001",
-      name: "Exercise Plan - January 2025",
-      type: "PDF",
-      date: "2025-01-10",
-      size: "2.3 MB",
-    },
-    {
-      id: "D002",
-      name: "MRI Scan Results",
-      type: "PDF",
-      date: "2025-01-08",
-      size: "8.7 MB",
-    },
-  ];
+// Mock documents data
+const mockDocuments = [
+  {
+    id: "1",
+    name: "Blood Test Results",
+    type: "LAB",
+    date: "2024-01-15",
+    size: "245 KB",
+    status: "COMPLETE"
+  },
+  {
+    id: "2", 
+    name: "X-Ray - Chest",
+    type: "IMG",
+    date: "2024-01-10",
+    size: "1.2 MB",
+    status: "COMPLETE"
+  },
+  {
+    id: "3",
+    name: "Prescription",
+    type: "RX",
+    date: "2024-01-08",
+    size: "98 KB",
+    status: "ACTIVE"
+  }
+];
 
-  return (
-    <div className="grid gap-4">
-      {documents.map((doc) => (
-        <Card
-          key={doc.id}
-          className="mint/30 bg-white/90 hover:mint/50 transition-colors"
-        >
-          <CardContent className="p-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white from-blue/10 to-light-blue/20 rounded-lg">
-                  <FileText className="h-5 w-5 text-dark-blue" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray">{doc.name}</h4>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>{doc.type}</span>
-                    <span>•</span>
-                    <span>{doc.size}</span>
-                    <span>•</span>
-                    <span>{new Date(doc.date).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-dark-blue bg-dark-blue/10"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
+// Status configuration
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "SCHEDULED":
+      return "text-blue-600";
+    case "IN_PROGRESS":
+      return "text-orange-600";
+    case "COMPLETED":
+      return "text-green-600";
+    case "CANCELLED":
+      return "text-red-600";
+    default:
+      return "text-gray-600";
+  }
 };
 
-// Appointments list component with real data
-const AppointmentsList = ({ patientId }: { patientId: PatientId }) => {
-  const {
-    data: appointmentsData,
-    isLoading,
-    error,
-  } = usePatientAppointments(patientId);
-
-  if (isLoading) return <AppointmentSkeleton />;
-
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          Failed to load appointments. Please try again later.
-        </AlertDescription>
-      </Alert>
-    );
+const getDocTypeColor = (type: string) => {
+  switch (type) {
+    case "LAB":
+      return "text-purple-600 bg-purple-50";
+    case "IMG":
+      return "text-blue-600 bg-blue-50";
+    case "RX":
+      return "text-green-600 bg-green-50";
+    default:
+      return "text-gray-600 bg-gray-50";
   }
-
-  const appointments = appointmentsData?.appointments || [];
-
-  if (appointments.length === 0) {
-    return (
-      <Card className="mint/30 bg-white/90">
-        <CardContent className="p-8 text-center">
-          <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-          <h3 className="text-lg font-medium text-gray mb-2">
-            No appointments scheduled
-          </h3>
-          <p className="text-muted-foreground mb-4">
-            Book your first appointment to get started
-          </p>
-          <Button className="bg-green bg-green/90 text-black uppercase font-mono">
-            <Plus className="h-4 w-4 mr-2" />
-            Book Appointment
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      {appointments.map((appointment) => (
-        <Card key={appointment.id} className="   transition-colors">
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start">
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <Badge
-                    variant="outline"
-                    className={`rounded-xs none
-                      ${appointment.status === "SCHEDULED" ? "text-gray" : ""}
-                      ${
-                        appointment.status === "IN_PROGRESS"
-                          ? "bg-white from-amber/20 to-yellow/40 text-gray amber/30"
-                          : ""
-                      }
-                      ${
-                        appointment.status === "COMPLETED"
-                          ? "bg-white from-green/20 to-light-green/40 text-gray green/30"
-                          : ""
-                      }
-                      ${
-                        appointment.status === "CANCELLED"
-                          ? "bg-white from-red/20 to-pink/40 text-gray red/30"
-                          : ""
-                      }
-                    `}
-                  >
-                    {appointment.status.toLowerCase().replace("_", " ")}
-                  </Badge>
-
-                  <span className="text-sm text-muted-foreground">
-                    #{appointment.id}
-                  </span>
-                </div>
-                <h4 className="font-semibold text-gray">
-                  {appointment.type
-                    .replace("_", " ")
-                    .toLowerCase()
-                    .replace(/\b\w/g, (l) => l.toUpperCase())}
-                </h4>
-                <p className="text-muted-foreground">
-                  {"doctor" in appointment
-                    ? `with Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
-                    : "Doctor information loading..."}
-                </p>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    {new Date(
-                      appointment.scheduledDateTime
-                    ).toLocaleDateString()}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    {new Date(appointment.scheduledDateTime).toLocaleTimeString(
-                      [],
-                      {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }
-                    )}
-                  </div>
-                </div>
-                {appointment.reasonForVisit && (
-                  <p className="text-sm text-muted-foreground mt-2">
-                    <strong>Reason:</strong> {appointment.reasonForVisit}
-                  </p>
-                )}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="green text-green bg-green text-black"
-              >
-                View Details
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
 };
 
 export default function PatientDashboard() {
-  // React 18/19 hooks for enhanced UX
-  const [activeTab, setActiveTab] = useState("appointments");
-  const [isPending, startTransition] = useTransition();
+  // Fetch patients to get the first patient ID
+  const { data: patientsData, isLoading: isPatientsLoading, error: patientsError } = usePatients();
+  const firstPatientId = patientsData?.patients?.[0]?.id || null;
 
-  // Fetch all patients to get the first one for demo
-  const {
-    data: patientsData,
-    isLoading: isPatientsLoading,
-    error: patientsError,
-  } = usePatients();
+  // Fetch patient details
+  const { data: patientData, isLoading: isPatientLoading, error: patientError } = usePatient(
+    firstPatientId || undefined,
+    { enabled: !!firstPatientId }
+  );
 
-  // Get the first patient ID
-  const firstPatientId = patientsData?.patients?.[0]?.id;
+  // Fetch patient appointments
+  const { data: appointmentsData, isLoading: isAppointmentsLoading } = usePatientAppointments(
+    firstPatientId || undefined,
+    { enabled: !!firstPatientId }
+  );
 
-  // Fetch specific patient data using the first patient ID
-  const {
-    data: patientData,
-    isLoading: isPatientLoading,
-    error: patientError,
-  } = usePatient(firstPatientId!, {
-    enabled: !!firstPatientId,
-  });
-
-  // Handle tab switching with useTransition for smooth UX
-  const handleTabChange = (newTab: string) => {
-    startTransition(() => {
-      setActiveTab(newTab);
-    });
-  };
-
-  // Show loading state if patient data is loading
+  // Show loading state
   if (isPatientsLoading || isPatientLoading) {
     return (
-      <div className="min-h-screen bg-white from-white via-mint/30 to-light-blue/40">
-        <header className="b mint bg-white">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/"
-                className="flex items-center text-muted-foreground text-foreground"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Portal
-              </Link>
-              <div className="h-4 w-px bg-border" />
-              <h1 className="text-xl font-semibold text-green">
-                Patient Portal
-              </h1>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-              <span className="text-sm font-medium">Loading...</span>
-            </div>
+      <div className="min-h-screen bg-gray-50">
+        <div className="border-b border-gray-200">
+          <div className="px-6 py-3">
+            <Skeleton className="h-5 w-32 bg-gray-200" />
+            <Skeleton className="h-3 w-24 bg-gray-100 mt-1" />
           </div>
-        </header>
-
-        <main className="container mx-auto px-4 py-8">
-          <div className="mb-8">
-            <div className="bg-white from-green/5 to-light-green/5 rounded-xl p-6 border mint/30">
-              <Skeleton className="h-8 w-64 mb-2" />
-              <div className="flex flex-wrap gap-4">
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-4 w-48" />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <Skeleton className="h-12 w-full" />
-            <AppointmentSkeleton />
-          </div>
-        </main>
+        </div>
+        <div className="p-6">
+          <LoadingSkeleton />
+        </div>
       </div>
     );
   }
 
-  // Show error state if patient data failed to load
+  // Show error state
   if (patientsError || patientError || !patientData || !firstPatientId) {
     return (
-      <div className="min-h-screen bg-white from-white via-mint/30 to-light-blue/40">
-        <header className="b mint bg-white">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/"
-                className="flex items-center text-muted-foreground text-foreground"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Portal
-              </Link>
-              <div className="h-4 w-px bg-border" />
-              <h1 className="text-xl font-semibold text-green">
-                Patient Portal
-              </h1>
-            </div>
-          </div>
-        </header>
-
-        <main className="container mx-auto px-4 py-8">
-          <Alert variant="destructive" className="max-w-2xl mx-auto">
+      <div className="min-h-screen bg-gray-50">
+        <div className="p-6">
+          <div className="flex items-center gap-2 text-red-600">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Failed to load patient information. Please try refreshing the page
-              or contact support if the problem persists.
-            </AlertDescription>
-          </Alert>
-        </main>
+            <span className="text-sm">Failed to load patient information</span>
+          </div>
+        </div>
       </div>
     );
   }
 
   const patient = patientData.patient;
+  const appointments = appointmentsData?.appointments || [];
+  const upcomingAppointments = appointments.filter(apt => apt.status === "SCHEDULED");
+  const pastAppointments = appointments.filter(apt => apt.status === "COMPLETED" || apt.status === "CANCELLED");
 
   return (
-    <div className="min-h-screen bg-white from-white via-mint/30 to-light-blue/40">
-      {/* Navigation */}
-      <header className="b mint bg-white">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link
-              href="/"
-              className="flex items-center text-muted-foreground text-foreground"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Portal
-            </Link>
-            <div className="h-4 w-px bg-border" />
-            <h1 className="text-xl font-semibold text-green">Patient Portal</h1>
-          </div>
-          <div className="flex items-center space-x-2">
-            <User className="h-5 w-5 text-muted-foreground" />
-            <span className="text-sm font-medium">
-              {patient.firstName} {patient.lastName}
-            </span>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <div className="bg-white from-green/5 to-light-green/5 rounded-xl p-6 border mint/30">
-            <h2 className="text-2xl font-bold text-gray mb-2">
-              Welcome back, {patient.firstName} {patient.lastName}
-            </h2>
-            <div className="flex flex-wrap gap-4 text-sm text-gray/70">
-              <div className="flex items-center gap-1">
-                <Phone className="h-4 w-4" />
-                {patient.phone?.normalizedValue ||
-                  patient.phone?.toString() ||
-                  patient.phone}
-              </div>
-              <div className="flex items-center gap-1">
-                <Mail className="h-4 w-4" />
-                {patient.email?.normalizedValue ||
-                  patient.email?.toString() ||
-                  patient.email}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <Tabs
-          value={activeTab}
-          onValueChange={handleTabChange}
-          className="space-y-6 rounded-sm"
-        >
-          <TabsList className="grid w-full grid-cols-3 bg-white border  rounded-xs">
-            <TabsTrigger
-              value="appointments"
-              className=" data-[state=active]:bg-white data-[state=active]:from-green/5 data-[state=active]:to-light-green/5"
-              disabled={isPending}
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              Appointments
-              {isPending && activeTab !== "appointments" && (
-                <Loader2 className="h-3 w-3 ml-2 animate-spin" />
-              )}
-            </TabsTrigger>
-            <TabsTrigger
-              value="documents"
-              className="data-[state=active]:bg-white data-[state=active]:from-green/5 data-[state=active]:to-light-green/5"
-              disabled={isPending}
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Documents
-              {isPending && activeTab !== "documents" && (
-                <Loader2 className="h-3 w-3 ml-2 animate-spin" />
-              )}
-            </TabsTrigger>
-            <TabsTrigger
-              value="profile"
-              className="data-[state=active]:bg-white data-[state=active]:from-green/5 data-[state=active]:to-light-green/5"
-              disabled={isPending}
-            >
-              <User className="h-4 w-4 mr-2" />
-              Profile
-              {isPending && activeTab !== "profile" && (
-                <Loader2 className="h-3 w-3 ml-2 animate-spin" />
-              )}
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Appointments Tab */}
-          <TabsContent value="appointments" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-gray">
-                Your Appointments
-              </h3>
-              <Button className="bg-green bg-green/90 text-black uppercase font-mono rounded-xs">
-                <Plus className="h-4 w-4 mr-2" />
-                Book Appointment
-              </Button>
-            </div>
-
-            <Suspense fallback={<AppointmentSkeleton />}>
-              <AppointmentsList patientId={patient.id} />
-            </Suspense>
-          </TabsContent>
-
-          {/* Documents Tab */}
-          <TabsContent value="documents" className="space-y-6 rounded-none">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="px-6 py-3">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-semibold text-gray mb-4">
-                Medical Documents
-              </h3>
-              <Suspense
-                fallback={
-                  <div className="space-y-4">
-                    {[1, 2].map((i) => (
-                      <Skeleton key={i} className="h-20 w-full" />
-                    ))}
-                  </div>
-                }
-              >
-                <DocumentsList />
-              </Suspense>
+              <h1 className="text-base font-semibold text-gray-900">
+                {patient.firstName} {patient.lastName}
+              </h1>
+              <p className="text-xs text-gray-500">
+                Patient ID <span className="font-mono">{patient.id.split('_')[1]}</span>
+              </p>
             </div>
-          </TabsContent>
+            <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+              Book Appointment
+            </button>
+          </div>
+        </div>
+      </div>
 
-          {/* Profile Tab */}
-          <TabsContent value="profile" className="space-y-6">
-            <Card className="mint/30 bg-white/90">
-              <CardHeader>
-                <CardTitle className="text-gray">Profile Information</CardTitle>
-                <CardDescription>
-                  Your personal details and preferences
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray">
-                      Full Name
-                    </label>
-                    <p className="text-muted-foreground">
-                      {patient.firstName} {patient.lastName}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray">
-                      Patient ID
-                    </label>
-                    <p className="text-muted-foreground">{patient.id}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray">
-                      Phone Number
-                    </label>
-                    <p className="text-muted-foreground">
-                      {patient.phone?.normalizedValue ||
-                        patient.phone?.toString() ||
-                        patient.phone}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray">
-                      Email Address
-                    </label>
-                    <p className="text-muted-foreground">
-                      {patient.email?.normalizedValue ||
-                        patient.email?.toString() ||
-                        patient.email}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray">
-                      Date of Birth
-                    </label>
-                    <p className="text-muted-foreground">
-                      {new Date(patient.dateOfBirth).toLocaleDateString()}
-                    </p>
-                  </div>
-                  {patient.address && (
+      {/* Main Grid Layout */}
+      <div className="p-6">
+        <div className="grid grid-cols-12 gap-6">
+          {/* Left Column - Main Content */}
+          <div className="col-span-8 space-y-6">
+            
+            {/* Contact Information */}
+            <section>
+              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Contact Information</h2>
+              <div className="bg-white border border-gray-200 rounded-sm divide-y divide-gray-100">
+                <div className="px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-3.5 w-3.5 text-gray-400" />
                     <div>
-                      <label className="text-sm font-medium text-gray">
-                        Address
-                      </label>
-                      <p className="text-muted-foreground">{patient.address}</p>
+                      <p className="text-xs text-gray-500">Phone</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {typeof patient.phone === 'string' ? patient.phone : patient.phone?.toString() || 'Not provided'}
+                      </p>
                     </div>
-                  )}
+                  </div>
                 </div>
-                <div className="pt-4">
-                  <Button
-                    variant="outline"
-                    className="green text-green bg-green text-black"
-                  >
-                    Edit Profile
-                  </Button>
+                <div className="px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-3.5 w-3.5 text-gray-400" />
+                    <div>
+                      <p className="text-xs text-gray-500">Email</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {typeof patient.email === 'string' ? patient.email : patient.email?.toString() || 'Not provided'}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </main>
+                <div className="px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-3.5 w-3.5 text-gray-400" />
+                    <div>
+                      <p className="text-xs text-gray-500">Address</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {patient.address || 'Not provided'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Upcoming Appointments */}
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Upcoming Appointments
+                  <span className="ml-2 font-mono text-gray-400 font-normal">{upcomingAppointments.length}</span>
+                </h2>
+                <button className="text-xs font-medium text-gray-700 hover:text-gray-900">
+                  View All
+                </button>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-sm">
+                {upcomingAppointments.length === 0 ? (
+                  <div className="px-4 py-8 text-center">
+                    <Calendar className="h-6 w-6 mx-auto mb-2 text-gray-300" />
+                    <p className="text-sm text-gray-600 mb-1">No upcoming appointments</p>
+                    <p className="text-xs text-gray-500">Schedule your next visit</p>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-100">
+                    {upcomingAppointments.slice(0, 3).map((appointment) => {
+                      const doctorName = ('doctor' in appointment)
+                        ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
+                        : 'Loading...';
+                      
+                      return (
+                        <div key={appointment.id} className="px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-sm font-medium text-gray-900">
+                                  {appointment.type.replace("_", " ").toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase())}
+                                </span>
+                                <span className={`text-xs font-medium ${getStatusColor(appointment.status)}`}>
+                                  •
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-3 text-xs text-gray-600">
+                                <span>{doctorName}</span>
+                                <span className="text-gray-400">•</span>
+                                <span>{new Date(appointment.scheduledDateTime).toLocaleDateString()}</span>
+                                <span className="text-gray-400">•</span>
+                                <span>
+                                  {new Date(appointment.scheduledDateTime).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </span>
+                              </div>
+                            </div>
+                            <ArrowUpRight className="h-3 w-3 text-gray-400" />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* Medical Documents */}
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Medical Documents
+                  <span className="ml-2 font-mono text-gray-400 font-normal">{mockDocuments.length}</span>
+                </h2>
+                <button className="text-xs font-medium text-gray-700 hover:text-gray-900">
+                  Request Document
+                </button>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-sm">
+                <div className="divide-y divide-gray-100">
+                  {mockDocuments.map((doc) => (
+                    <div key={doc.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className={`px-1.5 py-0.5 rounded-sm text-xs font-mono ${getDocTypeColor(doc.type)}`}>
+                            {doc.type}
+                          </span>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-gray-900">{doc.name}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-xs text-gray-500">{doc.size}</span>
+                              <span className="text-xs text-gray-400">•</span>
+                              <span className="text-xs text-gray-500">{new Date(doc.date).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <button className="flex items-center gap-1 text-xs font-medium text-gray-700 hover:text-gray-900">
+                          <Download className="h-3 w-3" />
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Right Column - Side Information */}
+          <div className="col-span-4 space-y-6">
+            
+            {/* Quick Stats */}
+            <section>
+              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Overview</h2>
+              <div className="bg-white border border-gray-200 rounded-sm p-4 space-y-3">
+                <div>
+                  <p className="text-xs text-gray-500">Total Appointments</p>
+                  <p className="text-lg font-semibold text-gray-900">{appointments.length}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">Upcoming</p>
+                  <p className="text-lg font-semibold text-blue-600">{upcomingAppointments.length}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">Documents</p>
+                  <p className="text-lg font-semibold text-gray-900">{mockDocuments.length}</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Recent Activity */}
+            <section>
+              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Recent Activity</h2>
+              <div className="bg-white border border-gray-200 rounded-sm">
+                <div className="divide-y divide-gray-100">
+                  {pastAppointments.slice(0, 3).map((appointment) => {
+                    const doctorName = ('doctor' in appointment)
+                      ? `Dr. ${appointment.doctor.lastName}`
+                      : 'Doctor';
+                    
+                    return (
+                      <div key={appointment.id} className="px-4 py-3">
+                        <div className="flex items-start gap-3">
+                          <div className={`mt-0.5 h-1.5 w-1.5 rounded-full ${
+                            appointment.status === 'COMPLETED' ? 'bg-green-500' : 'bg-red-500'
+                          }`} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium text-gray-900 truncate">
+                              {appointment.type.replace("_", " ").toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase())}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              {doctorName} • {new Date(appointment.scheduledDateTime).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+
+            {/* Quick Actions */}
+            <section>
+              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Quick Actions</h2>
+              <div className="space-y-2">
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                  <span className="text-sm font-medium text-gray-900">Book Appointment</span>
+                </button>
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                  <span className="text-sm font-medium text-gray-900">Request Document</span>
+                </button>
+                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 rounded-sm hover:bg-gray-50 transition-colors">
+                  <span className="text-sm font-medium text-gray-900">Update Profile</span>
+                </button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
