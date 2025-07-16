@@ -30,11 +30,11 @@ export const usePatients = (params?: PatientQueryParams) => {
 };
 
 // Hook to get a single patient by ID
-export const usePatient = (id: PatientId) => {
+export const usePatient = (id?: PatientId, options: { enabled?: boolean } = {}) => {
   return useQuery({
-    queryKey: patientKeys.detail(id),
-    queryFn: () => patientsApi.getPatientById(id),
-    enabled: !!id, // Only run query if ID is provided
+    queryKey: patientKeys.detail(id!),
+    queryFn: () => patientsApi.getPatientById(id!),
+    enabled: !!id && (options.enabled !== false), // Only run query if ID is provided and not explicitly disabled
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 };

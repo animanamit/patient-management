@@ -198,3 +198,51 @@ export interface DoctorApiResponse {
 export interface AppointmentApiResponse {
   appointment: Appointment | AppointmentWithDetails;
 }
+
+// Document Types (for future implementation)
+export type DocumentId = string;
+export type DocumentType = "LAB" | "IMG" | "RX" | "REPORT" | "OTHER";
+export type DocumentStatus = "PENDING" | "COMPLETE" | "ACTIVE" | "EXPIRED";
+
+export interface MedicalDocument {
+  id: DocumentId;
+  patientId: PatientId;
+  name: string;
+  type: DocumentType;
+  status: DocumentStatus;
+  fileUrl?: string;
+  fileSize?: number;
+  mimeType?: string;
+  uploadedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateDocumentRequest {
+  patientId: PatientId;
+  name: string;
+  type: DocumentType;
+  file?: File;
+}
+
+export interface DocumentQueryParams {
+  patientId?: PatientId;
+  type?: DocumentType;
+  status?: DocumentStatus;
+  limit?: number;
+  offset?: number;
+}
+
+export interface DocumentsResponse {
+  documents: MedicalDocument[];
+  totalCount: number;
+  pagination: {
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+  };
+}
+
+export interface DocumentApiResponse {
+  document: MedicalDocument;
+}

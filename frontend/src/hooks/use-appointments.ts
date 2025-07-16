@@ -41,11 +41,11 @@ export const useAppointments = (params?: AppointmentQueryParams) => {
 };
 
 // Hook to get appointments for a specific patient
-export const usePatientAppointments = (patientId: PatientId) => {
+export const usePatientAppointments = (patientId?: PatientId, options: { enabled?: boolean } = {}) => {
   return useQuery({
-    queryKey: appointmentKeys.byPatient(patientId),
+    queryKey: appointmentKeys.byPatient(patientId!),
     queryFn: () => appointmentsApi.getAppointments({ patientId }),
-    enabled: !!patientId,
+    enabled: !!patientId && (options.enabled !== false),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };

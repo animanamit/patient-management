@@ -230,16 +230,11 @@ export default function CheckInPage() {
   const formattedPhone = useMemo(() => {
     const numbers = deferredPhoneInput.replace(/\D/g, "");
 
-    // Format as +65 XXXX XXXX for Singapore numbers
-    if (numbers.length <= 2) {
+    // Format as XXXX XXXX for Singapore mobile numbers (8 digits)
+    if (numbers.length <= 4) {
       return numbers;
-    } else if (numbers.length <= 6) {
-      return `${numbers.slice(0, 2)} ${numbers.slice(2)}`;
     } else {
-      return `${numbers.slice(0, 2)} ${numbers.slice(2, 6)} ${numbers.slice(
-        6,
-        10
-      )}`;
+      return `${numbers.slice(0, 4)} ${numbers.slice(4, 8)}`;
     }
   }, [deferredPhoneInput]);
 
@@ -247,7 +242,7 @@ export default function CheckInPage() {
   const apiPhoneNumber = useMemo(() => {
     const numbers = deferredPhoneInput.replace(/\D/g, "");
     if (numbers.length >= 8) {
-      return `+65 ${numbers.slice(0, 4)} ${numbers.slice(4, 8)}`;
+      return `+65${numbers.slice(0, 8)}`;
     }
     return "";
   }, [deferredPhoneInput]);
