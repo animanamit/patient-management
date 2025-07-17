@@ -6,9 +6,10 @@ import { useAssistanceRequests, AssistanceRequest } from "@/hooks/use-assistance
 
 interface AssistanceRequestsPanelProps {
   className?: string;
+  onRequestClick?: (request: AssistanceRequest) => void;
 }
 
-export const AssistanceRequestsPanel = ({ className = "" }: AssistanceRequestsPanelProps) => {
+export const AssistanceRequestsPanel = ({ className = "", onRequestClick }: AssistanceRequestsPanelProps) => {
   const { requests, acknowledgeRequest, completeRequest, dismissRequest, pendingCount } = useAssistanceRequests();
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -77,10 +78,11 @@ export const AssistanceRequestsPanel = ({ className = "" }: AssistanceRequestsPa
           {requests.map((request) => (
             <div
               key={request.id}
+              onClick={() => onRequestClick?.(request)}
               className={`px-4 py-3 transition-colors ${
                 request.status === "pending" ? "bg-red-50" : 
                 request.status === "acknowledged" ? "bg-orange-50" : "bg-gray-50"
-              }`}
+              } ${request.appointmentId && onRequestClick ? "cursor-pointer hover:bg-opacity-80" : ""}`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
@@ -92,6 +94,11 @@ export const AssistanceRequestsPanel = ({ className = "" }: AssistanceRequestsPa
                     <span className={`px-2 py-0.5 text-xs font-medium border rounded-xs ${getRequestTypeColor(request.requestType)}`}>
                       {request.requestType === "registration" ? "Registration" : "Walk-in"}
                     </span>
+                    {request.appointmentId && (
+                      <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium border border-green-200 rounded-xs">
+                        Has Appointment
+                      </span>
+                    )}
                   </div>
                   
                   <div className="flex items-center gap-3 text-xs text-gray-600 mb-1">

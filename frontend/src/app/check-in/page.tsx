@@ -366,7 +366,9 @@ export default function CheckInPage() {
             createRequest(
               formattedPhone,
               "registration", 
-              `Guest patient created - needs full registration and appointment details updated. Reason: ${randomAilment}`
+              `Guest patient created - needs full registration and appointment details updated. Reason: ${randomAilment}`,
+              patientResult.patient.id,
+              appointmentResult.appointment.id
             );
             
             // Set patient and appointment data

@@ -9,6 +9,8 @@ export interface AssistanceRequest {
   timestamp: Date;
   status: "pending" | "acknowledged" | "completed";
   message?: string;
+  patientId?: string;
+  appointmentId?: string;
 }
 
 // Global state for assistance requests (demo purposes)
@@ -21,7 +23,13 @@ const notifyListeners = () => {
 
 // Hook for creating assistance requests (check-in page)
 export const useCreateAssistanceRequest = () => {
-  const createRequest = (phoneNumber: string, requestType: "registration" | "walk-in", message?: string) => {
+  const createRequest = (
+    phoneNumber: string, 
+    requestType: "registration" | "walk-in", 
+    message?: string,
+    patientId?: string,
+    appointmentId?: string
+  ) => {
     const newRequest: AssistanceRequest = {
       id: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       phoneNumber,
@@ -29,6 +37,8 @@ export const useCreateAssistanceRequest = () => {
       timestamp: new Date(),
       status: "pending",
       message,
+      patientId,
+      appointmentId,
     };
     
     assistanceRequests.unshift(newRequest); // Add to beginning

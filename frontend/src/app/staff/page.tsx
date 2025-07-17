@@ -22,13 +22,16 @@ import {
   Grid3X3,
   List
 } from "lucide-react";
-import { useTodayAppointments, useBulkAppointmentOperations } from "@/hooks/use-appointments";
+import { useTodayAppointments, useBulkAppointmentOperations, useAppointment } from "@/hooks/use-appointments";
 import { usePatients } from "@/hooks/use-patients";
-import { AppointmentStatus, AppointmentWithDetails, Appointment, Patient } from "@/lib/api-types";
+import { AppointmentStatus, AppointmentWithDetails, Appointment, Patient, AppointmentId } from "@/lib/api-types";
+import { AssistanceRequest } from "@/hooks/use-assistance-requests";
+import { appointmentsApi } from "@/lib/api";
 import { AppointmentsCalendar } from "@/components/appointments-calendar";
 import { NavigationBar } from "@/components/navigation-bar";
 import { AddPatientModal } from "@/components/add-patient-modal";
 import { AssistanceRequestsPanel } from "@/components/assistance-requests-panel";
+import { AppointmentDetailsModal } from "@/components/appointment-details-modal";
 
 // Loading skeleton - Dense grid
 const LoadingSkeleton = () => (
@@ -205,6 +208,9 @@ export default function StaffDashboard() {
   const [isPending, startTransition] = useTransition();
   const [viewMode, setViewMode] = useState<'dashboard' | 'calendar'>('dashboard');
   const [isAddPatientModalOpen, setIsAddPatientModalOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<AppointmentWithDetails | null>(null);
+  const [isAppointmentDetailsModalOpen, setIsAppointmentDetailsModalOpen] = useState(false);
+  const [assistanceRequestPhoneNumber, setAssistanceRequestPhoneNumber] = useState<string | undefined>(undefined);
 
   // Fetch today's appointments
   const { data: appointmentsData, isLoading: isAppointmentsLoading, error: appointmentsError, refetch } = useTodayAppointments();
@@ -216,6 +222,32 @@ export default function StaffDashboard() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log(`SMS sent to ${patientName}`);
     });
+  };
+
+  const handleOpenAppointmentDetails = (appointment: AppointmentWithDetails, phoneNumber?: string) => {
+    setSelectedAppointment(appointment);
+    setAssistanceRequestPhoneNumber(phoneNumber);
+    setIsAppointmentDetailsModalOpen(true);
+  };
+
+  const handleCloseAppointmentDetails = () => {
+    setSelectedAppointment(null);
+    setAssistanceRequestPhoneNumber(undefined);
+    setIsAppointmentDetailsModalOpen(false);
+  };
+
+  const handleAssistanceRequestClick = async (request: AssistanceRequest) => {
+    if (request.appointmentId) {
+      try {
+        // Fetch the full appointment details
+        const appointmentResponse = await appointmentsApi.getAppointmentById(request.appointmentId as AppointmentId);
+        if (appointmentResponse.appointment) {
+          handleOpenAppointmentDetails(appointmentResponse.appointment as AppointmentWithDetails, request.phoneNumber);
+        }
+      } catch (error) {
+        console.error("Failed to fetch appointment details:", error);
+      }
+    }
   };
 
   // Filter appointments for patient queue
@@ -424,8 +456,21 @@ export default function StaffDashboard() {
                                   <Phone className="h-3 w-3 mr-1 inline" />
                                   SMS
                                 </button>
-                                <button className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-2 py-1 rounded-xs">
+                                <button 
+                                  onClick={() => {
+                                    // Remove appt_ prefix if it exists to avoid duplication
+                                    const cleanId = appointment.id.startsWith('appt_') ? appointment.id.slice(5) : appointment.id;
+                                    window.open(`/appointment/${cleanId}`, '_blank');
+                                  }}
+                                  className="text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border border-gray-200 rounded-xs hover:bg-gray-50"
+                                >
                                   Details
+                                </button>
+                                <button 
+                                  onClick={() => handleOpenAppointmentDetails(appointment)}
+                                  className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-2 py-1 rounded-xs"
+                                >
+                                  Modify
                                 </button>
                               </div>
                             </div>
@@ -475,7 +520,10 @@ export default function StaffDashboard() {
                           : 'Doctor';
 
                         return (
-                          <div key={appointment.id} className="px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
+                          <div 
+                            key={appointment.id} 
+                            className="px-4 py-3 hover:bg-gray-50 transition-colors"
+                          >
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
@@ -501,7 +549,24 @@ export default function StaffDashboard() {
                                   </span>
                                 </div>
                               </div>
-                              <ArrowUpRight className="h-3 w-3 text-gray-400" />
+                              <div className="flex items-center gap-2">
+                                <button 
+                                  onClick={() => {
+                                    // Remove appt_ prefix if it exists to avoid duplication
+                                    const cleanId = appointment.id.startsWith('appt_') ? appointment.id.slice(5) : appointment.id;
+                                    window.open(`/appointment/${cleanId}`, '_blank');
+                                  }}
+                                  className="text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border border-gray-200 rounded-xs hover:bg-gray-50"
+                                >
+                                  Details
+                                </button>
+                                <button 
+                                  onClick={() => handleOpenAppointmentDetails(appointment)}
+                                  className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-2 py-1 rounded-xs"
+                                >
+                                  Modify
+                                </button>
+                              </div>
                             </div>
                           </div>
                         );
@@ -517,7 +582,7 @@ export default function StaffDashboard() {
           <div className="col-span-4 space-y-6">
             
             {/* Assistance Requests */}
-            <AssistanceRequestsPanel />
+            <AssistanceRequestsPanel onRequestClick={handleAssistanceRequestClick} />
             
             {/* Patient Search */}
             <Suspense fallback={<LoadingSkeleton />}>
@@ -592,6 +657,19 @@ export default function StaffDashboard() {
         onSuccess={(patientId) => {
           console.log("Patient created with ID:", patientId);
           // Optionally refresh patient search results
+        }}
+      />
+      
+      {/* Appointment Details Modal */}
+      <AppointmentDetailsModal
+        isOpen={isAppointmentDetailsModalOpen}
+        onClose={handleCloseAppointmentDetails}
+        appointment={selectedAppointment}
+        assistanceRequestPhoneNumber={assistanceRequestPhoneNumber}
+        onSuccess={() => {
+          // Refresh appointments data after successful update
+          refetch();
+          handleCloseAppointmentDetails();
         }}
       />
     </div>
