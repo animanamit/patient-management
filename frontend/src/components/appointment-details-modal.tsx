@@ -226,6 +226,8 @@ export const AppointmentDetailsModal = ({
   const handleDelete = async () => {
     if (!appointment) return;
 
+    console.log('🗑️ Deleting appointment with ID:', appointment.id);
+
     startTransition(async () => {
       try {
         await deleteAppointmentMutation.mutateAsync(appointment.id);

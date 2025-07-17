@@ -202,20 +202,23 @@ export const AppointmentsCalendar = ({ className = "" }: AppointmentsCalendarPro
               <div
                 key={index}
                 className={`
-                  min-h-24 p-1 border border-gray-100 rounded-xs cursor-pointer transition-colors
+                  min-h-24 p-1 border rounded-xs cursor-pointer transition-colors
                   ${isCurrentMonth ? 'bg-white' : 'bg-gray-50'}
-                  ${isTodayDate ? 'border-blue-300 bg-blue-50' : ''}
-                  ${isSelected ? 'border-blue-500 bg-blue-50' : ''}
+                  ${isSelected ? 'border-blue-600 border-2' : 'border-gray-100'}
                   hover:bg-gray-50
                 `}
                 onClick={() => handleDateClick(date)}
               >
                 <div className={`
-                  text-xs font-medium mb-1 
+                  text-xs font-medium mb-1 flex items-center gap-1
                   ${isCurrentMonth ? 'text-gray-900' : 'text-gray-400'}
-                  ${isTodayDate ? 'text-blue-600' : ''}
                 `}>
                   {format(date, "d")}
+                  {isTodayDate && (
+                    <span className="text-[9px] bg-blue-500 text-white px-1 py-0.5 rounded-xs font-medium">
+                      TODAY
+                    </span>
+                  )}
                 </div>
                 
                 {/* Appointments for this date */}

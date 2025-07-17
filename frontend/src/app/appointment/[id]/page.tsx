@@ -74,8 +74,9 @@ export default function AppointmentDetailsPage() {
   const appointmentId = rawId.startsWith('appt_') ? rawId : `appt_${rawId}`;
   
   // Debug logging
-  console.log('Raw ID from params:', rawId);
-  console.log('Full appointmentId for API:', appointmentId);
+  console.log('🔍 Raw ID from params:', rawId);
+  console.log('🔍 Full appointmentId for API:', appointmentId);
+  console.log('🔍 URL pathname:', window.location.pathname);
   const [isPending, startTransition] = useTransition();
   const [isEditing, setIsEditing] = useState(false);
   

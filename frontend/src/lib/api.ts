@@ -48,7 +48,7 @@ async function fetchApi<T>(
   
   const config: RequestInit = {
     headers: {
-      "Content-Type": "application/json",
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
       ...options.headers,
     },
     ...options,

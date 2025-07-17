@@ -149,6 +149,8 @@ export const useUpdateAppointment = () => {
       
       // Invalidate related queries
       queryClient.invalidateQueries({ queryKey: appointmentKeys.lists() });
+      // Also invalidate all list-based queries including date range queries
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
       
       // Invalidate patient and doctor specific queries
       const appointment = response.appointment as Appointment;
@@ -181,6 +183,8 @@ export const useUpdateAppointmentStatus = () => {
       // Invalidate relevant queries efficiently
       const appointment = response.appointment as Appointment;
       queryClient.invalidateQueries({ queryKey: appointmentKeys.lists() });
+      // Also invalidate all list-based queries including date range queries
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
       queryClient.invalidateQueries({ queryKey: appointmentKeys.byPatient(appointment.patientId) });
       queryClient.invalidateQueries({ queryKey: appointmentKeys.byDoctor(appointment.doctorId) });
       queryClient.invalidateQueries({ queryKey: appointmentKeys.byStatus(variables.status) });
@@ -203,9 +207,8 @@ export const useDeleteAppointment = () => {
       
       // Invalidate all lists to remove the deleted appointment
       queryClient.invalidateQueries({ queryKey: appointmentKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: [...appointmentKeys.all, "patient"] });
-      queryClient.invalidateQueries({ queryKey: [...appointmentKeys.all, "doctor"] });
-      queryClient.invalidateQueries({ queryKey: [...appointmentKeys.all, "status"] });
+      // Invalidate all appointment-related queries
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
     },
     onError: (error: ApiError) => {
       console.error("Failed to delete appointment:", error);
