@@ -20,6 +20,7 @@ import {
   Loader2,
   ArrowLeft,
   Calendar,
+  UserCheck,
 } from "lucide-react";
 import {
   usePatientLookupByPhone,
@@ -34,6 +35,11 @@ import {
   AppointmentId,
 } from "@/lib/api-types";
 import { NavigationBar } from "@/components/navigation-bar";
+import { WalkInRegistrationModal } from "@/components/walk-in-registration-modal";
+import { useCreateAssistanceRequest } from "@/hooks/use-assistance-requests";
+import { useCreatePatient } from "@/hooks/use-patients";
+import { useCreateAppointment } from "@/hooks/use-appointments";
+import { useActiveDoctors } from "@/hooks/use-doctors";
 
 // Loading skeleton components - Dense grid
 const QueueSkeleton = () => (
@@ -218,12 +224,33 @@ export default function CheckInPage() {
   const [phoneInput, setPhoneInput] = useState("");
   const [isPending, startTransition] = useTransition();
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [isWalkInModalOpen, setIsWalkInModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<
     Appointment | AppointmentWithDetails | null
   >(null);
   const [checkInStatus, setCheckInStatus] = useState<
-    "idle" | "found" | "success" | "error"
+    "idle" | "found" | "processing" | "concierge" | "success" | "error"
   >("idle");
+  
+  // Assistance request system
+  const { createRequest } = useCreateAssistanceRequest();
+  
+  // Mutation hooks for auto-creating records
+  const createPatientMutation = useCreatePatient();
+  const createAppointmentMutation = useCreateAppointment();
+  
+  // Get available doctors for appointment creation
+  const { data: doctorsData } = useActiveDoctors();
+  
+  // Stock ailments for temporary appointments
+  const stockAilments = [
+    "General consultation needed",
+    "Follow-up visit required", 
+    "Routine check-up",
+    "Health concern to discuss",
+    "Wellness consultation",
+    "Medical advice needed"
+  ];
 
   // Use deferred value for phone number to avoid excessive API calls
   const deferredPhoneInput = useDeferredValue(phoneInput);
@@ -295,7 +322,63 @@ export default function CheckInPage() {
         setSelectedPatient(patient);
         setCheckInStatus("found");
       } else {
-        setCheckInStatus("error");
+        // Patient not found - gracefully create temporary records
+        setCheckInStatus("processing");
+        
+        startTransition(async () => {
+          try {
+            // Create temporary patient record
+            const tempPatientData = {
+              clerkUserId: `temp_${Date.now()}`, // Temporary clerk ID
+              firstName: "Guest",
+              lastName: "Patient",
+              phone: apiPhoneNumber,
+              email: `guest.${Date.now()}@temp.clinic.local`, // Temporary email
+              dateOfBirth: "1990-01-01T00:00:00.000Z", // Temporary DOB - will be updated by concierge
+              address: "To be confirmed by concierge", // Will be filled by concierge
+              emergencyContact: "", // Will be filled by concierge
+            };
+            
+            const patientResult = await createPatientMutation.mutateAsync(tempPatientData);
+            
+            // Create temporary appointment
+            const randomAilment = stockAilments[Math.floor(Math.random() * stockAilments.length)];
+            const now = new Date();
+            const appointmentTime = new Date();
+            appointmentTime.setHours(now.getHours(), now.getMinutes() + 5, 0, 0); // 5 minutes from now
+            
+            // Get the first available doctor or fallback to a default
+            const availableDoctor = doctorsData?.doctors?.[0];
+            const doctorId = availableDoctor?.id || "doctor_general"; // Fallback if no doctors available
+            
+            const appointmentData = {
+              patientId: patientResult.patient.id,
+              doctorId: doctorId, // Use real doctor ID or fallback
+              type: "FIRST_CONSULT" as const, // Valid appointment type
+              scheduledDateTime: appointmentTime.toISOString(),
+              durationMinutes: 30,
+              reasonForVisit: randomAilment,
+            };
+            
+            const appointmentResult = await createAppointmentMutation.mutateAsync(appointmentData);
+            
+            // Create assistance request for concierge
+            createRequest(
+              formattedPhone,
+              "registration", 
+              `Guest patient created - needs full registration and appointment details updated. Reason: ${randomAilment}`
+            );
+            
+            // Set patient and appointment data
+            setSelectedPatient(patientResult.patient);
+            setSelectedAppointment(appointmentResult.appointment);
+            setCheckInStatus("concierge");
+            
+          } catch (error) {
+            console.error("Failed to create temporary records:", error);
+            setCheckInStatus("error");
+          }
+        });
       }
     });
   };
@@ -536,10 +619,7 @@ export default function CheckInPage() {
                               </div>
                             </div>
                             <button
-                              onClick={() => {
-                                // TODO: Implement walk-in registration
-                                alert("Walk-in registration coming soon!");
-                              }}
+                              onClick={() => setIsWalkInModalOpen(true)}
                               className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-3 py-1.5 transition-colors ml-4 rounded-xs"
                             >
                               <span className="flex items-center gap-1">
@@ -574,6 +654,197 @@ export default function CheckInPage() {
                 <span className="flex items-center justify-center gap-2">
                   <ArrowLeft className="h-3 w-3" />
                   Back to Phone Entry
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* Processing State */}
+          {checkInStatus === "processing" && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-blue-50 rounded-sm flex items-center justify-center mx-auto mb-3">
+                  <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
+                </div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                  Setting Up Your Visit
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Please wait while we prepare your appointment...
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Concierge Direction State */}
+          {checkInStatus === "concierge" && selectedPatient && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-50 rounded-sm flex items-center justify-center mx-auto mb-3">
+                  <UserCheck className="h-6 w-6 text-green-600" />
+                </div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                  Welcome to Our Clinic!
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Your appointment has been created successfully.
+                </p>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-sm">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Next Steps
+                  </h3>
+                </div>
+                
+                <div className="px-4 py-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-blue-100 rounded-sm flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-xs font-semibold text-blue-600">1</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium text-gray-900 mb-1">
+                        Please proceed to the front desk
+                      </h4>
+                      <p className="text-xs text-gray-600">
+                        Our concierge will complete your registration and confirm your appointment details.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="px-4 py-3 bg-blue-50 border-t border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-3 w-3 text-blue-600" />
+                    <span className="text-xs font-medium text-blue-700">
+                      Estimated wait time: 2-5 minutes
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 border border-gray-200 rounded-sm p-4">
+                <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
+                  Have your information ready:
+                </h4>
+                <ul className="text-xs text-gray-600 space-y-1">
+                  <li>• Government-issued ID (NRIC/Passport)</li>
+                  <li>• Insurance card (if applicable)</li>
+                  <li>• Emergency contact information</li>
+                  <li>• Current medications (if any)</li>
+                </ul>
+              </div>
+              
+              <button
+                onClick={resetCheckIn}
+                className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <ArrowLeft className="h-3 w-3" />
+                  Start Over
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* Old Not Found State - Remove this section */}
+          {false && checkInStatus === "not_found" && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-blue-50 rounded-sm flex items-center justify-center mx-auto mb-3">
+                  <Users className="h-6 w-6 text-blue-600" />
+                </div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                  Phone Number Not Found
+                </h2>
+                <p className="text-sm text-gray-600">
+                  We couldn't find your phone number in our system.
+                </p>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-sm">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    What would you like to do?
+                  </h3>
+                </div>
+                
+                <div className="divide-y divide-gray-100">
+                  {/* Option 1: Have appointment, need registration */}
+                  <div className="px-4 py-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="text-sm font-medium text-gray-900 mb-1">
+                          I have an appointment today
+                        </h4>
+                        <p className="text-xs text-gray-600 mb-2">
+                          You have a scheduled appointment but need to be registered in our system first.
+                        </p>
+                        <div className="flex items-center gap-3 text-xs text-gray-500">
+                          <div className="flex items-center gap-1">
+                            <UserCheck className="h-3 w-3" />
+                            <span>Registration required</span>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          createRequest(
+                            formattedPhone, 
+                            "registration", 
+                            "Patient has an appointment but needs to be registered in the system"
+                          );
+                          alert("Request sent to front desk! Please wait to be called for assistance with registration.");
+                        }}
+                        className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-3 py-1.5 transition-colors ml-4 rounded-xs"
+                      >
+                        <span className="flex items-center gap-1">
+                          Request Assistance
+                          <ArrowRight className="h-3 w-3" />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Option 2: Walk-in, no appointment */}
+                  <div className="px-4 py-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="text-sm font-medium text-gray-900 mb-1">
+                          I don't have an appointment
+                        </h4>
+                        <p className="text-xs text-gray-600 mb-2">
+                          Register as a new patient and book a walk-in appointment.
+                        </p>
+                        <div className="flex items-center gap-3 text-xs text-gray-500">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            <span>Subject to availability</span>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setIsWalkInModalOpen(true)}
+                        className="text-xs font-medium text-white bg-green-600 hover:bg-green-700 border border-green-600 hover:border-green-700 px-3 py-1.5 transition-colors ml-4 rounded-xs"
+                      >
+                        <span className="flex items-center gap-1">
+                          Register Now
+                          <ArrowRight className="h-3 w-3" />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <button
+                onClick={resetCheckIn}
+                className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <ArrowLeft className="h-3 w-3" />
+                  Try Different Phone Number
                 </span>
               </button>
             </div>
@@ -672,6 +943,18 @@ export default function CheckInPage() {
           )}
         </div>
       </div>
+      
+      {/* Walk-in Registration Modal */}
+      <WalkInRegistrationModal
+        isOpen={isWalkInModalOpen}
+        onClose={() => setIsWalkInModalOpen(false)}
+        onSuccess={(patientId, appointmentId) => {
+          // Set the check-in status to success after walk-in registration
+          setCheckInStatus("success");
+          setSelectedAppointment({ id: appointmentId } as Appointment);
+          setIsWalkInModalOpen(false);
+        }}
+      />
     </div>
   );
 }

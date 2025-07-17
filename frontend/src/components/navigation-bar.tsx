@@ -12,7 +12,9 @@ import {
   Menu,
   X,
   ChevronDown,
+  Bell,
 } from "lucide-react";
+import { useAssistanceRequests } from "@/hooks/use-assistance-requests";
 
 interface NavigationBarProps {
   className?: string;
@@ -21,6 +23,7 @@ interface NavigationBarProps {
 export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { pendingCount } = useAssistanceRequests();
 
   const navigationItems = [
     {
@@ -85,6 +88,11 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
                 >
                   <Icon className="h-3.5 w-3.5" />
                   {item.label}
+                  {item.href === "/staff" && pendingCount > 0 && (
+                    <span className="ml-1 px-1.5 py-0.5 bg-red-500 text-white text-xs font-medium rounded-full">
+                      {pendingCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -122,6 +130,11 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
                   >
                     <Icon className="h-4 w-4" />
                     {item.label}
+                    {item.href === "/staff" && pendingCount > 0 && (
+                      <span className="ml-auto px-1.5 py-0.5 bg-red-500 text-white text-xs font-medium rounded-full">
+                        {pendingCount}
+                      </span>
+                    )}
                   </Link>
                 );
               })}

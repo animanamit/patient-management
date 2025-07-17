@@ -27,6 +27,8 @@ import { usePatients } from "@/hooks/use-patients";
 import { AppointmentStatus, AppointmentWithDetails, Appointment, Patient } from "@/lib/api-types";
 import { AppointmentsCalendar } from "@/components/appointments-calendar";
 import { NavigationBar } from "@/components/navigation-bar";
+import { AddPatientModal } from "@/components/add-patient-modal";
+import { AssistanceRequestsPanel } from "@/components/assistance-requests-panel";
 
 // Loading skeleton - Dense grid
 const LoadingSkeleton = () => (
@@ -83,7 +85,7 @@ const DashboardStats = ({ appointments }: { appointments: (Appointment | Appoint
 };
 
 // Patient search component - Condensed
-const PatientSearchSection = () => {
+const PatientSearchSection = ({ onAddPatient }: { onAddPatient: () => void }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isPending, startTransition] = useTransition();
   const deferredSearchQuery = useDeferredValue(searchQuery);
@@ -105,7 +107,10 @@ const PatientSearchSection = () => {
       <div className="px-4 py-3 border-b border-gray-200">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Patient Search</h2>
-          <button className="text-xs font-medium text-gray-700 hover:text-gray-900">
+          <button 
+            onClick={onAddPatient}
+            className="text-xs font-medium text-gray-700 hover:text-gray-900"
+          >
             Add Patient
           </button>
         </div>
@@ -199,6 +204,7 @@ const getStatusBg = (status: AppointmentStatus) => {
 export default function StaffDashboard() {
   const [isPending, startTransition] = useTransition();
   const [viewMode, setViewMode] = useState<'dashboard' | 'calendar'>('dashboard');
+  const [isAddPatientModalOpen, setIsAddPatientModalOpen] = useState(false);
 
   // Fetch today's appointments
   const { data: appointmentsData, isLoading: isAppointmentsLoading, error: appointmentsError, refetch } = useTodayAppointments();
@@ -293,7 +299,10 @@ export default function StaffDashboard() {
               <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                 Export Data
               </button>
-              <button className="text-xs font-medium text-white bg-gray-900 hover:bg-gray-800 border border-gray-900 hover:border-gray-800 px-3 py-1.5 transition-colors rounded-xs">
+              <button 
+                onClick={() => setIsAddPatientModalOpen(true)}
+                className="text-xs font-medium text-white bg-gray-900 hover:bg-gray-800 border border-gray-900 hover:border-gray-800 px-3 py-1.5 transition-colors rounded-xs"
+              >
                 Add Patient
               </button>
             </div>
@@ -507,9 +516,12 @@ export default function StaffDashboard() {
           {/* Right Column - Side Information */}
           <div className="col-span-4 space-y-6">
             
+            {/* Assistance Requests */}
+            <AssistanceRequestsPanel />
+            
             {/* Patient Search */}
             <Suspense fallback={<LoadingSkeleton />}>
-              <PatientSearchSection />
+              <PatientSearchSection onAddPatient={() => setIsAddPatientModalOpen(true)} />
             </Suspense>
 
             {/* Quick Stats */}
@@ -542,8 +554,11 @@ export default function StaffDashboard() {
                 <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                   <span className="text-sm font-medium text-gray-900">Check In Patient</span>
                 </button>
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
-                  <span className="text-sm font-medium text-gray-900">Schedule Appointment</span>
+                <button 
+                  onClick={() => setIsAddPatientModalOpen(true)}
+                  className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+                >
+                  <span className="text-sm font-medium text-gray-900">Add Patient</span>
                 </button>
                 <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                   <span className="text-sm font-medium text-gray-900">Print Reports</span>
@@ -569,6 +584,16 @@ export default function StaffDashboard() {
         </div>
         )}
       </div>
+      
+      {/* Add Patient Modal */}
+      <AddPatientModal
+        isOpen={isAddPatientModalOpen}
+        onClose={() => setIsAddPatientModalOpen(false)}
+        onSuccess={(patientId) => {
+          console.log("Patient created with ID:", patientId);
+          // Optionally refresh patient search results
+        }}
+      />
     </div>
   );
 }
