@@ -374,7 +374,7 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
         firstName: prismaAppointment.patient.user.firstName,
         lastName: prismaAppointment.patient.user.lastName,
         email: prismaAppointment.patient.user.email,
-        phone: prismaAppointment.patient.user.phone,
+        phone: prismaAppointment.patient.phone, // Phone is on patient table, not user table
       };
     }
     

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
+import { toast } from "sonner";
 import {
   X,
   Calendar as CalendarIcon,
@@ -207,10 +208,42 @@ export const AppointmentDetailsModal = ({
           },
         });
 
+        toast.success("Appointment updated successfully!", {
+          description: "All changes have been saved.",
+          position: "top-right",
+        });
+        
         onSuccess?.();
         onClose();
       } catch (error) {
         console.error("Failed to update appointment:", error);
+        
+        // Handle specific error types
+        if (error instanceof Error) {
+          const errorMessage = error.message;
+          
+          if (errorMessage.includes("email") && errorMessage.includes("already exists")) {
+            toast.error("Email already exists", {
+              description: "This email is already registered to another patient. Please use a different email.",
+              position: "top-right",
+            });
+          } else if (errorMessage.includes("phone") && errorMessage.includes("already exists")) {
+            toast.error("Phone number already exists", {
+              description: "This phone number is already registered to another patient. Please use a different number.",
+              position: "top-right",
+            });
+          } else {
+            toast.error("Failed to update appointment", {
+              description: errorMessage || "An unexpected error occurred. Please try again.",
+              position: "top-right",
+            });
+          }
+        } else {
+          toast.error("Failed to update appointment", {
+            description: "An unexpected error occurred. Please try again.",
+            position: "top-right",
+          });
+        }
       }
     });
   };

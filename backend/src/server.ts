@@ -26,6 +26,7 @@ const start = async () => {
     await fastify.register(import("./routes/patients"), { prefix: "/api" });
     await fastify.register(import("./routes/doctors"), { prefix: "/api" });
     await fastify.register(import("./routes/appointments"), { prefix: "/api" });
+    await fastify.register(import("./routes/sms.routes"), { prefix: "/api/sms" });
 
     // 3. Start server
     await fastify.listen({

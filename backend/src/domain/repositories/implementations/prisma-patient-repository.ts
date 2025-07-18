@@ -160,6 +160,27 @@ export class PrismaPatientRepository implements IPatientRepository {
         };
       }
 
+      // Check for email conflicts before updating
+      if (updateData.email) {
+        const emailValue = updateData.email.getValue();
+        const existingUserWithEmail = await this.prisma.user.findFirst({
+          where: { 
+            email: emailValue,
+            id: { not: existingPatient.userId } // Exclude current user
+          }
+        });
+        
+        if (existingUserWithEmail) {
+          return {
+            success: false,
+            error: {
+              type: 'ValidationError',
+              message: `A patient with email ${emailValue} already exists`
+            }
+          };
+        }
+      }
+
       // Prepare update data for User and Patient
       const userUpdateData: any = {};
       const patientUpdateData: any = {};

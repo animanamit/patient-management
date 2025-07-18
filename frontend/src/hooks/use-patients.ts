@@ -10,6 +10,7 @@ import {
   CreatePatientRequest,
   UpdatePatientRequest,
 } from "@/lib/api-types";
+import { appointmentKeys } from "./use-appointments";
 
 // Query Keys
 export const patientKeys = {
@@ -77,6 +78,10 @@ export const useUpdatePatient = () => {
       
       // Invalidate lists to ensure they reflect the update
       queryClient.invalidateQueries({ queryKey: patientKeys.lists() });
+      
+      // Also invalidate appointments since they contain patient data
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: appointmentKeys.all });
     },
     onError: (error: ApiError) => {
       console.error("Failed to update patient:", error);

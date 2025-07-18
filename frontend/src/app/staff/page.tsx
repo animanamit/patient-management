@@ -3,6 +3,7 @@
 import { useState, useTransition, useDeferredValue, useMemo, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import { 
   Users,
   Clock,
@@ -32,6 +33,7 @@ import { NavigationBar } from "@/components/navigation-bar";
 import { AddPatientModal } from "@/components/add-patient-modal";
 import { AssistanceRequestsPanel } from "@/components/assistance-requests-panel";
 import { AppointmentDetailsModal } from "@/components/appointment-details-modal";
+import { useSendAppointmentReminder, useSendCustomMessage } from "@/hooks/use-sms";
 
 // Loading skeleton - Dense grid
 const LoadingSkeleton = () => (
@@ -215,13 +217,72 @@ export default function StaffDashboard() {
   // Fetch today's appointments
   const { data: appointmentsData, isLoading: isAppointmentsLoading, error: appointmentsError, refetch } = useTodayAppointments();
   const { bulkUpdateStatus, isBulkUpdating } = useBulkAppointmentOperations();
+  
+  // SMS functionality
+  const sendReminderMutation = useSendAppointmentReminder();
+  const sendCustomMessageMutation = useSendCustomMessage();
 
-  const handleSendSMS = async (patientName: string) => {
-    startTransition(async () => {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log(`SMS sent to ${patientName}`);
-    });
+  const handleSendSMS = async (appointment: AppointmentWithDetails) => {
+    console.log('🔔 SMS button clicked for appointment:', appointment.id);
+    
+    const patientName = `${appointment.patient.firstName} ${appointment.patient.lastName}`;
+    const doctorName = `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`;
+    
+    // Extract phone number properly - handle both string and object formats
+    let phoneNumber = typeof appointment.patient.phone === 'string' 
+      ? appointment.patient.phone 
+      : appointment.patient.phone?.normalizedValue;
+    
+    console.log('📞 Phone number extracted:', phoneNumber);
+    console.log('👤 Patient data:', appointment.patient);
+    
+    if (!phoneNumber || phoneNumber.trim() === '') {
+      console.log('❌ No valid phone number found');
+      toast.error(`Cannot send SMS to ${patientName}`, {
+        description: "Patient doesn't have a valid phone number. Please update their contact information first.",
+        position: "top-right",
+      });
+      return;
+    }
+    
+    // Ensure phone number is in correct format for SMS
+    // If it's just digits without +65, add the country code
+    if (phoneNumber.match(/^\d{8}$/) && !phoneNumber.startsWith('+')) {
+      phoneNumber = `+65${phoneNumber}`;
+      console.log('📱 Formatted phone number for SMS:', phoneNumber);
+    }
+    
+    console.log('📤 Attempting to send SMS reminder...');
+    
+    try {
+      const result = await sendReminderMutation.mutateAsync({
+        phoneNumber,
+        patientName,
+        appointmentDate: appointment.scheduledDateTime,
+        doctorName,
+        clinicName: "CarePulse Clinic",
+      });
+      
+      console.log('📬 SMS API response:', result);
+      
+      if (result.success) {
+        toast.success(`SMS reminder sent to ${patientName}`, {
+          description: `Message sent to ${phoneNumber}`,
+          position: "top-right",
+        });
+      } else {
+        toast.error(`Failed to send SMS to ${patientName}`, {
+          description: result.error || "Unknown error occurred",
+          position: "top-right",
+        });
+      }
+    } catch (error) {
+      console.error('❌ SMS Error:', error);
+      toast.error(`Error sending SMS to ${patientName}`, {
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+        position: "top-right",
+      });
+    }
   };
 
   const handleOpenAppointmentDetails = (appointment: AppointmentWithDetails, phoneNumber?: string) => {
@@ -328,6 +389,14 @@ export default function StaffDashboard() {
                 </button>
               </div>
               
+              <button 
+                onClick={() => refetch()}
+                disabled={isAppointmentsLoading}
+                className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+              >
+                <RefreshCw className={`h-3 w-3 mr-1 inline ${isAppointmentsLoading ? 'animate-spin' : ''}`} />
+                {isAppointmentsLoading ? 'Refreshing...' : 'Refresh'}
+              </button>
               <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                 Export Data
               </button>
@@ -449,12 +518,12 @@ export default function StaffDashboard() {
                               </div>
                               <div className="flex items-center gap-2">
                                 <button
-                                  onClick={() => handleSendSMS(patientName)}
-                                  disabled={isPending}
+                                  onClick={() => handleSendSMS(appointment)}
+                                  disabled={sendReminderMutation.isPending}
                                   className="text-xs font-medium text-gray-700 hover:text-gray-900"
                                 >
                                   <Phone className="h-3 w-3 mr-1 inline" />
-                                  SMS
+                                  {sendReminderMutation.isPending ? 'Sending...' : 'SMS'}
                                 </button>
                                 <button 
                                   onClick={() => {

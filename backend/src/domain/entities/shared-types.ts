@@ -175,7 +175,8 @@ export class PhoneNumber {
   }
 
   getValue(): string {
-    return this.normalizedValue;
+    // Return the formatted value for consistent database storage
+    return this.formatForDisplay();
   }
 }
 

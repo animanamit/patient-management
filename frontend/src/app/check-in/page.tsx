@@ -333,7 +333,7 @@ export default function CheckInPage() {
               firstName: "Guest",
               lastName: "Patient",
               phone: apiPhoneNumber,
-              email: `guest.${Date.now()}@temp.clinic.local`, // Temporary email
+              email: `guest.${Date.now()}.${Math.random().toString(36).substring(2, 8)}@temp.clinic.local`, // Temporary email with random suffix
               dateOfBirth: "1990-01-01T00:00:00.000Z", // Temporary DOB - will be updated by concierge
               address: "To be confirmed by concierge", // Will be filled by concierge
               emergencyContact: "", // Will be filled by concierge

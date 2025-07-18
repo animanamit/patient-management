@@ -24,7 +24,7 @@ import {
   AppointmentId,
 } from "./api-types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 class ApiError extends Error {
   constructor(
@@ -271,6 +271,131 @@ export const appointmentsApi = {
   checkInAppointment: async (id: AppointmentId): Promise<AppointmentApiResponse> => {
     return fetchApi<AppointmentApiResponse>(`/appointments/${id}/check-in`, {
       method: "POST",
+    });
+  },
+};
+
+// SMS API endpoints
+export const smsApi = {
+  // Send basic SMS
+  sendSMS: async (data: {
+    to: string;
+    body: string;
+    patientName?: string;
+  }): Promise<{
+    success: boolean;
+    messageSid?: string;
+    error?: string;
+    to: string;
+    body: string;
+  }> => {
+    return fetchApi<{
+      success: boolean;
+      messageSid?: string;
+      error?: string;
+      to: string;
+      body: string;
+    }>("/sms/send", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Send appointment reminder
+  sendAppointmentReminder: async (data: {
+    phoneNumber: string;
+    patientName: string;
+    appointmentDate: string;
+    doctorName: string;
+    clinicName?: string;
+  }): Promise<{
+    success: boolean;
+    messageSid?: string;
+    error?: string;
+    to: string;
+    body: string;
+  }> => {
+    return fetchApi<{
+      success: boolean;
+      messageSid?: string;
+      error?: string;
+      to: string;
+      body: string;
+    }>("/sms/appointment/reminder", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Send appointment confirmation
+  sendAppointmentConfirmation: async (data: {
+    phoneNumber: string;
+    patientName: string;
+    appointmentDate: string;
+    doctorName: string;
+    clinicName?: string;
+  }): Promise<{
+    success: boolean;
+    messageSid?: string;
+    error?: string;
+    to: string;
+    body: string;
+  }> => {
+    return fetchApi<{
+      success: boolean;
+      messageSid?: string;
+      error?: string;
+      to: string;
+      body: string;
+    }>("/sms/appointment/confirmation", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Send custom message
+  sendCustomMessage: async (data: {
+    phoneNumber: string;
+    message: string;
+    patientName?: string;
+  }): Promise<{
+    success: boolean;
+    messageSid?: string;
+    error?: string;
+    to: string;
+    body: string;
+  }> => {
+    return fetchApi<{
+      success: boolean;
+      messageSid?: string;
+      error?: string;
+      to: string;
+      body: string;
+    }>("/sms/custom", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Test SMS
+  testSMS: async (data: {
+    phoneNumber: string;
+  }): Promise<{
+    success: boolean;
+    messageSid?: string;
+    error?: string;
+    to: string;
+    body: string;
+  }> => {
+    return fetchApi<{
+      success: boolean;
+      messageSid?: string;
+      error?: string;
+      to: string;
+      body: string;
+    }>("/sms/test", {
+      method: "POST",
+      body: JSON.stringify(data),
     });
   },
 };
