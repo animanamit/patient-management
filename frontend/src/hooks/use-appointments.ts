@@ -33,9 +33,13 @@ export const appointmentKeys = {
 
 // Hook to get all appointments with optional filtering
 export const useAppointments = (params?: AppointmentQueryParams) => {
+  console.log('🔄 useAppointments hook called - will fetch GET /api/appointments');
   return useQuery({
     queryKey: appointmentKeys.list(params),
-    queryFn: () => appointmentsApi.getAppointments(params),
+    queryFn: () => {
+      console.log('📞 Executing appointmentsApi.getAppointments() - calling GET /api/appointments');
+      return appointmentsApi.getAppointments(params);
+    },
     staleTime: 2 * 60 * 1000, // 2 minutes - appointments change more frequently
   });
 };
@@ -71,6 +75,8 @@ export const useAppointmentsByStatus = (status: AppointmentStatus) => {
 
 // Hook to get appointments for today (for doctor/staff dashboards)
 export const useTodayAppointments = (doctorId?: DoctorId, options: { enabled?: boolean } = {}) => {
+  console.log('🔄 useTodayAppointments hook called - will fetch today\'s appointments via GET /api/appointments');
+  
   const today = new Date();
   const startOfDay = new Date(today.setHours(0, 0, 0, 0)).toISOString();
   const endOfDay = new Date(today.setHours(23, 59, 59, 999)).toISOString();
@@ -89,9 +95,14 @@ export const useTodayAppointments = (doctorId?: DoctorId, options: { enabled?: b
     ...(validDoctorId && { doctorId: validDoctorId }),
   };
 
+  console.log('📅 Today\'s appointments query params:', params);
+
   return useQuery({
     queryKey: [...appointmentKeys.byDateRange(startOfDay, endOfDay), validDoctorId],
-    queryFn: () => appointmentsApi.getAppointments(params),
+    queryFn: () => {
+      console.log('📞 Executing appointmentsApi.getAppointments() for today - calling GET /api/appointments');
+      return appointmentsApi.getAppointments(params);
+    },
     enabled: options.enabled !== false, // Remove the !!validDoctorId check to allow staff dashboard to work
     staleTime: 30 * 1000, // 30 seconds - today's appointments need frequent updates
     refetchInterval: 60 * 1000, // Refetch every minute

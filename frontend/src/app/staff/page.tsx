@@ -207,6 +207,8 @@ const getStatusBg = (status: AppointmentStatus) => {
 };
 
 export default function StaffDashboard() {
+  console.log('🏥 STAFF DASHBOARD: Component loaded - will fetch data from multiple Fastify routes');
+  
   const [isPending, startTransition] = useTransition();
   const [viewMode, setViewMode] = useState<'dashboard' | 'calendar'>('dashboard');
   const [isAddPatientModalOpen, setIsAddPatientModalOpen] = useState(false);
@@ -518,7 +520,10 @@ export default function StaffDashboard() {
                               </div>
                               <div className="flex items-center gap-2">
                                 <button
-                                  onClick={() => handleSendSMS(appointment)}
+                                  onClick={() => {
+                                    console.log('🔘 BUTTON CLICKED: SMS - Will call POST /api/sms/appointment/reminder');
+                                    handleSendSMS(appointment);
+                                  }}
                                   disabled={sendReminderMutation.isPending}
                                   className="text-xs font-medium text-gray-700 hover:text-gray-900"
                                 >

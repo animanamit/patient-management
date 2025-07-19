@@ -43,8 +43,11 @@ async function fetchApi<T>(
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
   
-  console.log(`🔍 API Request: ${options.method || 'GET'} ${url}`);
-  console.log('📤 Request options:', options);
+  console.log(`🚀 FASTIFY ROUTE HIT: ${options.method || 'GET'} ${endpoint}`);
+  console.log(`🔗 Full URL: ${url}`);
+  if (options.body) {
+    console.log('📤 Request body:', options.body);
+  }
   
   const config: RequestInit = {
     headers: {
@@ -57,8 +60,7 @@ async function fetchApi<T>(
   try {
     const response = await fetch(url, config);
     
-    console.log(`📥 API Response: ${response.status} ${response.statusText}`);
-    console.log('🌐 Response headers:', Object.fromEntries(response.headers.entries()));
+    console.log(`📥 FASTIFY RESPONSE: ${response.status} ${response.statusText} for ${endpoint}`);
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -82,12 +84,12 @@ async function fetchApi<T>(
 
     // Handle 204 No Content responses
     if (response.status === 204) {
-      console.log('✅ API Success: 204 No Content');
+      console.log(`✅ FASTIFY SUCCESS: 204 No Content for ${endpoint}`);
       return {} as T;
     }
 
     const data = await response.json();
-    console.log('✅ API Success:', data);
+    console.log(`✅ FASTIFY SUCCESS: Data received from ${endpoint}`, data);
     return data;
   } catch (error) {
     console.error('🚨 Fetch error:', error);

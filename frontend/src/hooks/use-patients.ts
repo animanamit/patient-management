@@ -23,9 +23,13 @@ export const patientKeys = {
 
 // Hook to get all patients with optional filtering
 export const usePatients = (params?: PatientQueryParams) => {
+  console.log('🔄 usePatients hook called - will fetch patients via GET /api/patients');
   return useQuery({
     queryKey: patientKeys.list(params),
-    queryFn: () => patientsApi.getPatients(params),
+    queryFn: () => {
+      console.log('📞 Executing patientsApi.getPatients() - calling GET /api/patients');
+      return patientsApi.getPatients(params);
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
