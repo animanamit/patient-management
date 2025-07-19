@@ -16,6 +16,13 @@ export interface SendSMSRequest {
   patientName?: string;
 }
 
+export interface SendSMSRequestInternal {
+  to: string;
+  body: string;
+  appointmentId?: string | undefined;
+  patientName?: string | undefined;
+}
+
 export interface SMSResponse {
   success: boolean;
   messageSid?: string;
@@ -27,7 +34,7 @@ export interface SMSResponse {
 export class SMSService {
   private client: twilio.Twilio;
   private fromNumber: string;
-  private messagingServiceSid?: string;
+  private messagingServiceSid?: string | undefined;
 
   constructor() {
     // Validate environment variables
@@ -85,7 +92,7 @@ export class SMSService {
   /**
    * Send SMS using Twilio
    */
-  async sendSMS(request: SendSMSRequest): Promise<SMSResponse> {
+  async sendSMS(request: SendSMSRequest | SendSMSRequestInternal): Promise<SMSResponse> {
     try {
       // Format and validate phone number
       const formattedNumber = this.formatSingaporeNumber(request.to);
@@ -162,7 +169,7 @@ export class SMSService {
     return this.sendSMS({
       to: phoneNumber,
       body: message,
-      patientName,
+      ...(patientName !== undefined && { patientName }),
     });
   }
 
@@ -190,7 +197,7 @@ export class SMSService {
     return this.sendSMS({
       to: phoneNumber,
       body: message,
-      patientName,
+      ...(patientName !== undefined && { patientName }),
     });
   }
 
@@ -218,7 +225,7 @@ export class SMSService {
     return this.sendSMS({
       to: phoneNumber,
       body: message,
-      patientName,
+      ...(patientName !== undefined && { patientName }),
     });
   }
 
@@ -233,7 +240,7 @@ export class SMSService {
     return this.sendSMS({
       to: phoneNumber,
       body: message,
-      patientName,
+      ...(patientName !== undefined && { patientName }),
     });
   }
 

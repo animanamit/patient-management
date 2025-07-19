@@ -55,7 +55,7 @@ const smsRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await smsService.sendSMS({
         to,
         body,
-        patientName,
+        ...(patientName !== undefined && { patientName }),
       });
 
       if (result.success) {
