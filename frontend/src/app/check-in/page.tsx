@@ -10,7 +10,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Heart,
   Phone,
   ArrowRight,
   CheckCircle,
@@ -106,7 +105,7 @@ const CheckInSuccess = ({
             <div>
               <span className="text-xs text-gray-500">Patient ID</span>
               <p className="text-sm font-medium text-gray-900 font-mono">
-                #{patient.id.split('_')[1]}
+                #{patient.id.split("_")[1]}
               </p>
             </div>
             <div>
@@ -184,18 +183,18 @@ const CheckInSuccess = ({
       <div className="bg-white border border-gray-200 ">
         <div className="px-4 py-3 border-b border-gray-100">
           <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
-            What's Next?
+            What&apos;s Next?
           </h3>
         </div>
         <div className="px-4 py-4">
           <div className="space-y-2 text-sm text-gray-600">
             <div className="flex items-start gap-2">
               <CheckCircle className="h-3.5 w-3.5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>You're successfully checked in</span>
+              <span>You&apos;re successfully checked in</span>
             </div>
             <div className="flex items-start gap-2">
               <CheckCircle className="h-3.5 w-3.5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>You'll receive an SMS when it's your turn</span>
+              <span>You&apos;ll receive an SMS when it&apos;s your turn</span>
             </div>
             <div className="flex items-start gap-2">
               <CheckCircle className="h-3.5 w-3.5 text-green-500 mt-0.5 flex-shrink-0" />
@@ -231,25 +230,25 @@ export default function CheckInPage() {
   const [checkInStatus, setCheckInStatus] = useState<
     "idle" | "found" | "processing" | "concierge" | "success" | "error"
   >("idle");
-  
+
   // Assistance request system
   const { createRequest } = useCreateAssistanceRequest();
-  
+
   // Mutation hooks for auto-creating records
   const createPatientMutation = useCreatePatient();
   const createAppointmentMutation = useCreateAppointment();
-  
+
   // Get available doctors for appointment creation
   const { data: doctorsData } = useActiveDoctors();
-  
+
   // Stock ailments for temporary appointments
   const stockAilments = [
     "General consultation needed",
-    "Follow-up visit required", 
+    "Follow-up visit required",
     "Routine check-up",
     "Health concern to discuss",
     "Wellness consultation",
-    "Medical advice needed"
+    "Medical advice needed",
   ];
 
   // Use deferred value for phone number to avoid excessive API calls
@@ -324,7 +323,7 @@ export default function CheckInPage() {
       } else {
         // Patient not found - gracefully create temporary records
         setCheckInStatus("processing");
-        
+
         startTransition(async () => {
           try {
             // Create temporary patient record
@@ -333,24 +332,34 @@ export default function CheckInPage() {
               firstName: "Guest",
               lastName: "Patient",
               phone: apiPhoneNumber,
-              email: `guest.${Date.now()}.${Math.random().toString(36).substring(2, 8)}@temp.clinic.local`, // Temporary email with random suffix
+              email: `guest.${Date.now()}.${Math.random()
+                .toString(36)
+                .substring(2, 8)}@temp.clinic.local`, // Temporary email with random suffix
               dateOfBirth: "1990-01-01T00:00:00.000Z", // Temporary DOB - will be updated by concierge
               address: "To be confirmed by concierge", // Will be filled by concierge
               emergencyContact: "", // Will be filled by concierge
             };
-            
-            const patientResult = await createPatientMutation.mutateAsync(tempPatientData);
-            
+
+            const patientResult = await createPatientMutation.mutateAsync(
+              tempPatientData
+            );
+
             // Create temporary appointment
-            const randomAilment = stockAilments[Math.floor(Math.random() * stockAilments.length)];
+            const randomAilment =
+              stockAilments[Math.floor(Math.random() * stockAilments.length)];
             const now = new Date();
             const appointmentTime = new Date();
-            appointmentTime.setHours(now.getHours(), now.getMinutes() + 5, 0, 0); // 5 minutes from now
-            
+            appointmentTime.setHours(
+              now.getHours(),
+              now.getMinutes() + 5,
+              0,
+              0
+            ); // 5 minutes from now
+
             // Get the first available doctor or fallback to a default
             const availableDoctor = doctorsData?.doctors?.[0];
             const doctorId = availableDoctor?.id || "doctor_general"; // Fallback if no doctors available
-            
+
             const appointmentData = {
               patientId: patientResult.patient.id,
               doctorId: doctorId, // Use real doctor ID or fallback
@@ -359,23 +368,23 @@ export default function CheckInPage() {
               durationMinutes: 30,
               reasonForVisit: randomAilment,
             };
-            
-            const appointmentResult = await createAppointmentMutation.mutateAsync(appointmentData);
-            
+
+            const appointmentResult =
+              await createAppointmentMutation.mutateAsync(appointmentData);
+
             // Create assistance request for concierge
             createRequest(
               formattedPhone,
-              "registration", 
+              "registration",
               `Guest patient created - needs full registration and appointment details updated. Reason: ${randomAilment}`,
               patientResult.patient.id,
               appointmentResult.appointment.id
             );
-            
+
             // Set patient and appointment data
             setSelectedPatient(patientResult.patient);
             setSelectedAppointment(appointmentResult.appointment);
             setCheckInStatus("concierge");
-            
           } catch (error) {
             console.error("Failed to create temporary records:", error);
             setCheckInStatus("error");
@@ -418,7 +427,6 @@ export default function CheckInPage() {
       {/* Main Content */}
       <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-6">
         <div className="w-full max-w-lg">
-
           {/* Idle State - Phone Input */}
           {checkInStatus === "idle" && (
             <div className="space-y-6">
@@ -427,7 +435,8 @@ export default function CheckInPage() {
                   Welcome to Our Clinic
                 </h2>
                 <p className="text-sm text-gray-600">
-                  Please enter your phone number to check in for your appointment
+                  Please enter your phone number to check in for your
+                  appointment
                 </p>
               </div>
 
@@ -484,7 +493,8 @@ export default function CheckInPage() {
 
               <div className="text-center">
                 <p className="text-xs text-gray-500">
-                  Having trouble? Please ask our front desk staff for assistance.
+                  Having trouble? Please ask our front desk staff for
+                  assistance.
                 </p>
               </div>
             </div>
@@ -495,7 +505,8 @@ export default function CheckInPage() {
             <div className="space-y-6">
               <div className="text-center">
                 <h2 className="text-lg font-semibold text-gray-900 mb-1">
-                  Welcome, {selectedPatient.firstName} {selectedPatient.lastName}!
+                  Welcome, {selectedPatient.firstName}{" "}
+                  {selectedPatient.lastName}!
                 </h2>
                 <p className="text-sm text-gray-600">
                   Please select your appointment to check in
@@ -523,85 +534,87 @@ export default function CheckInPage() {
                           </p>
                         </div>
                         {appointmentsData.appointments.map((appointment) => {
-                        const doctorName =
-                          "doctor" in appointment
-                            ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
-                            : "Doctor information loading...";
+                          const doctorName =
+                            "doctor" in appointment
+                              ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
+                              : "Doctor information loading...";
 
-                        return (
-                          <div
-                            key={appointment.id}
-                            className="px-4 py-4 hover:bg-gray-50 transition-colors"
-                          >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="text-sm font-medium text-gray-900">
-                                    {appointment.type
-                                      .replace("_", " ")
-                                      .toLowerCase()
-                                      .replace(/\b\w/g, (l) => l.toUpperCase())}
-                                  </h4>
-                                  <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs font-medium border border-blue-200 rounded-xs">
-                                    {appointment.status
-                                      .toLowerCase()
-                                      .replace("_", " ")}
-                                  </span>
-                                </div>
-                                <p className="text-sm text-gray-600 mb-2">
-                                  {doctorName}
-                                </p>
-                                <div className="flex items-center gap-3 text-xs text-gray-500">
-                                  <div className="flex items-center gap-1">
-                                    <Clock className="h-3 w-3" />
-                                    {new Date(
-                                      appointment.scheduledDateTime
-                                    ).toLocaleTimeString([], {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })}
+                          return (
+                            <div
+                              key={appointment.id}
+                              className="px-4 py-4 hover:bg-gray-50 transition-colors"
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <h4 className="text-sm font-medium text-gray-900">
+                                      {appointment.type
+                                        .replace("_", " ")
+                                        .toLowerCase()
+                                        .replace(/\b\w/g, (l) =>
+                                          l.toUpperCase()
+                                        )}
+                                    </h4>
+                                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs font-medium border border-blue-200 rounded-xs">
+                                      {appointment.status
+                                        .toLowerCase()
+                                        .replace("_", " ")}
+                                    </span>
                                   </div>
-                                </div>
-                                {appointment.reasonForVisit && (
-                                  <p className="text-xs text-gray-500 mt-1">
-                                    <strong>Reason:</strong>{" "}
-                                    {appointment.reasonForVisit}
+                                  <p className="text-sm text-gray-600 mb-2">
+                                    {doctorName}
                                   </p>
-                                )}
+                                  <div className="flex items-center gap-3 text-xs text-gray-500">
+                                    <div className="flex items-center gap-1">
+                                      <Clock className="h-3 w-3" />
+                                      {new Date(
+                                        appointment.scheduledDateTime
+                                      ).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })}
+                                    </div>
+                                  </div>
+                                  {appointment.reasonForVisit && (
+                                    <p className="text-xs text-gray-500 mt-1">
+                                      <strong>Reason:</strong>{" "}
+                                      {appointment.reasonForVisit}
+                                    </p>
+                                  )}
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    setSelectedAppointment(appointment);
+                                    handleCheckIn(appointment.id);
+                                  }}
+                                  disabled={isCheckingIn || isPending}
+                                  className="text-xs font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-300 border border-green-600 hover:border-green-700 disabled:border-gray-300 px-3 py-1.5 transition-colors ml-4 rounded-xs"
+                                >
+                                  {isCheckingIn ? (
+                                    <span className="flex items-center gap-1">
+                                      <Loader2 className="h-3 w-3 animate-spin" />
+                                      Checking in...
+                                    </span>
+                                  ) : (
+                                    <span className="flex items-center gap-1">
+                                      Check In
+                                      <CheckCircle className="h-3 w-3" />
+                                    </span>
+                                  )}
+                                </button>
                               </div>
-                              <button
-                                onClick={() => {
-                                  setSelectedAppointment(appointment);
-                                  handleCheckIn(appointment.id);
-                                }}
-                                disabled={isCheckingIn || isPending}
-                                className="text-xs font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-300 border border-green-600 hover:border-green-700 disabled:border-gray-300 px-3 py-1.5 transition-colors ml-4 rounded-xs"
-                              >
-                                {isCheckingIn ? (
-                                  <span className="flex items-center gap-1">
-                                    <Loader2 className="h-3 w-3 animate-spin" />
-                                    Checking in...
-                                  </span>
-                                ) : (
-                                  <span className="flex items-center gap-1">
-                                    Check In
-                                    <CheckCircle className="h-3 w-3" />
-                                  </span>
-                                )}
-                              </button>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
                       </>
                     ) : null}
                   </Suspense>
-                  
+
                   {/* Walk-in Option */}
                   <div className="bg-gray-50">
                     <div className="px-4 py-3">
                       <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-                        Don't have an appointment?
+                        Don&apos;t have an appointment?
                       </p>
                       <div className="bg-white border border-gray-200 rounded-xs">
                         <div className="px-4 py-4">
@@ -611,7 +624,8 @@ export default function CheckInPage() {
                                 Walk-in Consultation
                               </h4>
                               <p className="text-xs text-gray-600 mb-2">
-                                Register for a walk-in appointment. You'll be added to the queue based on availability.
+                                Register for a walk-in appointment. You&apos;ll
+                                be added to the queue based on availability.
                               </p>
                               <div className="flex items-center gap-3 text-xs text-gray-500">
                                 <div className="flex items-center gap-1">
@@ -634,18 +648,19 @@ export default function CheckInPage() {
                       </div>
                     </div>
                   </div>
-                  
-                  {!appointmentsData?.appointments?.length && !isLoadingAppointments && (
-                    <div className="px-4 py-8 text-center">
-                      <Calendar className="h-6 w-6 mx-auto mb-2 text-gray-300" />
-                      <p className="text-sm text-gray-600 mb-2">
-                        No scheduled appointments for today
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        You can still register as a walk-in patient above
-                      </p>
-                    </div>
-                  )}
+
+                  {!appointmentsData?.appointments?.length &&
+                    !isLoadingAppointments && (
+                      <div className="px-4 py-8 text-center">
+                        <Calendar className="h-6 w-6 mx-auto mb-2 text-gray-300" />
+                        <p className="text-sm text-gray-600 mb-2">
+                          No scheduled appointments for today
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          You can still register as a walk-in patient above
+                        </p>
+                      </div>
+                    )}
                 </div>
               </div>
 
@@ -699,23 +714,26 @@ export default function CheckInPage() {
                     Next Steps
                   </h3>
                 </div>
-                
+
                 <div className="px-4 py-4">
                   <div className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-blue-100 rounded-sm flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-xs font-semibold text-blue-600">1</span>
+                      <span className="text-xs font-semibold text-blue-600">
+                        1
+                      </span>
                     </div>
                     <div className="flex-1">
                       <h4 className="text-sm font-medium text-gray-900 mb-1">
                         Please proceed to the front desk
                       </h4>
                       <p className="text-xs text-gray-600">
-                        Our concierge will complete your registration and confirm your appointment details.
+                        Our concierge will complete your registration and
+                        confirm your appointment details.
                       </p>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="px-4 py-3 bg-blue-50 border-t border-gray-100">
                   <div className="flex items-center gap-2">
                     <Clock className="h-3 w-3 text-blue-600" />
@@ -725,7 +743,7 @@ export default function CheckInPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-gray-50 border border-gray-200 rounded-sm p-4">
                 <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
                   Have your information ready:
@@ -737,7 +755,7 @@ export default function CheckInPage() {
                   <li>• Current medications (if any)</li>
                 </ul>
               </div>
-              
+
               <button
                 onClick={resetCheckIn}
                 className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
@@ -745,108 +763,6 @@ export default function CheckInPage() {
                 <span className="flex items-center justify-center gap-2">
                   <ArrowLeft className="h-3 w-3" />
                   Start Over
-                </span>
-              </button>
-            </div>
-          )}
-
-          {/* Old Not Found State - Remove this section */}
-          {false && checkInStatus === "not_found" && (
-            <div className="space-y-6">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-blue-50 rounded-sm flex items-center justify-center mx-auto mb-3">
-                  <Users className="h-6 w-6 text-blue-600" />
-                </div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">
-                  Phone Number Not Found
-                </h2>
-                <p className="text-sm text-gray-600">
-                  We couldn't find your phone number in our system.
-                </p>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-sm">
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    What would you like to do?
-                  </h3>
-                </div>
-                
-                <div className="divide-y divide-gray-100">
-                  {/* Option 1: Have appointment, need registration */}
-                  <div className="px-4 py-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h4 className="text-sm font-medium text-gray-900 mb-1">
-                          I have an appointment today
-                        </h4>
-                        <p className="text-xs text-gray-600 mb-2">
-                          You have a scheduled appointment but need to be registered in our system first.
-                        </p>
-                        <div className="flex items-center gap-3 text-xs text-gray-500">
-                          <div className="flex items-center gap-1">
-                            <UserCheck className="h-3 w-3" />
-                            <span>Registration required</span>
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => {
-                          createRequest(
-                            formattedPhone, 
-                            "registration", 
-                            "Patient has an appointment but needs to be registered in the system"
-                          );
-                          alert("Request sent to front desk! Please wait to be called for assistance with registration.");
-                        }}
-                        className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-3 py-1.5 transition-colors ml-4 rounded-xs"
-                      >
-                        <span className="flex items-center gap-1">
-                          Request Assistance
-                          <ArrowRight className="h-3 w-3" />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {/* Option 2: Walk-in, no appointment */}
-                  <div className="px-4 py-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h4 className="text-sm font-medium text-gray-900 mb-1">
-                          I don't have an appointment
-                        </h4>
-                        <p className="text-xs text-gray-600 mb-2">
-                          Register as a new patient and book a walk-in appointment.
-                        </p>
-                        <div className="flex items-center gap-3 text-xs text-gray-500">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            <span>Subject to availability</span>
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => setIsWalkInModalOpen(true)}
-                        className="text-xs font-medium text-white bg-green-600 hover:bg-green-700 border border-green-600 hover:border-green-700 px-3 py-1.5 transition-colors ml-4 rounded-xs"
-                      >
-                        <span className="flex items-center gap-1">
-                          Register Now
-                          <ArrowRight className="h-3 w-3" />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <button
-                onClick={resetCheckIn}
-                className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
-              >
-                <span className="flex items-center justify-center gap-2">
-                  <ArrowLeft className="h-3 w-3" />
-                  Try Different Phone Number
                 </span>
               </button>
             </div>
@@ -945,7 +861,7 @@ export default function CheckInPage() {
           )}
         </div>
       </div>
-      
+
       {/* Walk-in Registration Modal */}
       <WalkInRegistrationModal
         isOpen={isWalkInModalOpen}
