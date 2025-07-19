@@ -14,8 +14,9 @@ export default fp(async function corsPlugin(fastify) {
       // Production origins (Vercel)
       const prodOrigins = [
         env.FRONTEND_URL,
+        "https://patient-management-kohl.vercel.app",  // Your specific Vercel deployment
         /https:\/\/.*\.vercel\.app$/,  // Allow all Vercel preview deployments
-        /https:\/\/carepulse-.*\.vercel\.app$/  // Specific to your app
+        /https:\/\/patient-management-.*\.vercel\.app$/  // Your app pattern
       ];
       
       const allowedOrigins = env.NODE_ENV === "development" ? devOrigins : prodOrigins;
