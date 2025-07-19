@@ -15,7 +15,8 @@ const start = async () => {
     // 1. Check database connection first
     const dbConnected = await checkDatabaseConnection();
     if (!dbConnected) {
-      throw new Error("Database connection failed");
+      console.warn("⚠️  Database connection failed - starting server anyway");
+      console.warn("⚠️  Some features may not work properly");
     }
 
     // 2. Register plugins (you'll add these in later steps)
