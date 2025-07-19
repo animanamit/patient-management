@@ -1,10 +1,10 @@
 import { FastifyPluginAsync } from "fastify";
-import { PrismaPatientRepository } from "../domain/repositories/implementations/prisma-patient-repository";
+import { PrismaPatientRepository } from "../domain/repositories/implementations/prisma-patient-repository.js";
 import {
   EmailAddress,
   PhoneNumber,
   createPatientId,
-} from "../domain/entities/shared-types";
+} from "../domain/entities/shared-types.js";
 import {
   CreatePatientSchema,
   UpdatePatientSchema,
@@ -14,12 +14,12 @@ import {
   PatientQueryParams,
   PatientIdParam,
   UpdatePatientRequest,
-} from "../schemas/patient-schemas";
+} from "../schemas/patient-schemas.js";
 import {
   validateRequest,
   validateParams,
   validateQuery,
-} from "../utils/validation";
+} from "../utils/validation.js";
 
 const patientRoutes: FastifyPluginAsync = async function (fastify) {
   // Initialize repository

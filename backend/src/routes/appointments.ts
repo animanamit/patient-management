@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from "fastify";
-import { PrismaAppointmentRepository } from "@domain/repositories/implementations/prisma-appointment-repository";
+import { PrismaAppointmentRepository } from "../domain/repositories/implementations/prisma-appointment-repository.js";
 import {
   createAppointmentId,
   createPatientId,
@@ -7,12 +7,12 @@ import {
   AppointmentDuration,
   AppointmentType,
   AppointmentStatus,
-} from "../domain/entities/shared-types";
+} from "../domain/entities/shared-types.js";
 import {
   validateRequest,
   validateParams,
   validateQuery,
-} from "../utils/validation";
+} from "../utils/validation.js";
 import {
   CreateAppointmentRequest,
   CreateAppointmentSchema,
@@ -24,7 +24,7 @@ import {
   AppointmentQuerySchema,
   AppointmentIdParam,
   AppointmentIdParamSchema,
-} from "../schemas/appointment-schemas";
+} from "../schemas/appointment-schemas.js";
 
 export const appointmentRoutes: FastifyPluginAsync = async function (fastify) {
   const appointmentRepository = new PrismaAppointmentRepository();

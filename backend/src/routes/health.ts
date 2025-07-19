@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from "fastify";
-import { checkDatabaseConnection } from "../config/database";
+import { checkDatabaseConnection } from "../config/database.js";
 
 const healthRoutes: FastifyPluginAsync = async function (fastify) {
   // Basic health check

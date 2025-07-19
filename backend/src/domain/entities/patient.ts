@@ -11,7 +11,7 @@ import {
   PatientId, 
   PhoneNumber,
   EmailAddress
-} from './shared-types';
+} from './shared-types.js';
 
 // Simple Patient entity focused on PRD requirements
 export interface Patient {

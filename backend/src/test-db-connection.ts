@@ -5,8 +5,8 @@
  * Run with: npm run test:db or tsx src/test-db-connection.ts
  */
 
-import { prisma, checkDatabaseConnection } from './config/database';
-import { env } from './config/environment';
+import { prisma, checkDatabaseConnection } from './config/database.js';
+import { env } from './config/environment.js';
 
 async function testDatabaseSetup() {
   console.log('🧪 Testing CarePulse Database Setup...\n');

@@ -1,11 +1,11 @@
 import { FastifyPluginAsync } from "fastify";
-import { PrismaDoctorRepository } from "@domain/repositories/implementations/prisma-doctor-repository";
-import { EmailAddress, createDoctorId } from "../domain/entities/shared-types";
+import { PrismaDoctorRepository } from "../domain/repositories/implementations/prisma-doctor-repository.js";
+import { EmailAddress, createDoctorId } from "../domain/entities/shared-types.js";
 import {
   validateRequest,
   validateParams,
   validateQuery,
-} from "../utils/validation";
+} from "../utils/validation.js";
 
 // ✅ Fix the import path
 import {
@@ -17,7 +17,7 @@ import {
   DoctorIdParamSchema,
   DoctorQueryParams,
   DoctorQuerySchema,
-} from "../schemas/doctor-schemas";
+} from "../schemas/doctor-schemas.js";
 
 export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
   const doctorRepository = new PrismaDoctorRepository();

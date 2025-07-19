@@ -16,12 +16,12 @@ import {
   AppointmentStatus,
   AppointmentType,
   UserRole,
-} from './entities/shared-types';
+} from './entities/shared-types.js';
 
-import { Patient } from './entities/patient';
-import { Doctor } from './entities/doctor';
-import { Appointment, createAppointment } from './entities/appointment';
-import { EmailAddress, PhoneNumber, AppointmentDuration } from './entities/shared-types';
+import { Patient } from './entities/patient.js';
+import { Doctor } from './entities/doctor.js';
+import { Appointment, createAppointment } from './entities/appointment.js';
+import { EmailAddress, PhoneNumber, AppointmentDuration } from './entities/shared-types.js';
 
 // Helper function to create dates relative to today
 const daysFromNow = (days: number): Date => {

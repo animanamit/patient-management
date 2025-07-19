@@ -7,7 +7,7 @@
  * - Simple doctor profiles (no complex scheduling rules)
  */
 
-import { DoctorId, EmailAddress } from "./shared-types";
+import { DoctorId, EmailAddress } from "./shared-types.js";
 
 // Simple Doctor entity focused on PRD requirements
 export interface Doctor {

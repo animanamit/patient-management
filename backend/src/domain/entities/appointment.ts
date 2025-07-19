@@ -14,7 +14,7 @@ import {
   AppointmentStatus,
   AppointmentType,
   AppointmentDuration,
-} from "./shared-types";
+} from "./shared-types.js";
 
 // Simple Appointment entity focused on PRD requirements
 export interface Appointment {

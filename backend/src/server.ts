@@ -1,6 +1,6 @@
 import Fastify from "fastify";
-import { env } from "./config/environment";
-import { checkDatabaseConnection } from "./config/database";
+import { env } from "./config/environment.js";
+import { checkDatabaseConnection } from "./config/database.js";
 
 // Create Fastify instance with logging configuration
 const fastify = Fastify({
@@ -19,14 +19,14 @@ const start = async () => {
     }
 
     // 2. Register plugins (you'll add these in later steps)
-    await fastify.register(import("./plugins/cors"));
-    await fastify.register(import("./plugins/security"));
-    await fastify.register(import("./plugins/error-handler"));
-    await fastify.register(import("./routes/health"));
-    await fastify.register(import("./routes/patients"), { prefix: "/api" });
-    await fastify.register(import("./routes/doctors"), { prefix: "/api" });
-    await fastify.register(import("./routes/appointments"), { prefix: "/api" });
-    await fastify.register(import("./routes/sms.routes"), { prefix: "/api/sms" });
+    await fastify.register(import("./plugins/cors.js"));
+    await fastify.register(import("./plugins/security.js"));
+    await fastify.register(import("./plugins/error-handler.js"));
+    await fastify.register(import("./routes/health.js"));
+    await fastify.register(import("./routes/patients.js"), { prefix: "/api" });
+    await fastify.register(import("./routes/doctors.js"), { prefix: "/api" });
+    await fastify.register(import("./routes/appointments.js"), { prefix: "/api" });
+    await fastify.register(import("./routes/sms.routes.js"), { prefix: "/api/sms" });
 
     // 3. Start server
     await fastify.listen({
