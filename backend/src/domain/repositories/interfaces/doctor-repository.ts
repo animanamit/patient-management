@@ -1,5 +1,5 @@
-import { Doctor } from "@domain/entities/doctor";
-import { DoctorId, EmailAddress } from "@domain/entities/shared-types";
+import { Doctor } from "../../entities/doctor.js";
+import { DoctorId, EmailAddress } from "../../entities/shared-types.js";
 
 export type RepositoryError = {
   type: "NotFound" | "ValidationError" | "ConflictError" | "DatabaseError";

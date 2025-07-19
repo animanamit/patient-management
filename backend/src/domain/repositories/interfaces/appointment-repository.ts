@@ -5,8 +5,8 @@ import {
   AppointmentType,
   DoctorId,
   PatientId,
-} from "@domain/entities/shared-types";
-import { Appointment } from "@domain/entities/appointment";
+} from "../../entities/shared-types.js";
+import { Appointment } from "../../entities/appointment.js";
 
 export type RepositoryError = {
   type: "NotFound" | "ValidationError" | "ConflictError" | "DatabaseError";

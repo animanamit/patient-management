@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createAppointmentId } from "@domain/entities/shared-types";
+import { createAppointmentId } from "../domain/entities/shared-types.js";
 
 // Appointment ID parameter validation
 export const AppointmentIdParamSchema = z.object({

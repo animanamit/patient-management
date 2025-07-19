@@ -5,8 +5,8 @@
  * Handles appointment scheduling, conflict checking, and status management.
  */
 
-import { prisma } from '@config/database';
-import { Appointment } from '@domain/entities/appointment';
+import { prisma } from '../../../config/database.js';
+import { Appointment } from '../../entities/appointment.js';
 import { 
   AppointmentId, 
   PatientId, 
@@ -16,13 +16,13 @@ import {
   createAppointmentId,
   createPatientId,
   createDoctorId
-} from '@domain/entities/shared-types';
+} from '../../entities/shared-types.js';
 import { 
   IAppointmentRepository, 
   RepositoryResult, 
   AppointmentFilters,
   AppointmentUpdateData 
-} from '@domain/repositories/interfaces';
+} from '../interfaces/index.js';
 
 export class PrismaAppointmentRepository implements IAppointmentRepository {
   private prisma = prisma;

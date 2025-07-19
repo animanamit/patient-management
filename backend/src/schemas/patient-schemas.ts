@@ -1,4 +1,4 @@
-import { createPatientId } from "@domain/entities/shared-types";
+import { createPatientId } from "../domain/entities/shared-types.js";
 import { z } from "zod";
 
 export const PatientIdParamSchema = z.object({

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createDoctorId } from "@domain/entities/shared-types";
+import { createDoctorId } from "../domain/entities/shared-types.js";
 
 export const DoctorIdParamSchema = z.object({
   id: z

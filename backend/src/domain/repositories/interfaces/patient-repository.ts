@@ -11,12 +11,12 @@
  * - Supports the core operations from your PRD
  */
 
-import { Patient } from "@domain/entities/patient";
+import { Patient } from "../../entities/patient.js";
 import {
   PatientId,
   EmailAddress,
   PhoneNumber,
-} from "@domain/entities/shared-types";
+} from "../../entities/shared-types.js";
 
 // Result types for error handling (Session 2 requirement)
 export type RepositoryResult<T> =

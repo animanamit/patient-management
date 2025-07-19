@@ -6,21 +6,21 @@
  * Works with the User/Patient relational schema.
  */
 
-import { prisma } from '@config/database';
-import { Patient } from '@domain/entities/patient';
+import { prisma } from '../../../config/database.js';
+import { Patient } from '../../entities/patient.js';
 import { 
   PatientId, 
   EmailAddress, 
   PhoneNumber,
   createPatientId,
   createUserId
-} from '@domain/entities/shared-types';
+} from '../../entities/shared-types.js';
 import { 
   IPatientRepository, 
   RepositoryResult, 
   PatientFilters,
   PatientUpdateData 
-} from '@domain/repositories/interfaces';
+} from '../interfaces/index.js';
 
 export class PrismaPatientRepository implements IPatientRepository {
   private prisma = prisma;
