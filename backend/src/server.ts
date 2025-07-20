@@ -67,14 +67,18 @@ const start = async () => {
     
     // 3. Start server
     console.log(`⚡ Attempting to start server on port ${env.PORT}...`);
+    console.log(`📡 ALL Environment variables:`, JSON.stringify(process.env, null, 2));
     try {
       const address = await fastify.listen({
         port: env.PORT,
         host: "0.0.0.0", // Allow external connections
+        listenTextResolver: (address) => `Server listening at ${address}`
       });
 
       console.log(`🚀 Server running on ${address}`);
       console.log(`📡 Port: ${env.PORT}`);
+      console.log(`📡 Raw PORT env: ${process.env.PORT}`);
+      console.log(`📡 Raw API_PORT env: ${process.env.API_PORT}`);
       console.log(`🌍 Environment: ${env.NODE_ENV}`);
       console.log(`🔗 FRONTEND_URL: ${env.FRONTEND_URL}`);
     } catch (listenError) {

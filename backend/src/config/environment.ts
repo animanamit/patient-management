@@ -53,7 +53,7 @@ const validateEnvironment = (): EnvironmentConfig => {
 
   return {
     DATABASE_URL: databaseUrl,
-    PORT: parseInt(process.env.PORT || process.env.API_PORT || '8000', 10),
+    PORT: parseInt(process.env.API_PORT || process.env.PORT || '8000', 10),
     NODE_ENV: (process.env.NODE_ENV as EnvironmentConfig['NODE_ENV']) || 'development',
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000',
@@ -63,11 +63,11 @@ const validateEnvironment = (): EnvironmentConfig => {
 // Export validated configuration
 export const env = validateEnvironment();
 
-// Log configuration (excluding sensitive data)
-if (env.NODE_ENV === 'development') {
-  console.log('🔧 Environment Configuration:');
-  console.log(`  - NODE_ENV: ${env.NODE_ENV}`);
-  console.log(`  - PORT: ${env.PORT}`);
-  console.log(`  - DATABASE_URL: ${env.DATABASE_URL.replace(/:[^:@]*@/, ':***@')}`); // Hide password
-  console.log(`  - FRONTEND_URL: ${env.FRONTEND_URL}`);
-}
+// Log configuration (excluding sensitive data) - always log in production for debugging
+console.log('🔧 Environment Configuration:');
+console.log(`  - NODE_ENV: ${env.NODE_ENV}`);
+console.log(`  - PORT: ${env.PORT}`);
+console.log(`  - Raw process.env.PORT: ${process.env.PORT}`);
+console.log(`  - Raw process.env.API_PORT: ${process.env.API_PORT}`);
+console.log(`  - DATABASE_URL: ${env.DATABASE_URL.replace(/:[^:@]*@/, ':***@')}`); // Hide password
+console.log(`  - FRONTEND_URL: ${env.FRONTEND_URL}`);
