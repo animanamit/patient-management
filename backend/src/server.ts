@@ -10,7 +10,7 @@ const fastify = Fastify({
 });
 
 // Add request logging hook
-fastify.addHook('onRequest', async (request, reply) => {
+fastify.addHook('onRequest', async (request) => {
   console.log(`📥 Incoming request: ${request.method} ${request.url}`);
   console.log(`   From: ${request.headers['x-forwarded-for'] || request.ip}`);
   console.log(`   Host: ${request.headers.host}`);
