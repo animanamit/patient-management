@@ -13,9 +13,7 @@ import {
   DoctorId, 
   AppointmentStatus,
   AppointmentDuration,
-  createAppointmentId,
-  createPatientId,
-  createDoctorId
+  createAppointmentId
 } from '../../entities/shared-types.js';
 import { 
   IAppointmentRepository, 
