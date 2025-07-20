@@ -36,6 +36,8 @@ export const appointmentRoutes: FastifyPluginAsync = async function (fastify) {
       preHandler: validateQuery(AppointmentQuerySchema),
     },
     async (request, reply) => {
+      console.log(`🚀 APPOINTMENTS ROUTE HIT: ${request.method} ${request.url}`);
+      console.log(`📊 Query params:`, request.query);
       try {
         const query = (request as any).validatedQuery;
 

@@ -27,8 +27,11 @@ const start = async () => {
     }
 
     // 2. Register plugins (you'll add these in later steps)
+    console.log("🔌 Registering CORS plugin...");
     await fastify.register(import("./plugins/cors.js"));
+    console.log("🔒 Registering security plugin...");
     await fastify.register(import("./plugins/security.js"));
+    console.log("❌ Registering error handler plugin...");
     await fastify.register(import("./plugins/error-handler.js"));
     
     // Add root endpoint for debugging
@@ -57,10 +60,25 @@ const start = async () => {
       };
     });
     
+    // Add a simple test endpoint
+    fastify.get("/api/test", async (request) => {
+      console.log(`🧪 API test endpoint hit: ${request.method} ${request.url}`);
+      return {
+        message: "API test endpoint working",
+        timestamp: new Date().toISOString(),
+        headers: request.headers
+      };
+    });
+    
+    console.log("🩺 Registering health routes...");
     await fastify.register(import("./routes/health.js"));
+    console.log("👥 Registering patient routes at /api prefix...");
     await fastify.register(import("./routes/patients.js"), { prefix: "/api" });
+    console.log("👨‍⚕️ Registering doctor routes at /api prefix...");
     await fastify.register(import("./routes/doctors.js"), { prefix: "/api" });
+    console.log("📅 Registering appointment routes at /api prefix...");
     await fastify.register(import("./routes/appointments.js"), { prefix: "/api" });
+    console.log("📱 Registering SMS routes at /api/sms prefix...");
     await fastify.register(import("./routes/sms.routes.js"), { prefix: "/api/sms" });
     
 
