@@ -53,7 +53,7 @@ const validateEnvironment = (): EnvironmentConfig => {
 
   return {
     DATABASE_URL: databaseUrl,
-    PORT: parseInt(process.env.API_PORT || process.env.PORT || '8000', 10),
+    PORT: parseInt(process.env.PORT || '8000', 10),
     NODE_ENV: (process.env.NODE_ENV as EnvironmentConfig['NODE_ENV']) || 'development',
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000',
