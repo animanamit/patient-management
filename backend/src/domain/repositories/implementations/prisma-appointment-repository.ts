@@ -360,7 +360,7 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
     
     if (prismaAppointment.doctor) {
       appointmentWithDetails.doctor = {
-        id: createDoctorId(prismaAppointment.doctor.id),
+        id: this.ensureValidDoctorId(prismaAppointment.doctor.id),
         firstName: prismaAppointment.doctor.user.firstName,
         lastName: prismaAppointment.doctor.user.lastName,
         email: prismaAppointment.doctor.user.email,
@@ -370,7 +370,7 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
     
     if (prismaAppointment.patient) {
       appointmentWithDetails.patient = {
-        id: createPatientId(prismaAppointment.patient.id),
+        id: this.ensureValidPatientId(prismaAppointment.patient.id),
         firstName: prismaAppointment.patient.user.firstName,
         lastName: prismaAppointment.patient.user.lastName,
         email: prismaAppointment.patient.user.email,
