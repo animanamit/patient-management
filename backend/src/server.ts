@@ -9,6 +9,13 @@ const fastify = Fastify({
   },
 });
 
+// Add request logging hook
+fastify.addHook('onRequest', async (request, reply) => {
+  console.log(`📥 Incoming request: ${request.method} ${request.url}`);
+  console.log(`   From: ${request.headers['x-forwarded-for'] || request.ip}`);
+  console.log(`   Host: ${request.headers.host}`);
+});
+
 // Server startup function
 const start = async () => {
   try {
@@ -36,12 +43,48 @@ const start = async () => {
       };
     });
     
+    // Add API prefix handler for debugging
+    fastify.get("/api", async (request) => {
+      console.log(`🚀 API root hit: ${request.method} ${request.url}`);
+      return {
+        message: "API endpoints available",
+        endpoints: [
+          "/api/appointments",
+          "/api/patients", 
+          "/api/doctors",
+          "/api/sms/send"
+        ]
+      };
+    });
+    
     await fastify.register(import("./routes/health.js"));
     await fastify.register(import("./routes/patients.js"), { prefix: "/api" });
     await fastify.register(import("./routes/doctors.js"), { prefix: "/api" });
     await fastify.register(import("./routes/appointments.js"), { prefix: "/api" });
     await fastify.register(import("./routes/sms.routes.js"), { prefix: "/api/sms" });
+    
+    // Add catch-all handler for debugging unmatched routes
+    fastify.setNotFoundHandler((request, reply) => {
+      console.log(`❌ Route not found: ${request.method} ${request.url}`);
+      console.log(`   Headers: ${JSON.stringify(request.headers)}`);
+      reply.code(404).send({
+        statusCode: 404,
+        error: "Not Found",
+        message: `Route ${request.method} ${request.url} not found`,
+        timestamp: new Date().toISOString()
+      });
+    });
 
+    // Add global error handler
+    fastify.setErrorHandler((error, request, reply) => {
+      console.error(`💥 Error handling ${request.method} ${request.url}:`, error);
+      reply.status(500).send({
+        statusCode: 500,
+        error: "Internal Server Error",
+        message: error.message
+      });
+    });
+    
     // 3. Start server
     const address = await fastify.listen({
       port: env.PORT,
