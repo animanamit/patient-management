@@ -6,7 +6,10 @@
  * for the entire application.
  */
 
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
+
+// Custom alphabet without hyphens for consistent ID generation
+const nanoidCustom = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_', 8);
 
 // TYPE DEFINITIONS
 
@@ -73,7 +76,7 @@ export const createPatientId = (id?: string): PatientId => {
       "Invalid PatientId format (expected: patient_<alphanumeric>)"
     );
   }
-  return `patient_${nanoid(8)}` as PatientId;
+  return `patient_${nanoidCustom()}` as PatientId;
 };
 
 export const createDoctorId = (id?: string): DoctorId => {
@@ -82,7 +85,7 @@ export const createDoctorId = (id?: string): DoctorId => {
     if (regex.test(id)) return id as DoctorId;
     throw new Error("Invalid DoctorId format (expected: doctor_<alphanumeric>)");
   }
-  return `doctor_${nanoid(8)}` as DoctorId;
+  return `doctor_${nanoidCustom()}` as DoctorId;
 };
 
 export const createAppointmentId = (id?: string): AppointmentId => {
@@ -93,7 +96,7 @@ export const createAppointmentId = (id?: string): AppointmentId => {
       "Invalid AppointmentId format (expected: appt_<alphanumeric>)"
     );
   }
-  return `appt_${nanoid(8)}` as AppointmentId;
+  return `appt_${nanoidCustom()}` as AppointmentId;
 };
 
 export const createQueueId = (id?: string): QueueId => {
@@ -102,7 +105,7 @@ export const createQueueId = (id?: string): QueueId => {
     if (regex.test(id)) return id as QueueId;
     throw new Error("Invalid QueueId format (expected: queue_<alphanumeric>)");
   }
-  return `queue_${nanoid(8)}` as QueueId;
+  return `queue_${nanoidCustom()}` as QueueId;
 };
 
 export const createUserId = (id?: string): UserId => {
@@ -111,7 +114,7 @@ export const createUserId = (id?: string): UserId => {
     if (regex.test(id)) return id as UserId;
     throw new Error("Invalid UserId format (expected: user_<alphanumeric>)");
   }
-  return `user_${nanoid(8)}` as UserId;
+  return `user_${nanoidCustom()}` as UserId;
 };
 
 // VALUE OBJECTS
