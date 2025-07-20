@@ -25,7 +25,7 @@ const start = async () => {
     await fastify.register(import("./plugins/error-handler.js"));
     
     // Add root endpoint for debugging
-    fastify.get("/", async (request, reply) => {
+    fastify.get("/", async (request) => {
       console.log(`🚀 Root endpoint hit: ${request.method} ${request.url}`);
       return {
         message: "CarePulse API is running",
