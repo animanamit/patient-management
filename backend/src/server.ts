@@ -63,38 +63,24 @@ const start = async () => {
     await fastify.register(import("./routes/appointments.js"), { prefix: "/api" });
     await fastify.register(import("./routes/sms.routes.js"), { prefix: "/api/sms" });
     
-    // Add catch-all handler for debugging unmatched routes
-    fastify.setNotFoundHandler((request, reply) => {
-      console.log(`❌ Route not found: ${request.method} ${request.url}`);
-      console.log(`   Headers: ${JSON.stringify(request.headers)}`);
-      reply.code(404).send({
-        statusCode: 404,
-        error: "Not Found",
-        message: `Route ${request.method} ${request.url} not found`,
-        timestamp: new Date().toISOString()
-      });
-    });
 
-    // Add global error handler
-    fastify.setErrorHandler((error, request, reply) => {
-      console.error(`💥 Error handling ${request.method} ${request.url}:`, error);
-      reply.status(500).send({
-        statusCode: 500,
-        error: "Internal Server Error",
-        message: error.message
-      });
-    });
     
     // 3. Start server
-    const address = await fastify.listen({
-      port: env.PORT,
-      host: "0.0.0.0", // Allow external connections
-    });
+    console.log(`⚡ Attempting to start server on port ${env.PORT}...`);
+    try {
+      const address = await fastify.listen({
+        port: env.PORT,
+        host: "0.0.0.0", // Allow external connections
+      });
 
-    console.log(`🚀 Server running on ${address}`);
-    console.log(`📡 Port: ${env.PORT}`);
-    console.log(`🌍 Environment: ${env.NODE_ENV}`);
-    console.log(`🔗 FRONTEND_URL: ${env.FRONTEND_URL}`);
+      console.log(`🚀 Server running on ${address}`);
+      console.log(`📡 Port: ${env.PORT}`);
+      console.log(`🌍 Environment: ${env.NODE_ENV}`);
+      console.log(`🔗 FRONTEND_URL: ${env.FRONTEND_URL}`);
+    } catch (listenError) {
+      console.error(`❌ Failed to start server:`, listenError);
+      throw listenError;
+    }
   } catch (error) {
     fastify.log.error(error);
     process.exit(1);

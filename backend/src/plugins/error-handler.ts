@@ -39,9 +39,12 @@ export default fp(async function errorHandler(fastify) {
 
   // Handle 404 for undefined routes
   fastify.setNotFoundHandler(async (request, reply) => {
+    console.log(`❌ Route not found: ${request.method} ${request.url}`);
+    console.log(`   Headers: ${JSON.stringify(request.headers)}`);
     reply.code(404).send({
       error: "Not Found",
       message: `Route ${request.method} ${request.url} not found`,
+      timestamp: new Date().toISOString()
     });
   });
 });
