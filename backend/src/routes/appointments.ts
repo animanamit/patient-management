@@ -2,11 +2,11 @@ import { FastifyPluginAsync } from "fastify";
 import { PrismaAppointmentRepository } from "../domain/repositories/implementations/prisma-appointment-repository.js";
 import {
   createAppointmentId,
-  createPatientId,
-  createDoctorId,
   AppointmentDuration,
   AppointmentType,
   AppointmentStatus,
+  PatientId,
+  DoctorId,
 } from "../domain/entities/shared-types.js";
 import {
   validateRequest,
@@ -29,6 +29,21 @@ import {
 export const appointmentRoutes: FastifyPluginAsync = async function (fastify) {
   const appointmentRepository = new PrismaAppointmentRepository();
 
+  // Helper functions to ensure valid ID formats
+  const ensureValidPatientId = (id: string) => {
+    if (id.match(/^patient_[a-zA-Z0-9_]+$/)) {
+      return id;
+    }
+    return `patient_${id}`;
+  };
+
+  const ensureValidDoctorId = (id: string) => {
+    if (id.match(/^doctor_[a-zA-Z0-9_]+$/)) {
+      return id;
+    }
+    return `doctor_${id}`;
+  };
+
   // 📋 GET /appointments - List appointments with filtering
   fastify.get<{ Querystring: AppointmentQueryParams }>(
     "/appointments",
@@ -44,8 +59,8 @@ export const appointmentRoutes: FastifyPluginAsync = async function (fastify) {
         // Build filters object
         const filters: any = {};
         if (query.patientId)
-          filters.patientId = createPatientId(query.patientId);
-        if (query.doctorId) filters.doctorId = createDoctorId(query.doctorId);
+          filters.patientId = ensureValidPatientId(query.patientId);
+        if (query.doctorId) filters.doctorId = ensureValidDoctorId(query.doctorId);
         if (query.status) filters.status = query.status as AppointmentStatus;
         if (query.type) filters.type = query.type as AppointmentType;
         if (query.dateFrom) filters.dateFrom = new Date(query.dateFrom);
@@ -60,7 +75,7 @@ export const appointmentRoutes: FastifyPluginAsync = async function (fastify) {
         // For now, let's implement basic filtering based on available methods
         if (query.patientId) {
           const result = await appointmentRepository.findByPatientId(
-            createPatientId(query.patientId)
+            ensureValidPatientId(query.patientId) as PatientId
           );
           if (!result.success) {
             reply.code(500);
@@ -74,7 +89,7 @@ export const appointmentRoutes: FastifyPluginAsync = async function (fastify) {
 
         if (query.doctorId) {
           const result = await appointmentRepository.findByDoctorId(
-            createDoctorId(query.doctorId)
+            ensureValidDoctorId(query.doctorId) as DoctorId
           );
           if (!result.success) {
             reply.code(500);
@@ -150,8 +165,8 @@ export const appointmentRoutes: FastifyPluginAsync = async function (fastify) {
 
         // Convert to domain objects
         const domainAppointmentData = {
-          patientId: createPatientId(appointmentData.patientId),
-          doctorId: createDoctorId(appointmentData.doctorId),
+          patientId: ensureValidPatientId(appointmentData.patientId) as PatientId,
+          doctorId: ensureValidDoctorId(appointmentData.doctorId) as DoctorId,
           type: appointmentData.type as AppointmentType,
           status: AppointmentStatus.SCHEDULED, // Default status
           scheduledDateTime: new Date(appointmentData.scheduledDateTime),
