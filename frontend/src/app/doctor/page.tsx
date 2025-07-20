@@ -112,6 +112,28 @@ const getStatusBg = (status: string) => {
 };
 
 export default function DoctorDashboard() {
+  // Helper function to ensure doctor ID is properly formatted
+  const ensureCleanDoctorId = (id: string | null): string | null => {
+    if (!id || typeof id !== "string") return null;
+    
+    // If ID is already double-prefixed, clean it up
+    if (id.startsWith("doctor_doctor_")) {
+      const cleanId = id.replace("doctor_doctor_", "doctor_");
+      console.log("🔧 Cleaned double-prefixed doctor ID:", id, "->", cleanId);
+      return cleanId;
+    }
+    
+    // If ID has no prefix, add it
+    if (!id.startsWith("doctor_")) {
+      const prefixedId = `doctor_${id}`;
+      console.log("🔧 Added prefix to doctor ID:", id, "->", prefixedId);
+      return prefixedId;
+    }
+    
+    // ID is already properly formatted
+    return id;
+  };
+
   // Fetch doctors to get the list
   const {
     data: doctorsData,
@@ -124,9 +146,19 @@ export default function DoctorDashboard() {
 
   // Use the first doctor as default if no selection
   const firstDoctorId = doctorsData?.doctors?.[0]?.id || null;
-  const validDoctorId =
-    selectedDoctorId ||
-    (typeof firstDoctorId === "string" && firstDoctorId ? firstDoctorId : null);
+  const cleanFirstDoctorId = ensureCleanDoctorId(firstDoctorId);
+  const cleanSelectedDoctorId = ensureCleanDoctorId(selectedDoctorId);
+  
+  const validDoctorId = cleanSelectedDoctorId || cleanFirstDoctorId;
+
+  // Debug logging to track ID transformations
+  console.log("🔍 Doctor Dashboard ID Debug:", {
+    firstDoctorIdRaw: firstDoctorId,
+    firstDoctorIdClean: cleanFirstDoctorId,
+    selectedDoctorIdRaw: selectedDoctorId,
+    selectedDoctorIdClean: cleanSelectedDoctorId,
+    validDoctorIdFinal: validDoctorId
+  });
 
   // Debug logging to help identify ID issues
   if (firstDoctorId && typeof firstDoctorId !== "string") {
@@ -218,7 +250,7 @@ export default function DoctorDashboard() {
                 <div className="relative">
                   <select
                     value={validDoctorId || ""}
-                    onChange={(e) => setSelectedDoctorId(e.target.value)}
+                    onChange={(e) => setSelectedDoctorId(ensureCleanDoctorId(e.target.value))}
                     className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs bg-white appearance-none pr-8"
                   >
                     {doctorsData.doctors.map((doctor) => (
