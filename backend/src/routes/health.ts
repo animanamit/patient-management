@@ -3,11 +3,16 @@ import { checkDatabaseConnection } from "../config/database.js";
 
 const healthRoutes: FastifyPluginAsync = async function (fastify) {
   // Basic health check
-  fastify.get("/health", async (_request, _reply) => {
+  fastify.get("/health", async (request, _reply) => {
+    console.log(`🚀 FASTIFY ROUTE HIT: ${request.method} ${request.url}`);
+    console.log(`🌐 Health check origin: ${request.headers.origin}`);
+    
     return {
       status: "healthy",
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
+      port: process.env.PORT,
+      nodeEnv: process.env.NODE_ENV,
     };
   });
 

@@ -23,6 +23,19 @@ const start = async () => {
     await fastify.register(import("./plugins/cors.js"));
     await fastify.register(import("./plugins/security.js"));
     await fastify.register(import("./plugins/error-handler.js"));
+    
+    // Add root endpoint for debugging
+    fastify.get("/", async (request, reply) => {
+      console.log(`🚀 Root endpoint hit: ${request.method} ${request.url}`);
+      return {
+        message: "CarePulse API is running",
+        status: "healthy",
+        port: env.PORT,
+        nodeEnv: env.NODE_ENV,
+        timestamp: new Date().toISOString(),
+      };
+    });
+    
     await fastify.register(import("./routes/health.js"));
     await fastify.register(import("./routes/patients.js"), { prefix: "/api" });
     await fastify.register(import("./routes/doctors.js"), { prefix: "/api" });
@@ -30,12 +43,15 @@ const start = async () => {
     await fastify.register(import("./routes/sms.routes.js"), { prefix: "/api/sms" });
 
     // 3. Start server
-    await fastify.listen({
+    const address = await fastify.listen({
       port: env.PORT,
       host: "0.0.0.0", // Allow external connections
     });
 
-    console.log(`🚀 Server running on http://localhost:${env.PORT}`);
+    console.log(`🚀 Server running on ${address}`);
+    console.log(`📡 Port: ${env.PORT}`);
+    console.log(`🌍 Environment: ${env.NODE_ENV}`);
+    console.log(`🔗 FRONTEND_URL: ${env.FRONTEND_URL}`);
   } catch (error) {
     fastify.log.error(error);
     process.exit(1);
