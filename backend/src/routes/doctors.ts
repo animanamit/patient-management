@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
 import { PrismaDoctorRepository } from "../domain/repositories/implementations/prisma-doctor-repository.js";
-import { EmailAddress, createDoctorId } from "../domain/entities/shared-types.js";
+import { EmailAddress, DoctorId } from "../domain/entities/shared-types.js";
 import {
   validateRequest,
   validateParams,
@@ -21,6 +21,14 @@ import {
 
 export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
   const doctorRepository = new PrismaDoctorRepository();
+
+  // Helper function to ensure valid doctor ID format
+  const ensureValidDoctorId = (id: string) => {
+    if (id.match(/^doctor_[a-zA-Z0-9_]+$/)) {
+      return id;
+    }
+    return `doctor_${id}`;
+  };
 
   fastify.post<{ Body: CreateDoctorRequest }>(
     "/doctors",
@@ -74,7 +82,7 @@ export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
     async (request, reply) => {
       try {
         const params = (request as any).validatedParams;
-        const doctorId = createDoctorId(params.id);
+        const doctorId = ensureValidDoctorId(params.id) as DoctorId;
         const result = await doctorRepository.findById(doctorId);
         if (!result.success) {
           if (result.error.type === "NotFound") {
@@ -171,7 +179,7 @@ export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
       try {
         const { id } = (request as any).validatedParams;
         const updateData = (request as any).validatedBody;
-        const doctorId = createDoctorId(id);
+        const doctorId = ensureValidDoctorId(id) as DoctorId;
 
         // Convert to domain objects where needed
         const domainUpdateData: any = {};
@@ -215,7 +223,7 @@ export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
     async (request, reply) => {
       try {
         const { id } = (request as any).validatedParams;
-        const doctorId = createDoctorId(id);
+        const doctorId = ensureValidDoctorId(id) as DoctorId;
 
         const result = await doctorRepository.delete(doctorId);
 
