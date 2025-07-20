@@ -166,7 +166,7 @@ export default function PatientDashboard() {
       "Unknown error occurred";
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="p-6">
+        <div className="p-6 w-full h-full flex items-center justify-center">
           <div className="bg-white border border-red-200 rounded-sm p-4 max-w-md">
             <div className="flex items-center gap-2 text-red-600 mb-2">
               <AlertCircle className="h-4 w-4" />

@@ -118,13 +118,15 @@ export default function DoctorDashboard() {
     isLoading: isDoctorsLoading,
     error: doctorsError,
   } = useDoctors();
-  
+
   // State for selected doctor
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
-  
+
   // Use the first doctor as default if no selection
   const firstDoctorId = doctorsData?.doctors?.[0]?.id || null;
-  const validDoctorId = selectedDoctorId || (typeof firstDoctorId === "string" && firstDoctorId ? firstDoctorId : null);
+  const validDoctorId =
+    selectedDoctorId ||
+    (typeof firstDoctorId === "string" && firstDoctorId ? firstDoctorId : null);
 
   // Debug logging to help identify ID issues
   if (firstDoctorId && typeof firstDoctorId !== "string") {
@@ -180,7 +182,7 @@ export default function DoctorDashboard() {
   if (doctorsError || doctorError || !doctorData || !validDoctorId) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="p-6">
+        <div className="p-6 w-full h-full flex items-center justify-center">
           <div className="flex items-center gap-2 text-red-600">
             <AlertCircle className="h-4 w-4" />
             <span className="text-sm">Failed to load doctor information</span>
@@ -196,7 +198,7 @@ export default function DoctorDashboard() {
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Bar */}
       <NavigationBar />
-      
+
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="px-6 py-3">
@@ -228,7 +230,7 @@ export default function DoctorDashboard() {
                   <ChevronDown className="absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 </div>
               )}
-              
+
               <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                 View Schedule
               </button>
@@ -248,7 +250,7 @@ export default function DoctorDashboard() {
             {/* Daily Stats */}
             <section>
               <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-                Today's Overview
+                Today&apos;s Overview
                 <span className="ml-2 font-mono text-gray-400 font-normal">
                   Today
                 </span>
@@ -421,7 +423,6 @@ export default function DoctorDashboard() {
                 )}
               </div>
             </section>
-
           </div>
 
           {/* Right Column - Side Information */}
@@ -447,7 +448,6 @@ export default function DoctorDashboard() {
                 </div>
               </div>
             </section>
-
 
             {/* Recent Activity */}
             <section>
