@@ -38,6 +38,7 @@ export interface CreatePatientRequest {
   phone: string;
   dateOfBirth: string;
   address?: string;
+  emergencyContact?: string;
 }
 
 export interface UpdatePatientRequest {
@@ -45,7 +46,9 @@ export interface UpdatePatientRequest {
   lastName?: string;
   email?: string;
   phone?: string;
+  dateOfBirth?: string;
   address?: string;
+  emergencyContact?: string;
 }
 
 export interface PatientQueryParams {
@@ -131,6 +134,8 @@ export interface AppointmentWithDetails extends Appointment {
     lastName: string;
     email: string | { normalizedValue: string };
     phone: string | { normalizedValue: string };
+    dateOfBirth?: string;
+    address?: string;
   };
   doctor: {
     id: DoctorId;
@@ -152,6 +157,7 @@ export interface CreateAppointmentRequest {
 }
 
 export interface UpdateAppointmentRequest {
+  doctorId?: DoctorId;
   type?: AppointmentType;
   status?: AppointmentStatus;
   scheduledDateTime?: string;
@@ -176,7 +182,7 @@ export interface AppointmentQueryParams {
 }
 
 export interface AppointmentsResponse {
-  appointments: Appointment[] | AppointmentWithDetails[];
+  appointments: AppointmentWithDetails[];
   message?: string;
 }
 
@@ -196,7 +202,7 @@ export interface DoctorApiResponse {
 }
 
 export interface AppointmentApiResponse {
-  appointment: Appointment | AppointmentWithDetails;
+  appointment: AppointmentWithDetails;
 }
 
 // Document Types (for future implementation)

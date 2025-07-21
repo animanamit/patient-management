@@ -200,10 +200,8 @@ export const useAuth = () => {
         console.error('[Auth] OTP send error:', error);
         
         const errorMessage = getErrorMessage(error);
-        toast({
+        toast.error(errorMessage, {
           title: "Failed to Send Code",
-          description: errorMessage,
-          variant: "destructive",
         });
         
         return { success: false, error: errorMessage };
@@ -211,9 +209,8 @@ export const useAuth = () => {
 
       console.log('[Auth] OTP sent successfully');
       
-      toast({
+      toast.success(`Check your SMS for the verification code sent to ${formatPhoneDisplay(phoneNumber)}`, {
         title: "Verification Code Sent",
-        description: `Check your SMS for the verification code sent to ${formatPhoneDisplay(phoneNumber)}`,
       });
 
       return { success: true, data };
@@ -222,10 +219,8 @@ export const useAuth = () => {
       console.error('[Auth] Unexpected OTP error:', error);
       const errorMessage = 'Failed to send verification code. Please try again.';
       
-      toast({
+      toast.error(errorMessage, {
         title: "Failed to Send Code",
-        description: errorMessage,
-        variant: "destructive",
       });
       
       return { success: false, error: errorMessage };
@@ -262,10 +257,8 @@ export const useAuth = () => {
         console.error('[Auth] OTP verification error:', error);
         
         const errorMessage = getErrorMessage(error);
-        toast({
+        toast.error(errorMessage, {
           title: "Verification Failed",
-          description: errorMessage,
-          variant: "destructive",
         });
         
         return { success: false, error: errorMessage };
@@ -273,11 +266,10 @@ export const useAuth = () => {
 
       console.log('[Auth] Phone verification successful');
       
-      toast({
+      toast.success(createSession 
+        ? "Your phone number has been verified and you're now signed in."
+        : "Your phone number has been verified successfully.", {
         title: createSession ? "Welcome to CarePulse!" : "Phone Verified",
-        description: createSession 
-          ? "Your phone number has been verified and you're now signed in."
-          : "Your phone number has been verified successfully.",
       });
 
       return { success: true, data };
@@ -286,10 +278,8 @@ export const useAuth = () => {
       console.error('[Auth] Unexpected verification error:', error);
       const errorMessage = 'Verification failed. Please try again.';
       
-      toast({
+      toast.error(errorMessage, {
         title: "Verification Failed",
-        description: errorMessage,
-        variant: "destructive",
       });
       
       return { success: false, error: errorMessage };
@@ -321,10 +311,8 @@ export const useAuth = () => {
     } catch (error) {
       console.error('[Auth] Google OAuth error:', error);
       
-      toast({
+      toast.error("Unable to connect to Google. Please try again.", {
         title: "Google Sign In Failed",
-        description: "Unable to connect to Google. Please try again.",
-        variant: "destructive",
       });
     }
   };
@@ -391,10 +379,10 @@ export const useAuth = () => {
    */
   return {
     // Session state
-    user: session?.user || null,
-    session,
+    user: (session as any)?.user || null,
+    session: session as any,
     isLoading: isPending,
-    isAuthenticated: !!session?.user,
+    isAuthenticated: !!(session as any)?.user,
     
     // Authentication methods
     signUpWithEmail,
@@ -417,9 +405,9 @@ export const useAuth = () => {
     formatPhoneDisplay,
     
     // Role checking
-    hasRole: (role: string) => session?.user?.role === role,
-    isPatient: session?.user?.role === 'PATIENT',
-    isDoctor: session?.user?.role === 'DOCTOR',
-    isStaff: session?.user?.role === 'STAFF',
+    hasRole: (role: string) => (session as any)?.user?.role === role,
+    isPatient: (session as any)?.user?.role === 'PATIENT',
+    isDoctor: (session as any)?.user?.role === 'DOCTOR',
+    isStaff: (session as any)?.user?.role === 'STAFF',
   };
 };

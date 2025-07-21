@@ -28,7 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { AppointmentWithDetails, AppointmentStatus } from "@/lib/api-types";
+import { AppointmentWithDetails, AppointmentStatus, AppointmentId } from "@/lib/api-types";
 import { useAppointment, useUpdateAppointment } from "@/hooks/use-appointments";
 
 const getStatusColor = (status: AppointmentStatus) => {
@@ -333,11 +333,11 @@ export default function AppointmentDetailsPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="h-3 w-3 text-gray-400" />
-                  <p className="text-sm text-gray-900">{appointment?.patient?.phone}</p>
+                  <p className="text-sm text-gray-900">{typeof appointment?.patient?.phone === 'object' ? appointment.patient.phone.normalizedValue : appointment?.patient?.phone}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="h-3 w-3 text-gray-400" />
-                  <p className="text-sm text-gray-900">{appointment?.patient?.email}</p>
+                  <p className="text-sm text-gray-900">{typeof appointment?.patient?.email === 'object' ? appointment.patient.email.normalizedValue : appointment?.patient?.email}</p>
                 </div>
                 {appointment?.patient?.address && (
                   <div className="flex items-start gap-2">

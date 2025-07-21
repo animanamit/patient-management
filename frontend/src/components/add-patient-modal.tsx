@@ -17,6 +17,7 @@ export const AddPatientModal = ({
   onSuccess,
 }: AddPatientModalProps) => {
   const [formData, setFormData] = useState<CreatePatientRequest>({
+    clerkUserId: "", // Will be set by backend
     firstName: "",
     lastName: "",
     phone: "",
@@ -62,6 +63,7 @@ export const AddPatientModal = ({
   
   const handleClose = () => {
     setFormData({
+      clerkUserId: "", // Will be set by backend
       firstName: "",
       lastName: "",
       phone: "",

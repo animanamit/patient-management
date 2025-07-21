@@ -148,8 +148,8 @@ export const AppointmentDetailsModal = ({
       setPatientData({
         firstName: appointment.patient.firstName,
         lastName: appointment.patient.lastName,
-        email: appointment.patient.email,
-        phone: assistanceRequestPhoneNumber || appointment.patient.phone,
+        email: typeof appointment.patient.email === 'object' ? appointment.patient.email.normalizedValue : appointment.patient.email,
+        phone: assistanceRequestPhoneNumber || (typeof appointment.patient.phone === 'object' ? appointment.patient.phone.normalizedValue : appointment.patient.phone),
         dateOfBirth: appointment.patient.dateOfBirth
           ? new Date(appointment.patient.dateOfBirth)
           : new Date(),
@@ -282,7 +282,7 @@ export const AppointmentDetailsModal = ({
 
   if (!isOpen || !appointment) return null;
 
-  const steps: { key: Step; label: string; icon: React.ComponentType }[] = [
+  const steps: { key: Step; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
     { key: "overview", label: "Overview", icon: FileText },
     { key: "appointment", label: "Appointment", icon: CalendarIcon },
     { key: "patient", label: "Patient Info", icon: User },

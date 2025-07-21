@@ -344,9 +344,10 @@ export const BookAppointmentModal = ({
                         const today = new Date();
                         const yesterday = new Date(today);
                         yesterday.setDate(yesterday.getDate() - 1);
+                        yesterday.setHours(23, 59, 59, 999);
                         
                         // Only disable dates before today, not today itself
-                        return date < yesterday.setHours(23, 59, 59, 999);
+                        return date < yesterday;
                       }}
                       initialFocus
                     />

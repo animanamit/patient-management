@@ -24,8 +24,9 @@ export const usePatientTodayAppointments = (patientId: PatientId | null, enabled
   return useQuery({
     queryKey: ["appointments", "patient", patientId, "today", today],
     queryFn: () => appointmentsApi.getAppointments({ 
-      patientId, 
-      date: today,
+      patientId: patientId || undefined, 
+      dateFrom: today,
+      dateTo: today,
       status: "SCHEDULED" // Only get scheduled appointments for check-in
     }),
     enabled: enabled && !!patientId,

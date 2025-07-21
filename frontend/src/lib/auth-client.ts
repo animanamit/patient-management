@@ -39,14 +39,7 @@ export const authClient = createAuthClient({
    * We're using the phone number plugin for OTP authentication
    */
   plugins: [
-    phoneNumberClient({
-      /**
-       * This tells the client to use our custom phone number endpoints
-       * The plugin adds methods like:
-       * - authClient.phoneNumber.sendOtp()
-       * - authClient.phoneNumber.verify()
-       */
-    })
+    phoneNumberClient()
   ],
 
   /**
@@ -54,11 +47,11 @@ export const authClient = createAuthClient({
    */
   fetchOptions: {
     // Log all auth requests in development
-    onRequest: (method, url, options) => {
+    onRequest: (context) => {
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[Auth Client] ${method} ${url}`);
-        if (options?.body) {
-          const body = JSON.parse(options.body as string);
+        console.log(`[Auth Client] ${context.method} ${context.url}`);
+        if (context.body) {
+          const body = typeof context.body === 'string' ? JSON.parse(context.body) : context.body;
           // Don't log sensitive data
           if (body.password) body.password = '[REDACTED]';
           console.log('[Auth Client] Request body:', body);
@@ -69,7 +62,7 @@ export const authClient = createAuthClient({
     // Log auth responses
     onResponse: (response) => {
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[Auth Client] Response status: ${response.status}`);
+        console.log(`[Auth Client] Response received`);
       }
     },
 
@@ -86,28 +79,22 @@ export const authClient = createAuthClient({
  * These are automatically inferred from your auth configuration
  */
 export type Session = typeof authClient.$Infer.Session;
-export type User = typeof authClient.$Infer.Session.user;
+export type User = typeof authClient.$Infer.Session.user & {
+  role?: 'PATIENT' | 'DOCTOR' | 'STAFF';
+  phoneNumber?: string;
+};
 
 /**
  * Convenience exports for common auth operations
  * These methods can be used throughout your app
  */
-export const {
-  // Email/Password methods
-  signUp,
-  signIn,
-  signOut,
-  
-  // Session management
-  // useSession,  // React hook for session state - TODO: Fix endpoint issue
-  getSession,  // Get session imperatively
-  
-  // Phone number methods (from plugin)
-  phoneNumber,
-  
-  // OAuth sign in
-  social,
-} = authClient;
+// Export commonly used auth methods
+export const signUp = authClient.signUp;
+export const signIn = authClient.signIn;
+export const signOut = authClient.signOut;
+export const getSession = authClient.getSession;
+// Note: phoneNumber methods are accessed via authClient.phoneNumber.*
+// Note: social auth is accessed via authClient.signIn.social()
 
 /**
  * Helper function to check if a user has a specific role

@@ -175,7 +175,7 @@ export default function DoctorDashboard() {
     data: doctorData,
     isLoading: isDoctorLoading,
     error: doctorError,
-  } = useDoctor(validDoctorId || undefined, { enabled: !!validDoctorId });
+  } = useDoctor(validDoctorId || "", { enabled: !!validDoctorId });
 
   // Fetch appointments for the doctor
   const { data: appointmentsData, isLoading: isAppointmentsLoading } =
@@ -260,7 +260,7 @@ export default function DoctorDashboard() {
     );
   }
 
-  const doctor = doctorData.doctor;
+  const doctor = doctorData?.doctor;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -273,11 +273,11 @@ export default function DoctorDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-base font-semibold text-gray-900">
-                Dr. {doctor.firstName} {doctor.lastName}
+                Dr. {doctor?.firstName} {doctor?.lastName}
               </h1>
               <p className="text-xs text-gray-500">
-                {doctor.specialization || "General Practice"} • ID{" "}
-                <span className="font-mono">{doctor.id.split("_")[1]}</span>
+                {doctor?.specialization || "General Practice"} • ID{" "}
+                <span className="font-mono">{doctor?.id.split("_")[1]}</span>
               </p>
             </div>
             <div className="flex items-center gap-2">

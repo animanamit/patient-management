@@ -293,7 +293,7 @@ export const CheckInDashboard = () => {
     if (!selectedPatient) return;
 
     try {
-      await checkInOptimistically(selectedPatient.id, appointmentId);
+      await checkInOptimistically(selectedPatient.id);
       setCheckInStatus("success");
     } catch (error) {
       console.log("Check-in error:", error);

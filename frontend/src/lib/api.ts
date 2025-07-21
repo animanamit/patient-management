@@ -76,9 +76,9 @@ async function fetchApi<T>(
         }
       }
       throw new ApiError(
-        errorData.error || `HTTP error! status: ${response.status} - ${errorText}`,
+        (errorData as any)?.error || `HTTP error! status: ${response.status} - ${errorText}`,
         response.status,
-        errorData.details
+        (errorData as any)?.details
       );
     }
 

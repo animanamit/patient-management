@@ -5,7 +5,7 @@ import { X, Loader2, AlertCircle, CheckCircle } from "lucide-react";
 import { useCreatePatient } from "@/hooks/use-patients";
 import { useCreateAppointment } from "@/hooks/use-appointments";
 import { useDoctors } from "@/hooks/use-doctors";
-import { CreatePatientRequest, DoctorId } from "@/lib/api-types";
+import { CreatePatientRequest, DoctorId, AppointmentType } from "@/lib/api-types";
 
 interface WalkInRegistrationModalProps {
   isOpen: boolean;
@@ -20,6 +20,7 @@ export const WalkInRegistrationModal = ({
 }: WalkInRegistrationModalProps) => {
   const [step, setStep] = useState<"patient" | "appointment" | "success">("patient");
   const [patientData, setPatientData] = useState<CreatePatientRequest>({
+    clerkUserId: "", // Will be set by backend
     firstName: "",
     lastName: "",
     phone: "",
@@ -29,7 +30,7 @@ export const WalkInRegistrationModal = ({
     emergencyContact: "",
   });
   const [selectedDoctorId, setSelectedDoctorId] = useState<DoctorId | null>(null);
-  const [appointmentType, setAppointmentType] = useState<"CONSULTATION" | "FOLLOW_UP" | "EMERGENCY">("CONSULTATION");
+  const [appointmentType, setAppointmentType] = useState<AppointmentType>("CHECK_UP");
   const [reasonForVisit, setReasonForVisit] = useState("");
   const [createdPatientId, setCreatedPatientId] = useState<string | null>(null);
   const [createdAppointmentId, setCreatedAppointmentId] = useState<string | null>(null);
@@ -85,9 +86,8 @@ export const WalkInRegistrationModal = ({
           doctorId: selectedDoctorId,
           type: appointmentType,
           scheduledDateTime: scheduledDateTime.toISOString(),
-          durationMinutes: appointmentType === "CONSULTATION" ? 30 : 15,
+          durationMinutes: appointmentType === "CHECK_UP" ? 30 : appointmentType === "FIRST_CONSULT" ? 60 : appointmentType === "FOLLOW_UP" ? 45 : 15,
           reasonForVisit: reasonForVisit || "Walk-in appointment",
-          status: "SCHEDULED",
         });
         
         setCreatedAppointmentId(result.appointment.id);
@@ -107,6 +107,7 @@ export const WalkInRegistrationModal = ({
   const handleClose = () => {
     setStep("patient");
     setPatientData({
+      clerkUserId: "", // Will be set by backend
       firstName: "",
       lastName: "",
       phone: "",
@@ -116,7 +117,7 @@ export const WalkInRegistrationModal = ({
       emergencyContact: "",
     });
     setSelectedDoctorId(null);
-    setAppointmentType("CONSULTATION");
+    setAppointmentType("CHECK_UP");
     setReasonForVisit("");
     setCreatedPatientId(null);
     setCreatedAppointmentId(null);
@@ -326,9 +327,9 @@ export const WalkInRegistrationModal = ({
                       onChange={(e) => setAppointmentType(e.target.value as typeof appointmentType)}
                       className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
                     >
-                      <option value="CONSULTATION">Consultation (30 min)</option>
-                      <option value="FOLLOW_UP">Follow-up (15 min)</option>
-                      <option value="EMERGENCY">Emergency (45 min)</option>
+                      <option value="CHECK_UP">Check-up (30 min)</option>
+                      <option value="FIRST_CONSULT">First Consultation (60 min)</option>
+                      <option value="FOLLOW_UP">Follow-up (45 min)</option>
                     </select>
                   </div>
                   
