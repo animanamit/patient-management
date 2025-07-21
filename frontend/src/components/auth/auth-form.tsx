@@ -1,29 +1,26 @@
 /**
  * AUTHENTICATION FORM COMPONENT
- * 
+ *
  * Clean authentication interface with email/password and phone/OTP methods
  * Styled to match the CarePulse design system
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAuth } from '@/hooks/use-auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
 
 interface AuthFormProps {
-  mode?: 'signin' | 'signup';
+  mode?: "signin" | "signup";
   onSuccess?: () => void;
-  defaultTab?: 'email' | 'phone';
+  defaultTab?: "email" | "phone";
 }
 
-export const AuthForm = ({ 
-  mode = 'signin', 
+export const AuthForm = ({
+  mode = "signin",
   onSuccess,
-  defaultTab = 'email' 
+  defaultTab = "email",
 }: AuthFormProps) => {
   // Authentication hook
   const {
@@ -38,13 +35,13 @@ export const AuthForm = ({
   } = useAuth();
 
   // Form state
-  const [authMethod, setAuthMethod] = useState<'email' | 'phone'>(defaultTab);
+  const [authMethod, setAuthMethod] = useState<"email" | "phone">(defaultTab);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: '',
-    phoneNumber: '',
-    otpCode: '',
+    email: "",
+    password: "",
+    name: "",
+    phoneNumber: "",
+    otpCode: "",
   });
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -75,17 +72,17 @@ export const AuthForm = ({
 
     // Validation
     const newErrors: Record<string, string> = {};
-    
+
     if (!validateEmail(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = "Please enter a valid email address";
     }
-    
+
     if (!validatePassword(formData.password)) {
-      newErrors.password = 'Password must be at least 8 characters long';
+      newErrors.password = "Password must be at least 8 characters long";
     }
-    
-    if (mode === 'signup' && !formData.name.trim()) {
-      newErrors.name = 'Please enter your name';
+
+    if (mode === "signup" && !formData.name.trim()) {
+      newErrors.name = "Please enter your name";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -94,7 +91,7 @@ export const AuthForm = ({
     }
 
     // Submit
-    const authFunction = mode === 'signup' ? signUpWithEmail : signInWithEmail;
+    const authFunction = mode === "signup" ? signUpWithEmail : signInWithEmail;
     const result = await authFunction({
       email: formData.email,
       password: formData.password,
@@ -113,7 +110,9 @@ export const AuthForm = ({
     if (!showOTPInput) {
       // Send OTP
       if (!validatePhoneNumber(formData.phoneNumber)) {
-        setErrors({ phoneNumber: 'Please enter a valid Singapore phone number (+65)' });
+        setErrors({
+          phoneNumber: "Please enter a valid Singapore phone number (+65)",
+        });
         return;
       }
 
@@ -124,7 +123,7 @@ export const AuthForm = ({
     } else {
       // Verify OTP
       if (!validateOTP(formData.otpCode)) {
-        setErrors({ otpCode: 'Please enter a valid 6-digit code' });
+        setErrors({ otpCode: "Please enter a valid 6-digit code" });
         return;
       }
 
@@ -141,14 +140,15 @@ export const AuthForm = ({
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
-  const isLoading = isSigningIn || isSigningUp || isSendingOTP || isVerifyingPhone;
+  const isLoading =
+    isSigningIn || isSigningUp || isSendingOTP || isVerifyingPhone;
 
   return (
     <div className="w-full">
@@ -158,14 +158,14 @@ export const AuthForm = ({
           <button
             type="button"
             onClick={() => {
-              setAuthMethod('email');
+              setAuthMethod("email");
               setShowOTPInput(false);
               setErrors({});
             }}
             className={`px-4 py-3 text-sm font-medium border-r border-gray-200 rounded-l-sm transition-colors ${
-              authMethod === 'email'
-                ? 'bg-blue-50 text-blue-700'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              authMethod === "email"
+                ? "bg-blue-50 text-blue-700"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`}
           >
             Email
@@ -173,14 +173,14 @@ export const AuthForm = ({
           <button
             type="button"
             onClick={() => {
-              setAuthMethod('phone');
+              setAuthMethod("phone");
               setShowOTPInput(false);
               setErrors({});
             }}
             className={`px-4 py-3 text-sm font-medium rounded-r-sm transition-colors ${
-              authMethod === 'phone'
-                ? 'bg-blue-50 text-blue-700'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              authMethod === "phone"
+                ? "bg-blue-50 text-blue-700"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`}
           >
             Phone
@@ -189,10 +189,10 @@ export const AuthForm = ({
       </div>
 
       {/* Email Authentication */}
-      {authMethod === 'email' && (
+      {authMethod === "email" && (
         <div className="bg-white border border-gray-200 rounded-sm p-6">
           <form onSubmit={handleEmailAuth} className="space-y-4">
-            {mode === 'signup' && (
+            {mode === "signup" && (
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-2">
                   Full Name *
@@ -200,7 +200,7 @@ export const AuthForm = ({
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter your full name"
                   disabled={isLoading}
@@ -218,7 +218,7 @@ export const AuthForm = ({
               <input
                 type="email"
                 value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
+                onChange={(e) => handleInputChange("email", e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter your email"
                 disabled={isLoading}
@@ -235,7 +235,7 @@ export const AuthForm = ({
               <input
                 type="password"
                 value={formData.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
+                onChange={(e) => handleInputChange("password", e.target.value)}
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter your password"
                 disabled={isLoading}
@@ -250,17 +250,20 @@ export const AuthForm = ({
               disabled={isLoading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {isLoading 
-                ? (mode === 'signup' ? 'Creating Account...' : 'Signing In...') 
-                : (mode === 'signup' ? 'Create Account' : 'Sign In')
-              }
+              {isLoading
+                ? mode === "signup"
+                  ? "Creating Account..."
+                  : "Signing In..."
+                : mode === "signup"
+                ? "Create Account"
+                : "Sign In"}
             </Button>
           </form>
         </div>
       )}
 
       {/* Phone Authentication */}
-      {authMethod === 'phone' && (
+      {authMethod === "phone" && (
         <div className="bg-white border border-gray-200 rounded-sm p-6">
           <form onSubmit={handlePhoneOTP} className="space-y-4">
             <div>
@@ -270,13 +273,17 @@ export const AuthForm = ({
               <input
                 type="tel"
                 value={formData.phoneNumber}
-                onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("phoneNumber", e.target.value)
+                }
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="+65 9123 4567"
                 disabled={isLoading || showOTPInput}
               />
               {errors.phoneNumber && (
-                <p className="text-xs text-red-600 mt-1">{errors.phoneNumber}</p>
+                <p className="text-xs text-red-600 mt-1">
+                  {errors.phoneNumber}
+                </p>
               )}
             </div>
 
@@ -288,7 +295,7 @@ export const AuthForm = ({
                 <input
                   type="text"
                   value={formData.otpCode}
-                  onChange={(e) => handleInputChange('otpCode', e.target.value)}
+                  onChange={(e) => handleInputChange("otpCode", e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter 6-digit code"
                   maxLength={6}
@@ -308,10 +315,13 @@ export const AuthForm = ({
               disabled={isLoading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {isLoading 
-                ? (showOTPInput ? 'Verifying...' : 'Sending Code...') 
-                : (showOTPInput ? 'Verify Code' : 'Send Verification Code')
-              }
+              {isLoading
+                ? showOTPInput
+                  ? "Verifying..."
+                  : "Sending Code..."
+                : showOTPInput
+                ? "Verify Code"
+                : "Send Verification Code"}
             </Button>
 
             {showOTPInput && (
@@ -319,7 +329,7 @@ export const AuthForm = ({
                 type="button"
                 onClick={() => {
                   setShowOTPInput(false);
-                  setFormData(prev => ({ ...prev, otpCode: '' }));
+                  setFormData((prev) => ({ ...prev, otpCode: "" }));
                   setErrors({});
                 }}
                 className="w-full text-xs text-gray-600 hover:text-gray-900 py-2"

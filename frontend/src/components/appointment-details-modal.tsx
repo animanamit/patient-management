@@ -5,9 +5,7 @@ import { toast } from "sonner";
 import {
   X,
   Calendar as CalendarIcon,
-  Clock,
   User,
-  Stethoscope,
   FileText,
   Save,
   AlertCircle,
@@ -212,29 +210,39 @@ export const AppointmentDetailsModal = ({
           description: "All changes have been saved.",
           position: "top-right",
         });
-        
+
         onSuccess?.();
         onClose();
       } catch (error) {
         console.error("Failed to update appointment:", error);
-        
+
         // Handle specific error types
         if (error instanceof Error) {
           const errorMessage = error.message;
-          
-          if (errorMessage.includes("email") && errorMessage.includes("already exists")) {
+
+          if (
+            errorMessage.includes("email") &&
+            errorMessage.includes("already exists")
+          ) {
             toast.error("Email already exists", {
-              description: "This email is already registered to another patient. Please use a different email.",
+              description:
+                "This email is already registered to another patient. Please use a different email.",
               position: "top-right",
             });
-          } else if (errorMessage.includes("phone") && errorMessage.includes("already exists")) {
+          } else if (
+            errorMessage.includes("phone") &&
+            errorMessage.includes("already exists")
+          ) {
             toast.error("Phone number already exists", {
-              description: "This phone number is already registered to another patient. Please use a different number.",
+              description:
+                "This phone number is already registered to another patient. Please use a different number.",
               position: "top-right",
             });
           } else {
             toast.error("Failed to update appointment", {
-              description: errorMessage || "An unexpected error occurred. Please try again.",
+              description:
+                errorMessage ||
+                "An unexpected error occurred. Please try again.",
               position: "top-right",
             });
           }
@@ -259,7 +267,7 @@ export const AppointmentDetailsModal = ({
   const handleDelete = async () => {
     if (!appointment) return;
 
-    console.log('🗑️ Deleting appointment with ID:', appointment.id);
+    console.log("🗑️ Deleting appointment with ID:", appointment.id);
 
     startTransition(async () => {
       try {
@@ -447,13 +455,16 @@ export const AppointmentDetailsModal = ({
                     Appointment Time
                   </h3>
                   <p className="text-sm font-medium text-gray-900">
-                    {new Date(appointment.scheduledDateTime).toLocaleString([], {
-                      year: 'numeric',
-                      month: 'numeric', 
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
+                    {new Date(appointment.scheduledDateTime).toLocaleString(
+                      [],
+                      {
+                        year: "numeric",
+                        month: "numeric",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    )}
                   </p>
                 </div>
               </div>
@@ -820,7 +831,10 @@ export const AppointmentDetailsModal = ({
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   Date of Birth *
                 </label>
-                <Popover open={dobCalendarOpen} onOpenChange={setDobCalendarOpen}>
+                <Popover
+                  open={dobCalendarOpen}
+                  onOpenChange={setDobCalendarOpen}
+                >
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -948,8 +962,14 @@ export const AppointmentDetailsModal = ({
                         {appointmentData.scheduledDate
                           ? format(appointmentData.scheduledDate, "PPP")
                           : "No date selected"}{" "}
-                        at {appointmentData.scheduledTime 
-                          ? new Date(`2000-01-01T${appointmentData.scheduledTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        at{" "}
+                        {appointmentData.scheduledTime
+                          ? new Date(
+                              `2000-01-01T${appointmentData.scheduledTime}`
+                            ).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
                           : "No time selected"}
                       </span>
                     </div>
