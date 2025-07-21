@@ -9,6 +9,7 @@ import {
   Play,
   Search,
   ChevronDown,
+  Stethoscope,
 } from "lucide-react";
 import { useDoctors, useDoctor } from "@/hooks/use-doctors";
 import { useTodayAppointments } from "@/hooks/use-appointments";
@@ -210,14 +211,49 @@ export default function DoctorDashboard() {
     );
   }
 
-  // Show error state
-  if (doctorsError || doctorError || !doctorData || !validDoctorId) {
+  // Show empty state if no doctors exist
+  if (!isDoctorsLoading && doctorsData && doctorsData.doctors.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
+        {/* Navigation Bar */}
+        <NavigationBar />
+        
         <div className="p-6 w-full h-full flex items-center justify-center">
-          <div className="flex items-center gap-2 text-red-600">
-            <AlertCircle className="h-4 w-4" />
-            <span className="text-sm">Failed to load doctor information</span>
+          <div className="text-center">
+            <Stethoscope className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Doctors Found</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              There are no doctors in the system yet. Add a doctor to get started.
+            </p>
+            <button className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-4 py-2 rounded-xs transition-colors">
+              Add First Doctor
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (doctorsError || doctorError || (!isDoctorsLoading && !doctorData && validDoctorId)) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Navigation Bar */}
+        <NavigationBar />
+        
+        <div className="p-6 w-full h-full flex items-center justify-center">
+          <div className="text-center">
+            <AlertCircle className="h-8 w-8 mx-auto mb-4 text-red-400" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Unable to Load</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              {doctorsError ? 'Failed to load doctors list' : 'Failed to load doctor information'}
+            </p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="text-sm font-medium text-gray-700 hover:text-gray-900 px-4 py-2 border border-gray-200 rounded-xs hover:bg-gray-50 transition-colors"
+            >
+              Try Again
+            </button>
           </div>
         </div>
       </div>

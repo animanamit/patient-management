@@ -1,5 +1,5 @@
-// CarePulse Database Schema
-// Simple schema matching our domain entities - no over-engineering
+// PhysioFlow Database Schema with Better Auth Integration
+// This schema combines Better Auth's authentication tables with our business domain
 
 generator client {
   provider = "prisma-client-js"
@@ -10,32 +10,105 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Users table - integrates with Clerk authentication
-model User {
-  id          String   @id
-  clerkUserId String   @unique
-  role        UserRole
+// ============================================
+// BETTER AUTH TABLES
+// ============================================
+
+// Core user table for Better Auth
+// This replaces the old User table that was tied to Clerk
+model user {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  name          String?
+  image         String?
+  role          UserRole  @default(PATIENT) // Our custom field
   
-  // Common fields
-  firstName String
-  lastName  String
-  email     String   @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Better Auth relations
+  sessions      session[]
+  accounts      account[]
+  
+  // Our business relations (one-to-one)
+  patient       Patient?
+  doctor        Doctor?
+  
+  // Phone number fields from plugin
+  phoneNumber          String?   @unique
+  phoneNumberVerified  Boolean   @default(false)
+
+  @@map("user")
+}
+
+// Sessions table - stores active user sessions
+// Each login creates a session with expiration
+model session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique // Better Auth requires this field for session tokens
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Role-specific data
-  patient Patient?
-  doctor  Doctor?
-
-  @@map("users")
+  @@map("session")
 }
+
+// OAuth accounts - links social providers to users
+// Stores provider-specific data (Google, etc.)
+model account {
+  id                String   @id @default(cuid())
+  userId            String
+  accountId         String   // Better Auth requires this field
+  providerId        String   // Better Auth internal field
+  provider          String   @default("credential") // Better Auth requires this field (e.g., "google", "credential")
+  accessToken       String?
+  refreshToken      String?
+  expiresAt         DateTime?
+  scope             String?
+  password          String?  // For credential accounts
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  user              user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, accountId])
+  @@map("account")
+}
+
+// Verification tokens - for email verification, password reset, etc.
+model verificationToken {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  type       String   // "email", "password-reset", etc.
+  identifier String   // email or phone number
+  expiresAt  DateTime
+  
+  createdAt  DateTime @default(now())
+
+  @@map("verification_token")
+}
+
+// ============================================
+// BUSINESS DOMAIN TABLES
+// ============================================
 
 // Patient-specific information
 model Patient {
-  id            String    @id
-  userId        String    @unique
-  phone         String
+  id            String    @id @default(cuid())
+  userId        String    @unique  // Links to user.id (not clerkUserId anymore!)
+  
+  // Patient details
+  firstName     String    // Denormalized for quick access
+  lastName      String    // Denormalized for quick access
+  phone         String    // Denormalized and formatted
   dateOfBirth   DateTime
   address       String?
   
@@ -43,7 +116,7 @@ model Patient {
   updatedAt     DateTime  @updatedAt
 
   // Relations
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          user          @relation(fields: [userId], references: [id], onDelete: Cascade)
   appointments  Appointment[]
 
   @@map("patients")
@@ -51,8 +124,12 @@ model Patient {
 
 // Doctor-specific information
 model Doctor {
-  id             String    @id
-  userId         String    @unique
+  id             String    @id @default(cuid())
+  userId         String    @unique  // Links to user.id
+  
+  // Doctor details
+  firstName      String    // Denormalized for quick access
+  lastName       String    // Denormalized for quick access
   specialization String?
   isActive       Boolean   @default(true)
   
@@ -60,15 +137,15 @@ model Doctor {
   updatedAt      DateTime  @updatedAt
 
   // Relations
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           user          @relation(fields: [userId], references: [id], onDelete: Cascade)
   appointments   Appointment[]
 
   @@map("doctors")
 }
 
-// Appointments - core business entity
+// Appointments - core business entity (unchanged)
 model Appointment {
-  id                  String            @id
+  id                  String            @id @default(cuid())
   
   // Core relationships
   patientId           String
@@ -80,7 +157,7 @@ model Appointment {
   
   // Scheduling
   scheduledDateTime   DateTime
-  durationMinutes     Int               @default(60) // Store duration as minutes
+  durationMinutes     Int               @default(60)
   
   // Optional information
   reasonForVisit      String?
@@ -97,7 +174,10 @@ model Appointment {
   @@map("appointments")
 }
 
-// Enums matching our domain types
+// ============================================
+// ENUMS
+// ============================================
+
 enum UserRole {
   PATIENT
   DOCTOR

@@ -166,6 +166,9 @@ export default function PatientDashboard() {
       "Unknown error occurred";
     return (
       <div className="min-h-screen bg-gray-50">
+        {/* Navigation Bar */}
+        <NavigationBar />
+        
         <div className="p-6 w-full h-full flex items-center justify-center">
           <div className="bg-white border border-red-200 rounded-sm p-4 max-w-md">
             <div className="flex items-center gap-2 text-red-600 mb-2">
@@ -191,6 +194,9 @@ export default function PatientDashboard() {
   if (!validPatientId || !patientData) {
     return (
       <div className="min-h-screen bg-gray-50">
+        {/* Navigation Bar */}
+        <NavigationBar />
+        
         <div className="p-6">
           <div className="bg-white border border-gray-200 rounded-sm p-8 text-center max-w-md mx-auto">
             <User className="h-8 w-8 mx-auto mb-3 text-gray-300" />

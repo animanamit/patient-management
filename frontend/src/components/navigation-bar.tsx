@@ -13,8 +13,12 @@ import {
   X,
   ChevronDown,
   Bell,
+  LogOut,
+  User,
 } from "lucide-react";
 import { useAssistanceRequests } from "@/hooks/use-assistance-requests";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
 
 interface NavigationBarProps {
   className?: string;
@@ -24,6 +28,7 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { pendingCount } = useAssistanceRequests();
+  const { user, isAuthenticated, signOut, isSigningOut } = useAuth();
 
   const navigationItems = [
     {
@@ -96,6 +101,35 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
                 </Link>
               );
             })}
+            
+            {/* Auth Section */}
+            {isAuthenticated && user ? (
+              <div className="flex items-center gap-3 border-l border-gray-200 pl-6 ml-6">
+                <div className="flex items-center gap-2 text-xs text-gray-600">
+                  <User className="h-3.5 w-3.5" />
+                  <span>{user.name || user.email}</span>
+                </div>
+                <Button
+                  onClick={signOut}
+                  disabled={isSigningOut}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs h-7"
+                >
+                  <LogOut className="h-3 w-3 mr-1" />
+                  {isSigningOut ? 'Signing out...' : 'Sign out'}
+                </Button>
+              </div>
+            ) : (
+              <div className="border-l border-gray-200 pl-6 ml-6">
+                <Link href="/sign-in">
+                  <Button variant="outline" size="sm" className="text-xs h-7">
+                    <User className="h-3 w-3 mr-1" />
+                    Sign in
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -138,6 +172,38 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
                   </Link>
                 );
               })}
+              
+              {/* Mobile Auth Section */}
+              <div className="border-t border-gray-200 pt-2 mt-2">
+                {isAuthenticated && user ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3 px-3 py-2 text-sm text-gray-600">
+                      <User className="h-4 w-4" />
+                      <span>{user.name || user.email}</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        signOut();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      disabled={isSigningOut}
+                      className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-xs w-full text-left"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      {isSigningOut ? 'Signing out...' : 'Sign out'}
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    href="/sign-in"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-xs"
+                  >
+                    <User className="h-4 w-4" />
+                    Sign in
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         )}

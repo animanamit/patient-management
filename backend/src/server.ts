@@ -81,7 +81,9 @@ const start = async () => {
     console.log("📱 Registering SMS routes at /api/sms prefix...");
     await fastify.register(import("./routes/sms.routes.js"), { prefix: "/api/sms" });
     
-
+    // Register authentication routes (no prefix needed - routes include /api/auth)
+    console.log("🔐 Registering authentication routes...");
+    await fastify.register(import("./routes/auth.routes.js"));
     
     // 3. Start server
     console.log(`⚡ Attempting to start server on port ${env.PORT}...`);

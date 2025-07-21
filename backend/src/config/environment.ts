@@ -22,6 +22,11 @@ interface EnvironmentConfig {
   // External Services (for future use)
   CLERK_SECRET_KEY: string | undefined;
   FRONTEND_URL: string;
+  
+  // Auth
+  AUTH_SECRET: string | undefined;
+  GOOGLE_CLIENT_ID: string | undefined;
+  GOOGLE_CLIENT_SECRET: string | undefined;
 }
 
 // Validate required environment variables
@@ -57,6 +62,9 @@ const validateEnvironment = (): EnvironmentConfig => {
     NODE_ENV: (process.env.NODE_ENV as EnvironmentConfig['NODE_ENV']) || 'development',
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000',
+    AUTH_SECRET: process.env.AUTH_SECRET,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   };
 };
 

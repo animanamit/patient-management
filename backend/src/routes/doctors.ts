@@ -154,7 +154,9 @@ export const doctorRoutes: FastifyPluginAsync = async function (fastify) {
           reply.code(500);
           return { error: "Failed to fetch doctors" };
         }
-        return { doctors: result.data };
+        
+        // Return empty array if no doctors found - this is a valid state
+        return { doctors: result.data || [] };
       } catch (error) {
         fastify.log.error(error);
         reply.code(500);

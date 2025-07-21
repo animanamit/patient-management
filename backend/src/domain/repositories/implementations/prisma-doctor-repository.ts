@@ -147,11 +147,12 @@ export class PrismaDoctorRepository implements IDoctorRepository {
           user: true
         },
         orderBy: [
-          { user: { lastName: 'asc' } },
-          { user: { firstName: 'asc' } }
+          { lastName: 'asc' },
+          { firstName: 'asc' }
         ]
       });
 
+      // Always return an array, even if empty - this is a valid state
       const doctors = prismaDoctors.map(d => this.transformPrismaToDoctor(d.user, d));
       return { success: true, data: doctors };
 
@@ -174,11 +175,12 @@ export class PrismaDoctorRepository implements IDoctorRepository {
           user: true
         },
         orderBy: [
-          { user: { lastName: 'asc' } },
-          { user: { firstName: 'asc' } }
+          { lastName: 'asc' },
+          { firstName: 'asc' }
         ]
       });
 
+      // Always return an array, even if empty - this is a valid state
       const doctors = prismaDoctors.map(d => this.transformPrismaToDoctor(d.user, d));
       return { success: true, data: doctors };
 
