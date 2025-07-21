@@ -30,10 +30,7 @@ export class PrismaPatientRepository implements IPatientRepository {
       // Check for existing email or phone in User table
       const existingUser = await this.prisma.user.findFirst({
         where: {
-          OR: [
-            { email: patientData.email.getValue() },
-            { clerkUserId: patientData.clerkUserId }
-          ]
+          email: patientData.email.getValue()
         }
       });
 
@@ -57,14 +54,14 @@ export class PrismaPatientRepository implements IPatientRepository {
       const result = await this.prisma.user.create({
         data: {
           id: userId as string,
-          clerkUserId: patientData.clerkUserId,
-          firstName: patientData.firstName,
-          lastName: patientData.lastName,
+          name: `${patientData.firstName} ${patientData.lastName}`,
           email: patientData.email.getValue(),
           role: 'PATIENT',
           patient: {
             create: {
               id: patientId as string,
+              firstName: patientData.firstName,
+              lastName: patientData.lastName,
               phone: patientData.phone.getValue(),
               dateOfBirth: patientData.dateOfBirth,
               address: patientData.address || null,
@@ -256,7 +253,7 @@ export class PrismaPatientRepository implements IPatientRepository {
   async findByClerkUserId(clerkUserId: string): Promise<RepositoryResult<Patient>> {
     try {
       const prismaRecord = await this.prisma.user.findUnique({
-        where: { clerkUserId },
+        where: { email: clerkUserId }, // Using email instead of clerkUserId
         include: {
           patient: true
         }
@@ -267,7 +264,7 @@ export class PrismaPatientRepository implements IPatientRepository {
           success: false,
           error: {
             type: 'NotFound',
-            message: `Patient with Clerk user ID ${clerkUserId} not found`
+            message: `Patient with email ${clerkUserId} not found`
           }
         };
       }

@@ -29,10 +29,7 @@ export class PrismaDoctorRepository implements IDoctorRepository {
       // Check for existing email or clerkUserId
       const existingUser = await this.prisma.user.findFirst({
         where: {
-          OR: [
-            { email: doctorData.email.getValue() },
-            { clerkUserId: doctorData.clerkUserId }
-          ]
+          email: doctorData.email.getValue()
         }
       });
 
@@ -55,14 +52,14 @@ export class PrismaDoctorRepository implements IDoctorRepository {
       const result = await this.prisma.user.create({
         data: {
           id: userId as string,
-          clerkUserId: doctorData.clerkUserId,
-          firstName: doctorData.firstName,
-          lastName: doctorData.lastName,
+          name: `${doctorData.firstName} ${doctorData.lastName}`,
           email: doctorData.email.getValue(),
           role: 'DOCTOR',
           doctor: {
             create: {
               id: doctorId as string,
+              firstName: doctorData.firstName,
+              lastName: doctorData.lastName,
               specialization: doctorData.specialization || null,
               isActive: doctorData.isActive,
             }
@@ -112,10 +109,10 @@ export class PrismaDoctorRepository implements IDoctorRepository {
     }
   }
 
-  async findByClerkUserId(clerkUserId: string): Promise<RepositoryResult<Doctor>> {
+  async findByClerkUserId(email: string): Promise<RepositoryResult<Doctor>> {
     try {
       const prismaRecord = await this.prisma.user.findUnique({
-        where: { clerkUserId },
+        where: { email },
         include: {
           doctor: true
         }
@@ -126,7 +123,7 @@ export class PrismaDoctorRepository implements IDoctorRepository {
           success: false,
           error: {
             type: 'NotFound',
-            message: `Doctor with Clerk user ID ${clerkUserId} not found`
+            message: `Doctor with email ${email} not found`
           }
         };
       }

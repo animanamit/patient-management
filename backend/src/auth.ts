@@ -26,7 +26,7 @@ import { env } from "./config/environment.js";
  * - CSRF protection with double-submit cookies
  * - Automatic session rotation for security
  */
-export const auth = betterAuth({
+export const auth: any = betterAuth({
   /**
    * Database adapter configuration
    * This tells Better Auth how to store users, sessions, and tokens
@@ -34,14 +34,6 @@ export const auth = betterAuth({
    */
   database: prismaAdapter(prisma, {
     provider: "postgresql",
-    // Map Better Auth's internal fields to our Prisma schema
-    schema: {
-      account: {
-        fields: {
-          providerId: "provider", // Map providerId to provider field
-        }
-      }
-    }
   }),
 
   /**
@@ -98,7 +90,6 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24, // Update if last activity > 24 hours ago
     
     // Cookie configuration for security
-    cookieName: "physioflow-auth", // Custom cookie name
   },
 
   /**
@@ -141,7 +132,7 @@ export const auth = betterAuth({
        * This is where Better Auth integrates with YOUR SMS service
        * Better Auth generates the OTP, you send it
        */
-      sendOTP: async ({ phoneNumber, code }, request) => {
+      sendOTP: async ({ phoneNumber, code }) => {
         console.log(`[AUTH] Sending OTP ${code} to ${phoneNumber}`);
         
         try {
@@ -200,7 +191,7 @@ export const auth = betterAuth({
        * Callback after successful phone verification
        * Use this for analytics or user onboarding
        */
-      callbackOnVerification: async ({ phoneNumber, user }, request) => {
+      callbackOnVerification: async ({ phoneNumber, user }) => {
         console.log(`[AUTH] Phone verified for user ${user.id}: ${phoneNumber}`);
         // You could trigger welcome SMS, analytics events, etc.
       }
@@ -238,7 +229,14 @@ export const auth = betterAuth({
   /**
    * Development helpers
    */
-  logger: env.NODE_ENV === "development",
+  ...(env.NODE_ENV === "development" ? {
+    logger: {
+      level: "debug",
+      log: (level: string, message: string, ...args: any[]) => {
+        console.log(`[AUTH ${level.toUpperCase()}]`, message, ...args);
+      }
+    }
+  } : {}),
 
   /**
    * Secret key for signing sessions

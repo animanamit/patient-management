@@ -75,9 +75,9 @@ const authRoutes: FastifyPluginAsync = async function (fastify) {
     const webRequest = new Request(fullUrl, {
       method: request.method,
       headers: request.headers as any,
-      body: request.method !== 'GET' && request.method !== 'HEAD' 
-        ? JSON.stringify(request.body) 
-        : undefined,
+      ...(request.method !== 'GET' && request.method !== 'HEAD' && request.body 
+        ? { body: JSON.stringify(request.body) }
+        : {}),
     });
 
     try {
@@ -94,7 +94,7 @@ const authRoutes: FastifyPluginAsync = async function (fastify) {
       reply.code(response.status);
 
       // Copy all headers from Better Auth's response
-      response.headers.forEach((value, key) => {
+      response.headers.forEach((value: string, key: string) => {
         reply.header(key, value);
       });
 
@@ -156,7 +156,7 @@ const authRoutes: FastifyPluginAsync = async function (fastify) {
       console.log('[AUTH] Session handler response status:', response.status);
       
       reply.code(response.status);
-      response.headers.forEach((value, key) => {
+      response.headers.forEach((value: string, key: string) => {
         reply.header(key, value);
       });
       
@@ -186,7 +186,7 @@ const authRoutes: FastifyPluginAsync = async function (fastify) {
    * Simple endpoint to verify auth service is running
    * Useful for monitoring and debugging
    */
-  fastify.get('/api/auth/health', async (request, reply) => {
+  fastify.get('/api/auth/health', async () => {
     return {
       status: 'healthy',
       service: 'authentication',
