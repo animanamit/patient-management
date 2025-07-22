@@ -21,56 +21,64 @@ import Link from "next/link";
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Skip to main content link */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 text-sm font-medium rounded-xs z-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        Skip to main content
+      </a>
+      
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <header className="bg-white border-b border-gray-200" role="banner">
         <div className="px-6 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-6 h-6 bg-blue-500 rounded-sm flex items-center justify-center">
-                <Heart className="h-3.5 w-3.5 text-white" />
+                <Heart className="h-3.5 w-3.5 text-white" aria-hidden="true" />
               </div>
               <h1 className="text-base font-semibold text-gray-900">
                 CarePulse
               </h1>
             </div>
-            <nav className="hidden md:flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-4" role="navigation" aria-label="Top navigation">
               <Link
                 href="/about"
-                className="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-xs px-2 py-1"
               >
                 About
               </Link>
               <Link
                 href="/contact"
-                className="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-xs px-2 py-1"
               >
                 Contact
               </Link>
               <Link
                 href="/check-in"
-                className="bg-gray-900 text-white px-3 py-1.5 text-xs font-medium hover:bg-gray-800 border border-gray-900 hover:border-gray-800 transition-colors rounded-xs"
+                className="bg-gray-900 text-white px-3 py-1.5 text-xs font-medium hover:bg-gray-800 border border-gray-900 hover:border-gray-800 transition-colors rounded-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Check In
               </Link>
             </nav>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
-      <main className="p-6">
+      <main id="main-content" className="p-6" role="main">
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
-          <div className="mb-12">
+          <section className="mb-12" aria-labelledby="hero-heading">
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+              <h2 id="hero-heading" className="text-2xl font-semibold text-gray-900 mb-2">
                 Healthcare Management System
-              </h1>
+              </h2>
               <p className="text-sm text-gray-600 max-w-2xl mx-auto">
                 Digital platform for physiotherapy clinic management
               </p>
             </div>
-          </div>
+          </section>
 
           {/* System Access Grid */}
           <div className="grid grid-cols-12 gap-6 mb-12">
