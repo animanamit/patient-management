@@ -35,9 +35,18 @@ async function clearDatabase() {
   await prisma.appointment.deleteMany();
   await prisma.patient.deleteMany();
   await prisma.doctor.deleteMany();
-  await prisma.user.deleteMany();
   
-  console.log('✨ Database cleared');
+  // IMPORTANT: Only delete users with our demo roles
+  // This preserves Better Auth system users and sessions
+  await prisma.user.deleteMany({
+    where: {
+      role: {
+        in: ['PATIENT', 'DOCTOR', 'STAFF']
+      }
+    }
+  });
+  
+  console.log('✨ Business data cleared (Better Auth data preserved)');
 }
 
 async function createUsers() {
@@ -47,11 +56,10 @@ async function createUsers() {
     await prisma.user.create({
       data: {
         id: user.id,
-        clerkUserId: user.clerkUserId,
-        role: user.role,
-        firstName: user.firstName,
-        lastName: user.lastName,
         email: user.email,
+        name: `${user.firstName} ${user.lastName}`,
+        role: user.role,
+        emailVerified: true, // Mark demo users as verified
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
@@ -67,6 +75,8 @@ async function createPatients() {
       data: {
         id: patient.id,
         userId: patient.userId,
+        firstName: patient.firstName,
+        lastName: patient.lastName,
         phone: patient.phone.formatForDisplay(),
         dateOfBirth: patient.dateOfBirth,
         address: patient.address,
@@ -85,6 +95,8 @@ async function createDoctors() {
       data: {
         id: doctor.id,
         userId: doctor.userId,
+        firstName: doctor.firstName,
+        lastName: doctor.lastName,
         specialization: doctor.specialization,
         isActive: doctor.isActive,
         createdAt: doctor.createdAt,

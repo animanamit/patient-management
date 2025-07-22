@@ -208,11 +208,18 @@ export class PrismaDoctorRepository implements IDoctorRepository {
       const userUpdateData: any = {};
       const doctorUpdateData: any = {};
       
-      if (updateData.firstName) userUpdateData.firstName = updateData.firstName;
-      if (updateData.lastName) userUpdateData.lastName = updateData.lastName;
+      if (updateData.firstName) doctorUpdateData.firstName = updateData.firstName;
+      if (updateData.lastName) doctorUpdateData.lastName = updateData.lastName;
       if (updateData.email) userUpdateData.email = updateData.email.getValue();
       if (updateData.specialization !== undefined) doctorUpdateData.specialization = updateData.specialization;
       if (updateData.isActive !== undefined) doctorUpdateData.isActive = updateData.isActive;
+
+      // Update name field in user table if firstName or lastName changed
+      if (updateData.firstName || updateData.lastName) {
+        const newFirstName = updateData.firstName || existingDoctor.firstName;
+        const newLastName = updateData.lastName || existingDoctor.lastName;
+        userUpdateData.name = `${newFirstName} ${newLastName}`;
+      }
 
       // Update both user and doctor records
       await this.prisma.$transaction(async (tx) => {
@@ -334,9 +341,9 @@ export class PrismaDoctorRepository implements IDoctorRepository {
     try {
       return {
         id: this.ensureValidDoctorId(doctor.id),
-        clerkUserId: user.clerkUserId,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        clerkUserId: '', // No longer using clerkUserId with Better Auth
+        firstName: doctor.firstName,
+        lastName: doctor.lastName,
         email: new EmailAddress(user.email),
         specialization: doctor.specialization,
         isActive: doctor.isActive,

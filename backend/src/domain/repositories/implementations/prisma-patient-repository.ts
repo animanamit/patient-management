@@ -182,11 +182,18 @@ export class PrismaPatientRepository implements IPatientRepository {
       const userUpdateData: any = {};
       const patientUpdateData: any = {};
 
-      if (updateData.firstName) userUpdateData.firstName = updateData.firstName;
-      if (updateData.lastName) userUpdateData.lastName = updateData.lastName;
+      if (updateData.firstName) patientUpdateData.firstName = updateData.firstName;
+      if (updateData.lastName) patientUpdateData.lastName = updateData.lastName;
       if (updateData.email) userUpdateData.email = updateData.email.getValue();
       if (updateData.phone) patientUpdateData.phone = updateData.phone.getValue();
       if (updateData.address !== undefined) patientUpdateData.address = updateData.address;
+
+      // Update name field in user table if firstName or lastName changed
+      if (updateData.firstName || updateData.lastName) {
+        const newFirstName = updateData.firstName || existingPatient.firstName;
+        const newLastName = updateData.lastName || existingPatient.lastName;
+        userUpdateData.name = `${newFirstName} ${newLastName}`;
+      }
 
       // Update both user and patient records
       await this.prisma.$transaction(async (tx) => {
@@ -416,9 +423,9 @@ export class PrismaPatientRepository implements IPatientRepository {
   private transformPrismaToPatient(user: any, patient: any): Patient {
     return {
       id: this.ensureValidPatientId(patient.id),
-      clerkUserId: user.clerkUserId,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      clerkUserId: '', // No longer using clerkUserId with Better Auth
+      firstName: patient.firstName,
+      lastName: patient.lastName,
       email: new EmailAddress(user.email),
       phone: new PhoneNumber(patient.phone),
       address: patient.address || undefined,

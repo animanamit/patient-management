@@ -359,8 +359,8 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
     if (prismaAppointment.doctor) {
       appointmentWithDetails.doctor = {
         id: this.ensureValidDoctorId(prismaAppointment.doctor.id),
-        firstName: prismaAppointment.doctor.user.firstName,
-        lastName: prismaAppointment.doctor.user.lastName,
+        firstName: prismaAppointment.doctor.firstName,
+        lastName: prismaAppointment.doctor.lastName,
         email: prismaAppointment.doctor.user.email,
         specialization: prismaAppointment.doctor.specialization,
       };
@@ -369,8 +369,8 @@ export class PrismaAppointmentRepository implements IAppointmentRepository {
     if (prismaAppointment.patient) {
       appointmentWithDetails.patient = {
         id: this.ensureValidPatientId(prismaAppointment.patient.id),
-        firstName: prismaAppointment.patient.user.firstName,
-        lastName: prismaAppointment.patient.user.lastName,
+        firstName: prismaAppointment.patient.firstName,
+        lastName: prismaAppointment.patient.lastName,
         email: prismaAppointment.patient.user.email,
         phone: prismaAppointment.patient.phone, // Phone is on patient table, not user table
       };
