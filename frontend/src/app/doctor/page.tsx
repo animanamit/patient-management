@@ -54,26 +54,26 @@ const StatsGrid = ({
   }, [appointments]);
 
   return (
-    <div className="grid grid-cols-4 gap-4">
-      <div className="bg-white border border-gray-200 rounded-sm p-3">
-        <p className="text-xs text-gray-500">Today</p>
-        <p className="text-lg font-semibold text-gray-900">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+        <p className="text-sm md:text-xs text-gray-500">Today</p>
+        <p className="text-xl md:text-lg font-bold md:font-semibold text-gray-900">
           {stats.totalToday}
         </p>
       </div>
-      <div className="bg-white border border-gray-200 rounded-sm p-3">
-        <p className="text-xs text-gray-500">Scheduled</p>
-        <p className="text-lg font-semibold text-blue-600">{stats.scheduled}</p>
+      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+        <p className="text-sm md:text-xs text-gray-500">Scheduled</p>
+        <p className="text-xl md:text-lg font-bold md:font-semibold text-blue-600">{stats.scheduled}</p>
       </div>
-      <div className="bg-white border border-gray-200 rounded-sm p-3">
-        <p className="text-xs text-gray-500">In Progress</p>
-        <p className="text-lg font-semibold text-orange-600">
+      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+        <p className="text-sm md:text-xs text-gray-500">In Progress</p>
+        <p className="text-xl md:text-lg font-bold md:font-semibold text-orange-600">
           {stats.inProgress}
         </p>
       </div>
-      <div className="bg-white border border-gray-200 rounded-sm p-3">
-        <p className="text-xs text-gray-500">Completed</p>
-        <p className="text-lg font-semibold text-green-600">
+      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+        <p className="text-sm md:text-xs text-gray-500">Completed</p>
+        <p className="text-xl md:text-lg font-bold md:font-semibold text-green-600">
           {stats.completed}
         </p>
       </div>
@@ -267,23 +267,23 @@ export default function DoctorDashboard() {
       {/* Navigation Bar */}
       <NavigationBar />
 
-      {/* Header */}
+      {/* Header - Mobile Responsive */}
       <div className="bg-white border-b border-gray-200">
-        <div className="px-6 py-3">
-          <div className="flex items-center justify-between">
+        <div className="px-4 py-4 md:px-6 md:py-3">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-0">
             <div>
-              <h1 className="text-base font-semibold text-gray-900">
+              <h1 className="text-lg md:text-base font-bold md:font-semibold text-gray-900">
                 Dr. {doctor?.firstName} {doctor?.lastName}
               </h1>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm md:text-xs text-gray-500">
                 {doctor?.specialization || "General Practice"} • ID{" "}
                 <span className="font-mono">{doctor?.id.split("_")[1]}</span>
               </p>
             </div>
             <div className="flex items-center gap-2">
-              {/* Doctor Selection Dropdown */}
+              {/* Doctor Selection Dropdown - Hidden on mobile */}
               {doctorsData?.doctors && doctorsData.doctors.length > 1 && (
-                <div className="relative">
+                <div className="hidden md:block relative">
                   <select
                     value={validDoctorId || ""}
                     onChange={(e) => setSelectedDoctorId(ensureCleanDoctorId(e.target.value))}
@@ -299,10 +299,10 @@ export default function DoctorDashboard() {
                 </div>
               )}
 
-              <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
+              <button className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                 View Schedule
               </button>
-              <button className="text-xs font-medium text-white bg-gray-900 hover:bg-gray-800 border border-gray-900 hover:border-gray-800 px-3 py-1.5 transition-colors rounded-xs">
+              <button className="text-sm md:text-xs font-semibold md:font-medium text-white bg-blue-600 md:bg-gray-900 hover:bg-blue-700 md:hover:bg-gray-800 px-4 py-2 md:px-3 md:py-1.5 transition-colors rounded-sm">
                 New Appointment
               </button>
             </div>
@@ -310,16 +310,16 @@ export default function DoctorDashboard() {
         </div>
       </div>
 
-      {/* Main Grid Layout */}
-      <div className="p-6">
-        <div className="grid grid-cols-12 gap-6">
+      {/* Main Grid Layout - Mobile Responsive */}
+      <div className="px-4 py-4 md:p-6">
+        <div className="space-y-6 md:grid md:grid-cols-12 md:gap-6 md:space-y-0">
           {/* Left Column - Main Content */}
-          <div className="col-span-8 space-y-6">
+          <div className="md:col-span-8 space-y-6">
             {/* Daily Stats */}
             <section>
-              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
+              <h2 className="text-base md:text-xs font-bold md:font-semibold text-gray-900 md:text-gray-600 md:uppercase md:tracking-wider mb-4 md:mb-3">
                 Today&apos;s Overview
-                <span className="ml-2 font-mono text-gray-400 font-normal">
+                <span className="hidden md:inline ml-2 font-mono text-gray-400 font-normal">
                   Today
                 </span>
               </h2>
@@ -337,7 +337,7 @@ export default function DoctorDashboard() {
                     </span>
                   </h2>
                 </div>
-                <div className="bg-white border border-gray-200 rounded-sm">
+                <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm  overflow-hidden">
                   <div className="divide-y divide-gray-100">
                     {activeAppointments.map((appointment) => {
                       const patientName =
@@ -353,28 +353,28 @@ export default function DoctorDashboard() {
                       return (
                         <div
                           key={appointment.id}
-                          className="px-4 py-3 bg-orange-50 border-l-2 border-orange-400"
+                          className="px-5 py-4 md:px-4 md:py-3 bg-orange-50 border-l-4 md:border-l-2 border-orange-400"
                         >
-                          <div className="flex items-start justify-between">
+                          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0">
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-sm font-medium text-gray-900">
+                              <div className="flex items-center gap-2 mb-2 md:mb-1">
+                                <span className="text-base md:text-sm font-semibold md:font-medium text-gray-900">
                                   {patientName}
                                 </span>
-                                <span className="text-xs font-medium text-orange-600">
+                                <span className="text-sm md:text-xs font-semibold md:font-medium text-orange-600">
                                   IN PROGRESS
                                 </span>
                               </div>
-                              <div className="flex items-center gap-3 text-xs text-gray-600">
+                              <div className="flex flex-wrap items-center gap-2 md:gap-3 text-sm md:text-xs text-gray-600">
                                 <span>
                                   {appointment.type
                                     .replace("_", " ")
                                     .toLowerCase()
                                     .replace(/\b\w/g, (l) => l.toUpperCase())}
                                 </span>
-                                <span className="text-gray-400">•</span>
+                                <span className="hidden md:inline text-gray-400">•</span>
                                 <span className="font-mono">#{patientId}</span>
-                                <span className="text-gray-400">•</span>
+                                <span className="hidden md:inline text-gray-400">•</span>
                                 <span>
                                   {new Date(
                                     appointment.scheduledDateTime
@@ -385,9 +385,9 @@ export default function DoctorDashboard() {
                                 </span>
                               </div>
                             </div>
-                            <button className="flex items-center gap-1 text-xs font-medium text-orange-700 hover:text-orange-900 px-2 py-1 border border-orange-200 rounded-xs hover:bg-orange-50 transition-colors">
+                            <button className="flex items-center justify-center gap-2 md:gap-1 text-sm md:text-xs font-semibold md:font-medium text-orange-700 hover:text-orange-900 px-4 py-2 md:px-2 md:py-1 border border-orange-200 rounded-sm hover:bg-orange-50 transition-colors w-full md:w-auto">
                               Continue Session
-                              <ArrowUpRight className="h-3 w-3" />
+                              <ArrowUpRight className="h-4 w-4 md:h-3 md:w-3" />
                             </button>
                           </div>
                         </div>
@@ -411,14 +411,14 @@ export default function DoctorDashboard() {
                   View Full Schedule
                 </button>
               </div>
-              <div className="bg-white border border-gray-200 rounded-sm">
+              <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm ">
                 {upcomingAppointments.length === 0 ? (
-                  <div className="px-4 py-8 text-center">
-                    <Calendar className="h-6 w-6 mx-auto mb-2 text-gray-300" />
-                    <p className="text-sm text-gray-600 mb-1">
+                  <div className="px-4 py-12 md:py-8 text-center">
+                    <Calendar className="h-8 w-8 md:h-6 md:w-6 mx-auto mb-3 md:mb-2 text-gray-300" />
+                    <p className="text-base md:text-sm text-gray-600 mb-1">
                       No upcoming appointments
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm md:text-xs text-gray-500">
                       Your schedule is clear
                     </p>
                   </div>
@@ -438,32 +438,32 @@ export default function DoctorDashboard() {
                       return (
                         <div
                           key={appointment.id}
-                          className="px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
+                          className="px-5 py-4 md:px-4 md:py-3 hover:bg-gray-50 transition-colors cursor-pointer"
                         >
-                          <div className="flex items-start justify-between">
+                          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0">
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-sm font-medium text-gray-900">
+                              <div className="flex items-center gap-2 mb-2 md:mb-1">
+                                <span className="text-base md:text-sm font-semibold md:font-medium text-gray-900">
                                   {patientName}
                                 </span>
                                 <span
-                                  className={`text-xs font-medium ${getStatusColor(
+                                  className={`text-sm md:text-xs font-medium ${getStatusColor(
                                     appointment.status
                                   )}`}
                                 >
                                   •
                                 </span>
                               </div>
-                              <div className="flex items-center gap-3 text-xs text-gray-600">
+                              <div className="flex flex-wrap items-center gap-2 md:gap-3 text-sm md:text-xs text-gray-600">
                                 <span>
                                   {appointment.type
                                     .replace("_", " ")
                                     .toLowerCase()
                                     .replace(/\b\w/g, (l) => l.toUpperCase())}
                                 </span>
-                                <span className="text-gray-400">•</span>
+                                <span className="hidden md:inline text-gray-400">•</span>
                                 <span className="font-mono">#{patientId}</span>
-                                <span className="text-gray-400">•</span>
+                                <span className="hidden md:inline text-gray-400">•</span>
                                 <span>
                                   {new Date(
                                     appointment.scheduledDateTime
@@ -474,13 +474,13 @@ export default function DoctorDashboard() {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border border-gray-200 rounded-xs hover:bg-gray-50 transition-colors">
+                            <div className="flex items-center gap-2 w-full md:w-auto">
+                              <button className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border border-gray-200 rounded-xs hover:bg-gray-50 transition-colors">
                                 View Patient
                               </button>
-                              <button className="flex items-center gap-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-2 py-1 rounded-xs">
-                                <Play className="h-3 w-3" />
-                                Start
+                              <button className="flex items-center justify-center gap-2 md:gap-1 text-sm md:text-xs font-semibold md:font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-4 py-2 md:px-2 md:py-1 rounded-sm flex-1 md:flex-initial">
+                                <Play className="h-4 w-4 md:h-3 md:w-3" />
+                                Start Session
                               </button>
                             </div>
                           </div>
@@ -493,8 +493,8 @@ export default function DoctorDashboard() {
             </section>
           </div>
 
-          {/* Right Column - Side Information */}
-          <div className="col-span-4 space-y-6">
+          {/* Right Column - Side Information - Hidden on Mobile */}
+          <div className="hidden md:block md:col-span-4 space-y-6">
             {/* Patient Search */}
             <section>
               <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">

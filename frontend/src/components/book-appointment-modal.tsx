@@ -212,20 +212,25 @@ export const BookAppointmentModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-sm border border-gray-200 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center z-50">
+      <div className="bg-white rounded-t-sm md:rounded-sm border-0 md:border md:border-gray-200 w-full max-w-lg md:mx-4 max-h-[90vh] overflow-y-auto">
+        {/* Mobile handle */}
+        <div className="md:hidden flex justify-center pt-3 pb-2">
+          <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
+        </div>
+        
         {/* Header with step indicator */}
-        <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between mb-3">
+        <div className="px-6 py-6 md:px-6 md:py-4 md:border-b md:border-gray-200">
+          <div className="flex items-center justify-between mb-4 md:mb-3">
             <div>
-              <h2 className="text-base font-semibold text-gray-900">Book Appointment</h2>
-              <p className="text-xs text-gray-500 mt-1">For {patientName}</p>
+              <h2 className="text-xl md:text-base font-bold md:font-semibold text-gray-900">Book Appointment</h2>
+              <p className="text-sm md:text-xs text-gray-500 mt-1">For {patientName}</p>
             </div>
             <button
               onClick={handleClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="p-2 md:p-0 text-gray-400 hover:text-gray-600 rounded-full md:rounded-none hover:bg-gray-100 md:hover:bg-transparent transition-colors"
             >
-              <X className="h-4 w-4" />
+              <X className="h-6 w-6 md:h-4 md:w-4" />
             </button>
           </div>
           
@@ -249,26 +254,26 @@ export const BookAppointmentModal = ({
           </div>
         </div>
 
-        {/* Step Content */}
-        <div className="p-6 min-h-[400px]">
+        {/* Step Content - Mobile Optimized */}
+        <div className="px-6 pb-6 md:p-6 min-h-[400px] md:min-h-[400px]">
           {/* Step 1: Doctor Selection */}
           {currentStep === 1 && (
-            <div className="space-y-4">
-              <div className="text-center mb-6">
-                <User className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                <h3 className="text-lg font-medium text-gray-900">Select Doctor</h3>
-                <p className="text-sm text-gray-600">Choose your preferred doctor and appointment type</p>
+            <div className="space-y-6 md:space-y-4">
+              <div className="text-center mb-8 md:mb-6">
+                <User className="h-12 w-12 md:h-8 md:w-8 mx-auto mb-3 md:mb-2 text-blue-600" />
+                <h3 className="text-xl md:text-lg font-bold md:font-medium text-gray-900">Select Doctor</h3>
+                <p className="text-base md:text-sm text-gray-600">Choose your preferred doctor and appointment type</p>
               </div>
               
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2">
+                <label className="block text-base md:text-xs font-semibold md:font-medium text-gray-900 md:text-gray-700 mb-3 md:mb-2">
                   Doctor *
                 </label>
                 <Suspense fallback={<div className="h-10 bg-gray-100 rounded-xs animate-pulse" />}>
                   <select
                     value={formData.doctorId}
                     onChange={(e) => handleInputChange('doctorId', e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-4 md:px-3 md:py-2 text-base md:text-sm border border-gray-300 md:border-gray-200 rounded-sm focus:ring-2 md:focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     disabled={isDoctorsLoading}
                   >
                     <option value="">Select a doctor</option>

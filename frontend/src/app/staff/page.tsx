@@ -64,26 +64,26 @@ const DashboardStats = ({ appointments }: { appointments: (Appointment | Appoint
   }, [appointments]);
 
   return (
-    <div className="grid grid-cols-5 gap-4">
-      <div className="bg-white border border-gray-200 rounded-sm p-3">
-        <p className="text-xs text-gray-500">Total Today</p>
-        <p className="text-lg font-semibold text-gray-900">{stats.totalAppointments}</p>
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
+      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+        <p className="text-sm md:text-xs text-gray-500">Total Today</p>
+        <p className="text-2xl md:text-lg font-bold md:font-semibold text-gray-900">{stats.totalAppointments}</p>
       </div>
-      <div className="bg-white border border-gray-200 rounded-sm p-3">
-        <p className="text-xs text-gray-500">Checked In</p>
-        <p className="text-lg font-semibold text-blue-600">{stats.checkedIn}</p>
+      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+        <p className="text-sm md:text-xs text-gray-500">Checked In</p>
+        <p className="text-2xl md:text-lg font-bold md:font-semibold text-blue-600">{stats.checkedIn}</p>
       </div>
-      <div className="bg-white border border-gray-200 rounded-sm p-3">
-        <p className="text-xs text-gray-500">In Progress</p>
-        <p className="text-lg font-semibold text-orange-600">{stats.inProgress}</p>
+      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+        <p className="text-sm md:text-xs text-gray-500">In Progress</p>
+        <p className="text-2xl md:text-lg font-bold md:font-semibold text-orange-600">{stats.inProgress}</p>
       </div>
-      <div className="bg-white border border-gray-200 rounded-sm p-3">
-        <p className="text-xs text-gray-500">Completed</p>
-        <p className="text-lg font-semibold text-green-600">{stats.completed}</p>
+      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+        <p className="text-sm md:text-xs text-gray-500">Completed</p>
+        <p className="text-2xl md:text-lg font-bold md:font-semibold text-green-600">{stats.completed}</p>
       </div>
-      <div className="bg-white border border-gray-200 rounded-sm p-3">
-        <p className="text-xs text-gray-500">No Shows</p>
-        <p className="text-lg font-semibold text-red-600">{stats.noShows}</p>
+      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+        <p className="text-sm md:text-xs text-gray-500">No Shows</p>
+        <p className="text-2xl md:text-lg font-bold md:font-semibold text-red-600">{stats.noShows}</p>
       </div>
     </div>
   );
@@ -350,13 +350,13 @@ export default function StaffDashboard() {
       {/* Navigation Bar */}
       <NavigationBar />
       
-      {/* Header */}
+      {/* Header - Mobile Responsive */}
       <div className="bg-white border-b border-gray-200">
-        <div className="px-6 py-3">
-          <div className="flex items-center justify-between">
+        <div className="px-4 py-4 md:px-6 md:py-3">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
             <div>
-              <h1 className="text-base font-semibold text-gray-900">Staff Dashboard</h1>
-              <p className="text-xs text-gray-500">
+              <h1 className="text-lg md:text-base font-bold md:font-semibold text-gray-900">Staff Dashboard</h1>
+              <p className="text-sm md:text-xs text-gray-500">
                 Front desk operations • {new Date().toLocaleDateString('en-US', { 
                   weekday: 'long', 
                   month: 'short', 
@@ -364,29 +364,29 @@ export default function StaffDashboard() {
                 })}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 overflow-x-auto">
               {/* View toggle */}
-              <div className="flex items-center border border-gray-200 rounded-xs overflow-hidden">
+              <div className="flex items-center border border-gray-200 rounded-full md:rounded-xs overflow-hidden flex-shrink-0">
                 <button
                   onClick={() => setViewMode('dashboard')}
-                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                  className={`px-4 py-2 md:px-3 md:py-1.5 text-sm md:text-xs font-semibold md:font-medium transition-colors ${
                     viewMode === 'dashboard'
-                      ? 'bg-gray-900 text-white'
+                      ? 'bg-blue-600 md:bg-gray-900 text-white'
                       : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
-                  <List className="h-3 w-3 mr-1 inline" />
+                  <List className="h-4 w-4 md:h-3 md:w-3 mr-1 inline" />
                   Dashboard
                 </button>
                 <button
                   onClick={() => setViewMode('calendar')}
-                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+                  className={`px-4 py-2 md:px-3 md:py-1.5 text-sm md:text-xs font-semibold md:font-medium transition-colors ${
                     viewMode === 'calendar'
-                      ? 'bg-gray-900 text-white'
+                      ? 'bg-blue-600 md:bg-gray-900 text-white'
                       : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
-                  <Grid3X3 className="h-3 w-3 mr-1 inline" />
+                  <Grid3X3 className="h-4 w-4 md:h-3 md:w-3 mr-1 inline" />
                   Calendar
                 </button>
               </div>
@@ -394,18 +394,19 @@ export default function StaffDashboard() {
               <button 
                 onClick={() => refetch()}
                 disabled={isAppointmentsLoading}
-                className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+                className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
               >
                 <RefreshCw className={`h-3 w-3 mr-1 inline ${isAppointmentsLoading ? 'animate-spin' : ''}`} />
                 {isAppointmentsLoading ? 'Refreshing...' : 'Refresh'}
               </button>
-              <button className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
+              <button className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
                 Export Data
               </button>
               <button 
                 onClick={() => setIsAddPatientModalOpen(true)}
-                className="text-xs font-medium text-white bg-gray-900 hover:bg-gray-800 border border-gray-900 hover:border-gray-800 px-3 py-1.5 transition-colors rounded-xs"
+                className="text-sm md:text-xs font-semibold md:font-medium text-white bg-blue-600 md:bg-gray-900 hover:bg-blue-700 md:hover:bg-gray-800 px-4 py-2 md:px-3 md:py-1.5 transition-colors rounded-full md:rounded-xs flex-shrink-0"
               >
+                <Plus className="h-4 w-4 md:h-0 md:w-0 mr-1 md:mr-0" />
                 Add Patient
               </button>
             </div>
@@ -413,20 +414,20 @@ export default function StaffDashboard() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="p-6">
+      {/* Main Content - Mobile Responsive */}
+      <div className="px-4 py-4 md:p-6">
         {viewMode === 'calendar' ? (
           <AppointmentsCalendar />
         ) : (
-          <div className="grid grid-cols-12 gap-6">
+          <div className="space-y-6 md:grid md:grid-cols-12 md:gap-6 md:space-y-0">
           {/* Left Column - Main Content */}
-          <div className="col-span-8 space-y-6">
+          <div className="md:col-span-8 space-y-6">
             
             {/* Daily Overview */}
             <section>
-              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
+              <h2 className="text-base md:text-xs font-bold md:font-semibold text-gray-900 md:text-gray-600 md:uppercase md:tracking-wider mb-4 md:mb-3">
                 Daily Overview
-                <span className="ml-2 font-mono text-gray-400 font-normal">Today</span>
+                <span className="hidden md:inline ml-2 font-mono text-gray-400 font-normal">Today</span>
               </h2>
               <Suspense fallback={<LoadingSkeleton />}>
                 {appointmentsError ? (
@@ -464,18 +465,18 @@ export default function StaffDashboard() {
                 </button>
               </div>
               
-              <div className="bg-white border border-gray-200 rounded-sm">
+              <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm overflow-hidden">
                 <Suspense fallback={<LoadingSkeleton />}>
                   {appointmentsError ? (
-                    <div className="px-4 py-8 text-center">
-                      <AlertCircle className="h-6 w-6 mx-auto mb-2 text-red-500" />
-                      <p className="text-sm text-red-600">Failed to load patient queue</p>
+                    <div className="px-4 py-12 md:py-8 text-center">
+                      <AlertCircle className="h-8 w-8 md:h-6 md:w-6 mx-auto mb-3 md:mb-2 text-red-500" />
+                      <p className="text-base md:text-sm text-red-600">Failed to load patient queue</p>
                     </div>
                   ) : patientQueue.length === 0 ? (
-                    <div className="px-4 py-8 text-center">
-                      <Users className="h-6 w-6 mx-auto mb-2 text-gray-300" />
-                      <p className="text-sm text-gray-600 mb-1">No patients in queue</p>
-                      <p className="text-xs text-gray-500">All appointments completed or no check-ins yet</p>
+                    <div className="px-4 py-12 md:py-8 text-center">
+                      <Users className="h-8 w-8 md:h-6 md:w-6 mx-auto mb-3 md:mb-2 text-gray-300" />
+                      <p className="text-base md:text-sm text-gray-600 mb-2 md:mb-1">No patients in queue</p>
+                      <p className="text-sm md:text-xs text-gray-500">All appointments completed or no check-ins yet</p>
                     </div>
                   ) : (
                     <div className="divide-y divide-gray-100">
@@ -489,45 +490,45 @@ export default function StaffDashboard() {
                           : 'Doctor';
 
                         return (
-                          <div key={appointment.id} className={`px-4 py-3 ${appointment.status === 'IN_PROGRESS' ? 'bg-orange-50 border-l-2 border-orange-400' : 'hover:bg-gray-50'} transition-colors`}>
-                            <div className="flex items-start justify-between">
-                              <div className="flex items-start gap-3">
-                                <div className="w-6 h-6 bg-gray-100 rounded-sm flex items-center justify-center text-xs font-semibold text-gray-600">
+                          <div key={appointment.id} className={`px-5 py-4 md:px-4 md:py-3 ${appointment.status === 'IN_PROGRESS' ? 'bg-orange-50 border-l-4 md:border-l-2 border-orange-400' : 'hover:bg-gray-50'} transition-colors`}>
+                            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0">
+                              <div className="flex items-start gap-4 md:gap-3">
+                                <div className="w-8 h-8 md:w-6 md:h-6 bg-blue-100 rounded-full md:rounded-sm flex items-center justify-center text-sm md:text-xs font-bold md:font-semibold text-blue-600 md:text-gray-600 flex-shrink-0">
                                   {index + 1}
                                 </div>
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-sm font-medium text-gray-900">{patientName}</span>
-                                    <span className={`text-xs font-medium ${getStatusColor(appointment.status)}`}>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-2 md:mb-1">
+                                    <span className="text-base md:text-sm font-semibold md:font-medium text-gray-900">{patientName}</span>
+                                    <span className={`text-sm md:text-xs font-semibold md:font-medium ${getStatusColor(appointment.status)}`}>
                                       {appointment.status === 'IN_PROGRESS' ? 'IN PROGRESS' : '•'}
                                     </span>
                                   </div>
-                                  <div className="flex items-center gap-3 text-xs text-gray-600">
+                                  <div className="flex flex-wrap items-center gap-2 md:gap-3 text-sm md:text-xs text-gray-600">
                                     <span>{doctorName}</span>
-                                    <span className="text-gray-400">•</span>
+                                    <span className="hidden md:inline text-gray-400">•</span>
                                     <span>
                                       {new Date(appointment.scheduledDateTime).toLocaleTimeString([], {
                                         hour: "2-digit",
                                         minute: "2-digit",
                                       })}
                                     </span>
-                                    <span className="text-gray-400">•</span>
+                                    <span className="hidden md:inline text-gray-400">•</span>
                                     <span className="font-mono">
                                       #{('patient' in appointment) ? appointment.patient.id.split('_')[1] : 'Loading...'}
                                     </span>
                                   </div>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 w-full md:w-auto">
                                 <button
                                   onClick={() => {
                                     console.log('🔘 BUTTON CLICKED: SMS - Will call POST /api/sms/appointment/reminder');
                                     handleSendSMS(appointment);
                                   }}
                                   disabled={sendReminderMutation.isPending}
-                                  className="text-xs font-medium text-gray-700 hover:text-gray-900"
+                                  className="text-sm md:text-xs font-semibold md:font-medium text-gray-700 hover:text-gray-900 px-3 py-2 md:px-0 md:py-0 border border-gray-200 md:border-0 rounded-full md:rounded-none flex-1 md:flex-initial"
                                 >
-                                  <Phone className="h-3 w-3 mr-1 inline" />
+                                  <Phone className="h-4 w-4 md:h-3 md:w-3 mr-1 inline" />
                                   {sendReminderMutation.isPending ? 'Sending...' : 'SMS'}
                                 </button>
                                 <button 
@@ -536,13 +537,13 @@ export default function StaffDashboard() {
                                     const cleanId = appointment.id.startsWith('appt_') ? appointment.id.slice(5) : appointment.id;
                                     window.open(`/appointment/${cleanId}`, '_blank');
                                   }}
-                                  className="text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border border-gray-200 rounded-xs hover:bg-gray-50"
+                                  className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border border-gray-200 rounded-xs hover:bg-gray-50"
                                 >
                                   Details
                                 </button>
                                 <button 
                                   onClick={() => handleOpenAppointmentDetails(appointment)}
-                                  className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-2 py-1 rounded-xs"
+                                  className="text-sm md:text-xs font-semibold md:font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 md:px-2 md:py-1 rounded-full md:rounded-xs flex-1 md:flex-initial"
                                 >
                                   Modify
                                 </button>
@@ -557,30 +558,30 @@ export default function StaffDashboard() {
               </div>
             </section>
 
-            {/* Today's Schedule */}
+            {/* Today's Schedule - Mobile Optimized */}
             <section>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <div className="flex items-center justify-between mb-4 md:mb-3">
+                <h2 className="text-base md:text-xs font-bold md:font-semibold text-gray-900 md:text-gray-600 md:uppercase md:tracking-wider">
                   Today's Schedule
-                  <span className="ml-2 font-mono text-gray-400 font-normal">{appointments.length}</span>
+                  <span className="hidden md:inline ml-2 font-mono text-gray-400 font-normal">{appointments.length}</span>
                 </h2>
-                <button className="text-xs font-medium text-gray-700 hover:text-gray-900">
+                <button className="hidden md:inline text-xs font-medium text-gray-700 hover:text-gray-900">
                   View Full Schedule
                 </button>
               </div>
               
-              <div className="bg-white border border-gray-200 rounded-sm">
+              <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm">
                 <Suspense fallback={<LoadingSkeleton />}>
                   {appointmentsError ? (
-                    <div className="px-4 py-8 text-center">
-                      <AlertCircle className="h-6 w-6 mx-auto mb-2 text-red-500" />
-                      <p className="text-sm text-red-600">Failed to load today's schedule</p>
+                    <div className="px-4 py-12 md:py-8 text-center">
+                      <AlertCircle className="h-8 w-8 md:h-6 md:w-6 mx-auto mb-3 md:mb-2 text-red-500" />
+                      <p className="text-base md:text-sm text-red-600">Failed to load today's schedule</p>
                     </div>
                   ) : appointments.length === 0 ? (
-                    <div className="px-4 py-8 text-center">
-                      <Calendar className="h-6 w-6 mx-auto mb-2 text-gray-300" />
-                      <p className="text-sm text-gray-600 mb-1">No appointments today</p>
-                      <p className="text-xs text-gray-500">No appointments scheduled for today</p>
+                    <div className="px-4 py-12 md:py-8 text-center">
+                      <Calendar className="h-8 w-8 md:h-6 md:w-6 mx-auto mb-3 md:mb-2 text-gray-300" />
+                      <p className="text-base md:text-sm text-gray-600 mb-2 md:mb-1">No appointments today</p>
+                      <p className="text-sm md:text-xs text-gray-500">No appointments scheduled for today</p>
                     </div>
                   ) : (
                     <div className="divide-y divide-gray-100">
@@ -596,47 +597,47 @@ export default function StaffDashboard() {
                         return (
                           <div 
                             key={appointment.id} 
-                            className="px-4 py-3 hover:bg-gray-50 transition-colors"
+                            className="px-5 py-4 md:px-4 md:py-3 hover:bg-gray-50 transition-colors"
                           >
-                            <div className="flex items-start justify-between">
+                            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0">
                               <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className="text-sm font-medium text-gray-900">{patientName}</span>
-                                  <span className={`text-xs font-medium ${getStatusColor(appointment.status)}`}>
+                                <div className="flex items-center gap-2 mb-2 md:mb-1">
+                                  <span className="text-base md:text-sm font-semibold md:font-medium text-gray-900">{patientName}</span>
+                                  <span className={`text-sm md:text-xs font-semibold md:font-medium ${getStatusColor(appointment.status)}`}>
                                     •
                                   </span>
                                 </div>
-                                <div className="flex items-center gap-3 text-xs text-gray-600">
+                                <div className="flex flex-wrap items-center gap-2 md:gap-3 text-sm md:text-xs text-gray-600">
                                   <span>{doctorName}</span>
-                                  <span className="text-gray-400">•</span>
+                                  <span className="hidden md:inline text-gray-400">•</span>
                                   <span>{appointment.type.replace("_", " ").toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase())}</span>
-                                  <span className="text-gray-400">•</span>
+                                  <span className="hidden md:inline text-gray-400">•</span>
                                   <span>
                                     {new Date(appointment.scheduledDateTime).toLocaleTimeString([], {
                                       hour: "2-digit",
                                       minute: "2-digit",
                                     })}
                                   </span>
-                                  <span className="text-gray-400">•</span>
+                                  <span className="hidden md:inline text-gray-400">•</span>
                                   <span className="font-mono">
                                     #{('patient' in appointment) ? appointment.patient.id.split('_')[1] : 'Loading...'}
                                   </span>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 w-full md:w-auto">
                                 <button 
                                   onClick={() => {
                                     // Remove appt_ prefix if it exists to avoid duplication
                                     const cleanId = appointment.id.startsWith('appt_') ? appointment.id.slice(5) : appointment.id;
                                     window.open(`/appointment/${cleanId}`, '_blank');
                                   }}
-                                  className="text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border border-gray-200 rounded-xs hover:bg-gray-50"
+                                  className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border border-gray-200 rounded-xs hover:bg-gray-50"
                                 >
                                   Details
                                 </button>
                                 <button 
                                   onClick={() => handleOpenAppointmentDetails(appointment)}
-                                  className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 hover:border-blue-700 px-2 py-1 rounded-xs"
+                                  className="text-sm md:text-xs font-semibold md:font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 md:px-2 md:py-1 rounded-sm flex-1 md:flex-initial"
                                 >
                                   Modify
                                 </button>
@@ -652,8 +653,8 @@ export default function StaffDashboard() {
             </section>
           </div>
 
-          {/* Right Column - Side Information */}
-          <div className="col-span-4 space-y-6">
+          {/* Right Column - Side Information - Hidden on Mobile */}
+          <div className="hidden md:block md:col-span-4 space-y-6">
             
             {/* Assistance Requests */}
             <AssistanceRequestsPanel onRequestClick={handleAssistanceRequestClick} />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useMemo, Suspense } from "react";
+import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Calendar,
@@ -13,12 +13,7 @@ import {
   AlertCircle,
   Loader2,
   Download,
-  Activity,
-  CheckCircle2,
-  XCircle,
-  Plus,
   ChevronRight,
-  ArrowUpRight,
   ChevronDown,
 } from "lucide-react";
 import { usePatients, usePatient } from "@/hooks/use-patients";
@@ -34,7 +29,6 @@ import {
 import { BookAppointmentModal } from "@/components/book-appointment-modal";
 import { EditPatientModal } from "@/components/edit-patient-modal";
 import { NavigationBar } from "@/components/navigation-bar";
-import { Patient, Appointment, AppointmentWithDetails } from "@/lib/api-types";
 
 // Helper function to extract value from value objects
 const extractValue = (
@@ -168,7 +162,7 @@ export default function PatientDashboard() {
       <div className="min-h-screen bg-gray-50">
         {/* Navigation Bar */}
         <NavigationBar />
-        
+
         <div className="p-6 w-full h-full flex items-center justify-center">
           <div className="bg-white border border-red-200 rounded-sm p-4 max-w-md">
             <div className="flex items-center gap-2 text-red-600 mb-2">
@@ -196,7 +190,7 @@ export default function PatientDashboard() {
       <div className="min-h-screen bg-gray-50">
         {/* Navigation Bar */}
         <NavigationBar />
-        
+
         <div className="p-6">
           <div className="bg-white border border-gray-200 rounded-sm p-8 text-center max-w-md mx-auto">
             <User className="h-8 w-8 mx-auto mb-3 text-gray-300" />
@@ -235,22 +229,22 @@ export default function PatientDashboard() {
       {/* Navigation Bar */}
       <NavigationBar />
 
-      {/* Header */}
+      {/* Header - Mobile Optimized */}
       <div className="bg-white border-b border-gray-200">
-        <div className="px-6 py-3">
+        <div className="px-4 md:px-6 py-4 md:py-3">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-base font-semibold text-gray-900">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl md:text-base font-bold md:font-semibold text-gray-900 truncate">
                 {patient.firstName} {patient.lastName}
               </h1>
-              <p className="text-xs text-gray-500 font-mono uppercase font-extralight tracking-normal">
+              <p className="text-sm md:text-xs text-gray-500 md:font-mono md:uppercase md:font-extralight md:tracking-normal">
                 Patient ID {patient.id.split("_")[1]}
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              {/* Patient Selection Dropdown */}
+            <div className="flex items-center gap-2 md:gap-2">
+              {/* Patient Selection Dropdown - Desktop Only */}
               {patientsData?.patients && patientsData.patients.length > 1 && (
-                <div className="relative">
+                <div className="hidden md:block relative">
                   <select
                     value={validPatientId || ""}
                     onChange={(e) => setSelectedPatientId(e.target.value)}
@@ -266,85 +260,113 @@ export default function PatientDashboard() {
                 </div>
               )}
 
+              {/* Desktop Book Appointment Button */}
               <button
                 onClick={() => setIsBookingModalOpen(true)}
-                className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+                className="hidden md:block text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
               >
                 Book Appointment
               </button>
+
+              {/* Mobile Menu Button (if needed for patient selection) */}
+              {patientsData?.patients && patientsData.patients.length > 1 && (
+                <button className="md:hidden p-2 text-gray-500 active:text-gray-700 rounded-xl active:bg-gray-100 transition-colors">
+                  <User className="h-6 w-6" />
+                </button>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Grid Layout */}
-      <div className="p-6">
-        <div className="grid grid-cols-12 gap-6">
-          {/* Left Column - Main Content */}
-          <div className="col-span-8 space-y-6">
-            {/* Contact Information */}
-            <section>
-              <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
+      {/* Mobile-First Main Layout */}
+      <div className="pb-20 md:pb-6">
+        {/* Mobile: Single Column Stack | Desktop: Keep Grid */}
+        <div className="md:p-6 md:grid md:grid-cols-12 md:gap-6">
+          {/* Main Content */}
+          <div className="md:col-span-8 space-y-4 md:space-y-6">
+            {/* Contact Information - Apple Card Style */}
+            <section className="px-4 md:px-0">
+              <h2 className="hidden md:block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
                 Contact Information
               </h2>
-              <div className="bg-white border border-gray-200 rounded-sm divide-y divide-gray-100">
-                <div className="px-4 py-3 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Phone className="h-3.5 w-3.5 text-gray-400" />
-                    <div>
-                      <p className="text-xs text-gray-500">Phone</p>
-                      <p className="text-sm font-medium text-gray-900">
+              <div className="bg-white md:border md:border-gray-200 rounded-sm  overflow-hidden">
+                <div className="px-6 py-4 md:px-4 md:py-3">
+                  <div className="flex items-center gap-4 md:gap-3">
+                    <div className="w-10 h-10 md:w-auto md:h-auto bg-blue-100 rounded-full flex items-center justify-center md:bg-transparent">
+                      <Phone className="h-5 w-5 md:h-3.5 md:w-3.5 text-blue-600 md:text-gray-400" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900 md:text-xs md:text-gray-500 md:font-normal">
+                        Phone
+                      </p>
+                      <p className="text-lg font-semibold text-gray-900 md:text-sm md:font-medium mt-1 md:mt-0">
                         {extractValue(patient.phone)}
                       </p>
                     </div>
+                    <ChevronRight className="h-5 w-5 text-gray-300 md:hidden" />
                   </div>
                 </div>
-                <div className="px-4 py-3 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-3.5 w-3.5 text-gray-400" />
-                    <div>
-                      <p className="text-xs text-gray-500">Email</p>
-                      <p className="text-sm font-medium text-gray-900">
+                <div className="h-px bg-gray-100 mx-6 md:mx-0" />
+                <div className="px-6 py-4 md:px-4 md:py-3">
+                  <div className="flex items-center gap-4 md:gap-3">
+                    <div className="w-10 h-10 md:w-auto md:h-auto bg-green-100 rounded-full flex items-center justify-center md:bg-transparent">
+                      <Mail className="h-5 w-5 md:h-3.5 md:w-3.5 text-green-600 md:text-gray-400" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900 md:text-xs md:text-gray-500 md:font-normal">
+                        Email
+                      </p>
+                      <p className="text-lg font-semibold text-gray-900 md:text-sm md:font-medium mt-1 md:mt-0 break-all">
                         {extractValue(patient.email)}
                       </p>
                     </div>
+                    <ChevronRight className="h-5 w-5 text-gray-300 md:hidden" />
                   </div>
                 </div>
-                <div className="px-4 py-3 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-3.5 w-3.5 text-gray-400" />
-                    <div>
-                      <p className="text-xs text-gray-500">Address</p>
-                      <p className="text-sm font-medium text-gray-900">
+                <div className="h-px bg-gray-100 mx-6 md:mx-0" />
+                <div className="px-6 py-4 md:px-4 md:py-3">
+                  <div className="flex items-center gap-4 md:gap-3">
+                    <div className="w-10 h-10 md:w-auto md:h-auto bg-purple-100 rounded-full flex items-center justify-center md:bg-transparent">
+                      <MapPin className="h-5 w-5 md:h-3.5 md:w-3.5 text-purple-600 md:text-gray-400" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900 md:text-xs md:text-gray-500 md:font-normal">
+                        Address
+                      </p>
+                      <p className="text-lg font-semibold text-gray-900 md:text-sm md:font-medium mt-1 md:mt-0">
                         {patient.address || "Not provided"}
                       </p>
                     </div>
+                    <ChevronRight className="h-5 w-5 text-gray-300 md:hidden" />
                   </div>
                 </div>
               </div>
             </section>
 
-            {/* Upcoming Appointments */}
-            <section>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+            {/* Upcoming Appointments - Apple Card Style */}
+            <section className="px-4 md:px-0">
+              <div className="flex items-center justify-between mb-3 md:mb-3">
+                <h2 className="text-xl font-bold text-gray-900 md:text-xs md:font-semibold md:text-gray-600 md:uppercase md:tracking-wider">
                   Upcoming Appointments
-                  <span className="ml-2 font-mono text-gray-400 font-normal">
+                  <span className="ml-2 text-lg font-medium text-gray-500 md:font-mono md:text-gray-400 md:font-normal md:text-xs">
                     {upcomingAppointments.length}
                   </span>
                 </h2>
-                <button className="text-xs font-medium text-gray-700 hover:text-gray-900">
+                <button className="text-blue-600 font-medium md:text-xs md:font-medium md:text-gray-700 md:hover:text-gray-900">
                   View All
                 </button>
               </div>
-              <div className="bg-white border border-gray-200 rounded-sm">
+              <div className="bg-white md:border md:border-gray-200 rounded-sm  overflow-hidden">
                 {upcomingAppointments.length === 0 ? (
-                  <div className="px-4 py-8 text-center">
-                    <Calendar className="h-6 w-6 mx-auto mb-2 text-gray-300" />
-                    <p className="text-sm text-gray-600 mb-1">
+                  <div className="px-6 py-12 md:px-4 md:py-8 text-center">
+                    <div className="w-16 h-16 md:w-6 md:h-6 mx-auto mb-4 md:mb-2 bg-gray-100 rounded-full flex items-center justify-center">
+                      <Calendar className="h-8 w-8 md:h-6 md:w-6 text-gray-300" />
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900 mb-2 md:text-sm md:text-gray-600 md:mb-1 md:font-normal">
                       No upcoming appointments
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-base text-gray-500 md:text-xs md:text-gray-500">
                       Schedule your next visit
                     </p>
                   </div>
@@ -356,48 +378,106 @@ export default function PatientDashboard() {
                           ? `Dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}`
                           : "Doctor information unavailable";
 
+                      const appointmentDate = new Date(
+                        appointment.scheduledDateTime
+                      );
+                      const isToday =
+                        appointmentDate.toDateString() ===
+                        new Date().toDateString();
+                      const isTomorrow =
+                        appointmentDate.toDateString() ===
+                        new Date(Date.now() + 86400000).toDateString();
+
                       return (
                         <div
                           key={appointment.id}
-                          className="px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
+                          className="px-6 py-5 md:px-4 md:py-3 active:bg-gray-50 md:hover:bg-gray-50 transition-colors cursor-pointer"
                         >
-                          <div className="flex items-start justify-between">
+                          <div className="flex items-center justify-between">
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-sm font-medium text-gray-900">
-                                  {appointment.type
-                                    .replace("_", " ")
-                                    .toLowerCase()
-                                    .replace(/\b\w/g, (l) => l.toUpperCase())}
-                                </span>
-                                <span
-                                  className={`text-xs font-medium ${getStatusColor(
-                                    appointment.status
-                                  )}`}
-                                >
-                                  •
-                                </span>
+                              {/* Mobile: Large Typography */}
+                              <div className="md:hidden">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="text-lg font-semibold text-gray-900">
+                                    {appointment.type
+                                      .replace("_", " ")
+                                      .toLowerCase()
+                                      .replace(/\b\w/g, (l) => l.toUpperCase())}
+                                  </h3>
+                                  <div
+                                    className={`w-2 h-2 rounded-full ${getStatusColor(
+                                      appointment.status
+                                    ).replace("text-", "bg-")}`}
+                                  />
+                                </div>
+                                <p className="text-base text-gray-600 mb-2">
+                                  {doctorName}
+                                </p>
+                                <div className="flex items-center gap-4">
+                                  <div className="flex items-center gap-2">
+                                    <Calendar className="h-4 w-4 text-gray-400" />
+                                    <span className="text-sm font-medium text-gray-700">
+                                      {isToday
+                                        ? "Today"
+                                        : isTomorrow
+                                        ? "Tomorrow"
+                                        : appointmentDate.toLocaleDateString(
+                                            "en-US",
+                                            {
+                                              weekday: "short",
+                                              month: "short",
+                                              day: "numeric",
+                                            }
+                                          )}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4 text-gray-400" />
+                                    <span className="text-sm font-medium text-gray-700">
+                                      {appointmentDate.toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-3 text-xs text-gray-600">
-                                <span>{doctorName}</span>
-                                <span className="text-gray-400">•</span>
-                                <span>
-                                  {new Date(
-                                    appointment.scheduledDateTime
-                                  ).toLocaleDateString()}
-                                </span>
-                                <span className="text-gray-400">•</span>
-                                <span>
-                                  {new Date(
-                                    appointment.scheduledDateTime
-                                  ).toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
-                                </span>
+
+                              {/* Desktop: Compact Layout */}
+                              <div className="hidden md:block">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-sm font-medium text-gray-900">
+                                    {appointment.type
+                                      .replace("_", " ")
+                                      .toLowerCase()
+                                      .replace(/\b\w/g, (l) => l.toUpperCase())}
+                                  </span>
+                                  <span
+                                    className={`text-xs font-medium ${getStatusColor(
+                                      appointment.status
+                                    )}`}
+                                  >
+                                    •
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-3 text-xs text-gray-600">
+                                  <span>{doctorName}</span>
+                                  <span className="text-gray-400">•</span>
+                                  <span>
+                                    {appointmentDate.toLocaleDateString()}
+                                  </span>
+                                  <span className="text-gray-400">•</span>
+                                  <span>
+                                    {appointmentDate.toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                            <div className="flex items-center gap-1">
+
+                            <div className="flex items-center gap-3 md:gap-1">
                               {appointment.status === "SCHEDULED" && (
                                 <button
                                   onClick={(e) => {
@@ -408,12 +488,12 @@ export default function PatientDashboard() {
                                     );
                                   }}
                                   disabled={isUpdatingAppointmentStatus}
-                                  className="text-xs px-2 py-1 text-red-600 hover:bg-red-50 border border-red-200 rounded-xs transition-colors disabled:opacity-50"
+                                  className="px-4 py-2 md:text-xs md:px-2 md:py-1 text-red-600 hover:bg-red-50 active:bg-red-100 border border-red-200 rounded-full md:rounded-xs transition-colors disabled:opacity-50 font-medium"
                                 >
                                   Cancel
                                 </button>
                               )}
-                              <ArrowUpRight className="h-3 w-3 text-gray-400" />
+                              <ChevronRight className="h-6 w-6 md:h-3 md:w-3 text-gray-300" />
                             </div>
                           </div>
                         </div>
@@ -424,34 +504,38 @@ export default function PatientDashboard() {
               </div>
             </section>
 
-            {/* Medical Documents */}
-            <section>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+            {/* Medical Documents - Apple Card Style */}
+            <section className="px-4 md:px-0">
+              <div className="flex items-center justify-between mb-3 md:mb-3">
+                <h2 className="text-xl font-bold text-gray-900 md:text-xs md:font-semibold md:text-gray-600 md:uppercase md:tracking-wider">
                   Medical Documents
-                  <span className="ml-2 font-mono text-gray-400 font-normal">
+                  <span className="ml-2 text-lg font-medium text-gray-500 md:font-mono md:text-gray-400 md:font-normal md:text-xs">
                     {documents.length}
                   </span>
                 </h2>
-                <button className="text-xs font-medium text-gray-700 hover:text-gray-900">
+                <button className="text-blue-600 font-medium md:text-xs md:font-medium md:text-gray-700 md:hover:text-gray-900">
                   Request Document
                 </button>
               </div>
-              <div className="bg-white border border-gray-200 rounded-sm">
+              <div className="bg-white md:border md:border-gray-200 rounded-sm  overflow-hidden">
                 {isDocumentsLoading ? (
-                  <div className="px-4 py-8 text-center">
-                    <Loader2 className="h-4 w-4 mx-auto mb-2 text-gray-300 animate-spin" />
-                    <p className="text-xs text-gray-500">
+                  <div className="px-6 py-12 md:px-4 md:py-8 text-center">
+                    <div className="w-16 h-16 md:w-4 md:h-4 mx-auto mb-4 md:mb-2 bg-gray-100 rounded-full flex items-center justify-center">
+                      <Loader2 className="h-8 w-8 md:h-4 md:w-4 text-gray-300 animate-spin" />
+                    </div>
+                    <p className="text-base text-gray-500 md:text-xs md:text-gray-500">
                       Loading documents...
                     </p>
                   </div>
                 ) : documents.length === 0 ? (
-                  <div className="px-4 py-8 text-center">
-                    <FileText className="h-6 w-6 mx-auto mb-2 text-gray-300" />
-                    <p className="text-sm text-gray-600 mb-1">
+                  <div className="px-6 py-12 md:px-4 md:py-8 text-center">
+                    <div className="w-16 h-16 md:w-6 md:h-6 mx-auto mb-4 md:mb-2 bg-gray-100 rounded-full flex items-center justify-center">
+                      <FileText className="h-8 w-8 md:h-6 md:w-6 text-gray-300" />
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900 mb-2 md:text-sm md:text-gray-600 md:mb-1 md:font-normal">
                       No documents available
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-base text-gray-500 md:text-xs md:text-gray-500">
                       Medical records will appear here
                     </p>
                   </div>
@@ -460,18 +544,70 @@ export default function PatientDashboard() {
                     {documents.map((doc) => (
                       <div
                         key={doc.id}
-                        className="px-4 py-3 hover:bg-gray-50 transition-colors"
+                        className="px-6 py-5 md:px-4 md:py-3 active:bg-gray-50 md:hover:bg-gray-50 transition-colors"
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <span
-                              className={`px-2 py-1 text-xs font-mono border rounded-xs ${getDocumentTypeStyles(
+                        <div className="flex items-center gap-4 md:gap-3">
+                          {/* Mobile: Larger Document Type Badge */}
+                          <div className="md:hidden">
+                            <div
+                              className={`px-3 py-2 text-sm font-mono border rounded-xl ${getDocumentTypeStyles(
                                 doc.type
                               )}`}
                             >
                               {doc.type}
-                            </span>
-                            <div className="flex-1">
+                            </div>
+                          </div>
+
+                          {/* Desktop: Small Badge */}
+                          <span
+                            className={`hidden md:inline-block px-2 py-1 text-xs font-mono border rounded-xs ${getDocumentTypeStyles(
+                              doc.type
+                            )}`}
+                          >
+                            {doc.type}
+                          </span>
+
+                          <div className="flex-1">
+                            {/* Mobile: Large Typography */}
+                            <div className="md:hidden">
+                              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                                {doc.name}
+                              </h3>
+                              <div className="flex items-center gap-3 text-sm text-gray-600">
+                                <span className="font-medium">
+                                  {formatFileSize(doc.fileSize)}
+                                </span>
+                                <span className="text-gray-400">•</span>
+                                <span>
+                                  {new Date(doc.uploadedAt).toLocaleDateString(
+                                    "en-US",
+                                    {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                    }
+                                  )}
+                                </span>
+                              </div>
+                              <div className="mt-2">
+                                <span
+                                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                                    doc.status === "COMPLETE"
+                                      ? "bg-green-100 text-green-800"
+                                      : doc.status === "ACTIVE"
+                                      ? "bg-blue-100 text-blue-800"
+                                      : doc.status === "PENDING"
+                                      ? "bg-orange-100 text-orange-800"
+                                      : "bg-gray-100 text-gray-800"
+                                  }`}
+                                >
+                                  {doc.status.toLowerCase()}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Desktop: Compact Layout */}
+                            <div className="hidden md:block">
                               <p className="text-sm font-medium text-gray-900">
                                 {doc.name}
                               </p>
@@ -502,12 +638,13 @@ export default function PatientDashboard() {
                               </div>
                             </div>
                           </div>
+
                           <button
-                            className="flex items-center gap-1 text-xs font-medium text-gray-700 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center gap-2 px-4 py-2 md:gap-1 md:text-xs md:font-medium text-blue-600 md:text-gray-700 hover:bg-blue-50 md:hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed rounded-full md:rounded-none font-medium transition-colors"
                             disabled={doc.status === "PENDING"}
                           >
-                            <Download className="h-3 w-3" />
-                            Download
+                            <Download className="h-5 w-5 md:h-3 md:w-3" />
+                            <span className="md:inline">Download</span>
                           </button>
                         </div>
                       </div>
@@ -518,8 +655,8 @@ export default function PatientDashboard() {
             </section>
           </div>
 
-          {/* Right Column - Side Information */}
-          <div className="col-span-4 space-y-6">
+          {/* Right Column - Desktop Only Sidebar */}
+          <div className="hidden md:block md:col-span-4 space-y-6">
             {/* Quick Stats */}
             <section>
               <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
@@ -622,6 +759,102 @@ export default function PatientDashboard() {
               </div>
             </section>
           </div>
+
+          {/* Mobile Overview Cards - Stacked below main content */}
+          <div className="md:hidden px-4 space-y-4">
+            {/* Quick Stats Cards */}
+            <section>
+              <h2 className="text-xl font-bold text-gray-900 mb-3">Overview</h2>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-white rounded-2xl shadow-sm p-4 text-center">
+                  <p className="text-2xl font-bold text-gray-900 mb-1">
+                    {appointments.length}
+                  </p>
+                  <p className="text-sm text-gray-600">Total</p>
+                </div>
+                <div className="bg-white rounded-2xl shadow-sm p-4 text-center">
+                  <p className="text-2xl font-bold text-blue-600 mb-1">
+                    {upcomingAppointments.length}
+                  </p>
+                  <p className="text-sm text-gray-600">Upcoming</p>
+                </div>
+                <div className="bg-white rounded-2xl shadow-sm p-4 text-center">
+                  <p className="text-2xl font-bold text-gray-900 mb-1">
+                    {documents.length}
+                  </p>
+                  <p className="text-sm text-gray-600">Documents</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Recent Activity */}
+            {pastAppointments.length > 0 && (
+              <section>
+                <h2 className="text-xl font-bold text-gray-900 mb-3">
+                  Recent Activity
+                </h2>
+                <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                  <div className="divide-y divide-gray-100">
+                    {pastAppointments.slice(0, 3).map((appointment) => {
+                      const doctorName =
+                        "doctor" in appointment
+                          ? `Dr. ${appointment.doctor.lastName}`
+                          : "Doctor";
+
+                      return (
+                        <div key={appointment.id} className="px-6 py-4">
+                          <div className="flex items-start gap-4">
+                            <div
+                              className={`mt-2 w-3 h-3 rounded-full ${
+                                appointment.status === "COMPLETED"
+                                  ? "bg-green-500"
+                                  : "bg-red-500"
+                              }`}
+                            />
+                            <div className="flex-1">
+                              <h3 className="text-lg font-semibold text-gray-900">
+                                {appointment.type
+                                  .replace("_", " ")
+                                  .toLowerCase()
+                                  .replace(/\b\w/g, (l) => l.toUpperCase())}
+                              </h3>
+                              <p className="text-base text-gray-600 mt-1">
+                                {doctorName} •{" "}
+                                {new Date(
+                                  appointment.scheduledDateTime
+                                ).toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "numeric",
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Action Bar - Apple Style */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 safe-area-inset-bottom">
+        <div className="flex gap-3">
+          <button
+            onClick={() => setIsBookingModalOpen(true)}
+            className="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-semibold text-lg active:bg-blue-700 transition-colors"
+          >
+            Book Appointment
+          </button>
+          <button
+            onClick={() => setIsEditModalOpen(true)}
+            className="px-6 py-4 bg-gray-100 text-gray-700 rounded-2xl font-semibold active:bg-gray-200 transition-colors"
+          >
+            Edit Profile
+          </button>
         </div>
       </div>
 

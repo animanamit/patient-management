@@ -70,13 +70,13 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
       aria-label="Main navigation"
     >
       <div className="px-4 sm:px-6">
-        <div className="flex items-center justify-between h-12">
-          {/* Logo */}
+        <div className="flex items-center justify-between h-14 md:h-12">
+          {/* Logo - Mobile Optimized */}
           <Link href="/" className="flex items-center gap-3" aria-label="CarePulse - Healthcare Management Home">
-            <div className="w-6 h-6 bg-blue-500 rounded-sm flex items-center justify-center">
-              <Heart className="h-3.5 w-3.5 text-white" aria-hidden="true" />
+            <div className="w-8 h-8 md:w-6 md:h-6 bg-blue-500 rounded-sm flex items-center justify-center">
+              <Heart className="h-4 w-4 md:h-3.5 md:w-3.5 text-white" aria-hidden="true" />
             </div>
-            <span className="text-base font-semibold text-gray-900">
+            <span className="text-lg md:text-base font-bold md:font-semibold text-gray-900">
               CarePulse
             </span>
           </Link>
@@ -140,26 +140,26 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
             )}
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button - Improved Touch Target */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-xs text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="md:hidden p-3 rounded-sm text-gray-400 hover:text-gray-600 hover:bg-gray-100 active:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
             aria-label="Toggle mobile menu"
           >
             {isMobileMenuOpen ? (
-              <X className="h-4 w-4" aria-hidden="true" />
+              <X className="h-5 w-5" aria-hidden="true" />
             ) : (
-              <Menu className="h-4 w-4" aria-hidden="true" />
+              <Menu className="h-5 w-5" aria-hidden="true" />
             )}
           </button>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation - Enhanced Touch Experience */}
         {isMobileMenuOpen && (
-          <div id="mobile-menu" className="md:hidden py-3 border-t border-gray-200" role="navigation" aria-label="Mobile menu">
-            <div className="space-y-1">
+          <div id="mobile-menu" className="md:hidden py-4 border-t border-gray-200" role="navigation" aria-label="Mobile menu">
+            <div className="space-y-2">
               {navigationItems.slice(1).map((item) => {
                 const Icon = item.icon;
                 return (
@@ -168,17 +168,17 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
                     href={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
                     aria-current={item.active ? "page" : undefined}
-                    className={`flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors rounded-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                    className={`flex items-center gap-4 px-4 py-3 text-base font-semibold transition-colors rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 ${
                       item.active
                         ? "bg-blue-50 text-blue-700 border border-blue-200"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                        : "text-gray-700 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100"
                     }`}
                   >
-                    <Icon className="h-4 w-4" aria-hidden="true" />
+                    <Icon className="h-5 w-5" aria-hidden="true" />
                     {item.label}
                     {item.href === "/staff" && pendingCount > 0 && (
                       <span 
-                        className="ml-auto px-1.5 py-0.5 bg-red-500 text-white text-xs font-medium rounded-full"
+                        className="ml-auto px-2 py-1 bg-red-500 text-white text-sm font-medium rounded-full"
                         aria-label={`${pendingCount} pending assistance requests`}
                       >
                         {pendingCount}
@@ -188,13 +188,13 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
                 );
               })}
               
-              {/* Mobile Auth Section */}
-              <div className="border-t border-gray-200 pt-2 mt-2">
+              {/* Mobile Auth Section - Enhanced Touch */}
+              <div className="border-t border-gray-200 pt-3 mt-3">
                 {isAuthenticated && user ? (
                   <div className="space-y-2">
-                    <div className="flex items-center gap-3 px-3 py-2 text-sm text-gray-600">
-                      <User className="h-4 w-4" />
-                      <span>{user.name || user.email}</span>
+                    <div className="flex items-center gap-4 px-4 py-3 text-base text-gray-600 bg-gray-50 rounded-sm">
+                      <User className="h-5 w-5" />
+                      <span className="font-medium">{user.name || user.email}</span>
                     </div>
                     <button
                       onClick={() => {
@@ -202,9 +202,9 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
                         setIsMobileMenuOpen(false);
                       }}
                       disabled={isSigningOut}
-                      className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-xs w-full text-left"
+                      className="flex items-center gap-4 px-4 py-3 text-base font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100 rounded-sm w-full text-left transition-colors active:scale-95"
                     >
-                      <LogOut className="h-4 w-4" />
+                      <LogOut className="h-5 w-5" />
                       {isSigningOut ? 'Signing out...' : 'Sign out'}
                     </button>
                   </div>
@@ -212,9 +212,9 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
                   <Link
                     href="/sign-in"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-xs"
+                    className="flex items-center gap-4 px-4 py-3 text-base font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100 rounded-sm transition-colors active:scale-95"
                   >
-                    <User className="h-4 w-4" />
+                    <User className="h-5 w-5" />
                     Sign in
                   </Link>
                 )}
