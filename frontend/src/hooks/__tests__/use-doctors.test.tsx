@@ -1,13 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { useDoctors, useDoctor, useCreateDoctor, useUpdateDoctor, useDeleteDoctor } from '../use-doctors'
-import { createTestQueryClient, mockDoctor } from '@/test/test-utils'
+import { createTestQueryClient, mockDoctor, server } from '@/test/test-utils'
 import { QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
-import { api } from '@/lib/api'
-
-// Mock the API
-vi.mock('@/lib/api')
+import { http, HttpResponse } from 'msw'
 
 describe('use-doctors hooks', () => {
   const createWrapper = () => {
@@ -26,13 +23,6 @@ describe('use-doctors hooks', () => {
 
   describe('useDoctors', () => {
     it('should fetch doctors successfully', async () => {
-      const mockDoctorsData = {
-        doctors: [mockDoctor],
-        total: 1,
-      }
-
-      vi.mocked(api.doctors.list).mockResolvedValue(mockDoctorsData)
-
       const { result } = renderHook(() => useDoctors(), {
         wrapper: createWrapper(),
       })
@@ -41,13 +31,25 @@ describe('use-doctors hooks', () => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      expect(result.current.data).toEqual(mockDoctorsData)
-      expect(api.doctors.list).toHaveBeenCalled()
+      expect(result.current.data).toBeDefined()
+      expect(result.current.data?.doctors).toHaveLength(3) // Based on mock data
+      expect(result.current.data?.doctors[0]).toMatchObject({
+        firstName: 'Sarah',
+        lastName: 'Smith',
+        specialization: 'General Practice',
+      })
     })
 
     it('should handle error when fetching doctors', async () => {
-      const mockError = new Error('Failed to fetch doctors')
-      vi.mocked(api.doctors.list).mockRejectedValue(mockError)
+      // Override the default handler to return an error
+      server.use(
+        http.get('http://localhost:8000/api/doctors', () => {
+          return HttpResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+          )
+        })
+      )
 
       const { result } = renderHook(() => useDoctors(), {
         wrapper: createWrapper(),
@@ -57,15 +59,12 @@ describe('use-doctors hooks', () => {
         expect(result.current.isError).toBe(true)
       })
 
-      expect(result.current.error).toEqual(mockError)
+      expect(result.current.error).toBeDefined()
     })
   })
 
   describe('useDoctor', () => {
     it('should fetch a single doctor successfully', async () => {
-      const mockDoctorData = { doctor: mockDoctor }
-      vi.mocked(api.doctors.get).mockResolvedValue(mockDoctorData)
-
       const { result } = renderHook(() => useDoctor('doctor_123'), {
         wrapper: createWrapper(),
       })
@@ -74,28 +73,50 @@ describe('use-doctors hooks', () => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      expect(result.current.data).toEqual(mockDoctorData)
-      expect(api.doctors.get).toHaveBeenCalledWith('doctor_123')
+      expect(result.current.data?.doctor).toMatchObject({
+        id: 'doctor_123',
+        firstName: 'Sarah',
+        lastName: 'Smith',
+        specialization: 'General Practice',
+      })
     })
 
-    it('should not fetch if doctorId is not provided', () => {
-      vi.mocked(api.doctors.get).mockResolvedValue({ doctor: mockDoctor })
+    it('should handle 404 error for non-existent doctor', async () => {
+      server.use(
+        http.get('http://localhost:8000/api/doctors/nonexistent', () => {
+          return HttpResponse.json(
+            { error: 'Doctor not found' },
+            { status: 404 }
+          )
+        })
+      )
 
-      renderHook(() => useDoctor(''), {
+      const { result } = renderHook(() => useDoctor('nonexistent'), {
         wrapper: createWrapper(),
       })
 
-      expect(api.doctors.get).not.toHaveBeenCalled()
+      await waitFor(() => {
+        expect(result.current.isError).toBe(true)
+      })
+
+      expect(result.current.error).toBeDefined()
+    })
+
+    it('should not fetch if doctorId is empty', () => {
+      const { result } = renderHook(() => useDoctor(''), {
+        wrapper: createWrapper(),
+      })
+
+      // Should not trigger any request
+      expect(result.current.isIdle).toBe(true)
     })
 
     it('should not fetch if disabled', () => {
-      vi.mocked(api.doctors.get).mockResolvedValue({ doctor: mockDoctor })
-
-      renderHook(() => useDoctor('doctor_123', { enabled: false }), {
+      const { result } = renderHook(() => useDoctor('doctor_123', { enabled: false }), {
         wrapper: createWrapper(),
       })
 
-      expect(api.doctors.get).not.toHaveBeenCalled()
+      expect(result.current.isIdle).toBe(true)
     })
   })
 

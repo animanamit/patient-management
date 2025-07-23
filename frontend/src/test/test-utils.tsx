@@ -48,6 +48,10 @@ export const mockAuthContext = {
   isLoading: false,
 }
 
+// MSW Test helpers
+export { setMockSession, clearMockSession, getMockSession } from './mocks/handlers/auth-handlers'
+export { server } from './mocks/server'
+
 // Mock user data
 export const mockUser = {
   id: 'user_123',
