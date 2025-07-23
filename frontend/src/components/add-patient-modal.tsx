@@ -94,16 +94,16 @@ export const AddPatientModal = ({
           aria-hidden="true"
         />
         
-        <div className="relative w-full max-w-lg md:max-w-md bg-white border-0 md:border md:border-gray-200 rounded-t-sm md:rounded-sm ">
+        <div className="relative w-full max-w-lg md:max-w-md bg-white border-0 md:border rounded-t-sm md:rounded-sm " style={{ borderColor: '#E0ECDB' }}>
           {/* Mobile handle */}
           <div className="md:hidden flex justify-center pt-3 pb-2">
-            <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
+            <div className="w-10 h-1 rounded-full" style={{ backgroundColor: '#D0E5C4' }}></div>
           </div>
           
           {/* Header */}
-          <div className="px-6 py-6 md:px-6 md:py-4 md:border-b md:border-gray-200">
+          <div className="px-6 py-6 md:px-6 md:py-4 md:border-b" style={{ borderColor: '#E0ECDB' }}>
             <div className="flex items-center justify-between">
-              <h2 id="modal-title" className="text-xl md:text-base font-bold md:font-semibold text-gray-900">
+              <h2 id="modal-title" className="text-xl md:text-base font-bold md:font-semibold" style={{ color: '#2D5A29' }}>
                 Add New Patient
               </h2>
               <button
@@ -139,9 +139,9 @@ export const AddPatientModal = ({
               <form onSubmit={handleSubmit} className="space-y-6 md:space-y-4">
                 {/* Error Display */}
                 {error && (
-                  <div className="p-4 md:p-3 bg-red-50 border border-red-200 rounded-sm">
+                  <div className="p-4 md:p-3 border rounded-sm" style={{ backgroundColor: '#EDF5E9', borderColor: '#D0E5C4' }}>
                     <div className="flex items-center gap-3 md:gap-2">
-                      <AlertCircle className="h-5 w-5 md:h-4 md:w-4 text-red-600" />
+                      <AlertCircle className="h-5 w-5 md:h-4 md:w-4" style={{ color: '#6B9A65' }} />
                       <p className="text-base md:text-sm text-red-700">{error}</p>
                     </div>
                   </div>

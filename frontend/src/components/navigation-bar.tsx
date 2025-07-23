@@ -30,6 +30,44 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
   const { pendingCount } = useAssistanceRequests();
   const { user, isAuthenticated, signOut, isSigningOut } = useAuth();
 
+  // Determine color palette based on current page
+  const getColorPalette = () => {
+    if (pathname.includes('/staff')) {
+      return {
+        bg: '#F5E8DF', // Warm Sand
+        border: '#EDDCC7', // Soft Beige
+        icon: '#A66B42', // Rich Brown
+        text: '#5D321A', // Dark Chocolate
+        activeBg: '#EDDCC7',
+        hoverBg: '#F5E8DF',
+        ring: '#A66B42'
+      };
+    } else if (pathname.includes('/doctor')) {
+      return {
+        bg: '#EBF1F8', // Pale Sky
+        border: '#D8E4F0', // Soft Steel
+        icon: '#5C7B9E', // Ocean Blue
+        text: '#243A56', // Midnight Blue
+        activeBg: '#D8E4F0',
+        hoverBg: '#EBF1F8',
+        ring: '#5C7B9E'
+      };
+    } else {
+      // Default green palette for home, patient, check-in
+      return {
+        bg: '#EDF5E9', // Soft Meadow
+        border: '#E0ECDB', // Spring Dew
+        icon: '#6B9A65', // Forest Green
+        text: '#2D5A29', // Forest Shadow
+        activeBg: '#E0ECDB',
+        hoverBg: '#EDF5E9',
+        ring: '#6B9A65'
+      };
+    }
+  };
+
+  const colors = getColorPalette();
+
   const navigationItems = [
     {
       href: "/",
@@ -65,7 +103,11 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
 
   return (
     <nav 
-      className={`bg-white border-b border-gray-200 sticky top-0 z-50 ${className}`}
+      className={`border-b sticky top-0 z-50 ${className}`}
+      style={{ 
+        backgroundColor: colors.bg,
+        borderColor: colors.border 
+      }}
       role="banner"
       aria-label="Main navigation"
     >
@@ -73,10 +115,10 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
         <div className="flex items-center justify-between h-14 md:h-12">
           {/* Logo - Mobile Optimized */}
           <Link href="/" className="flex items-center gap-3" aria-label="CarePulse - Healthcare Management Home">
-            <div className="w-8 h-8 md:w-6 md:h-6 bg-blue-500 rounded-sm flex items-center justify-center">
+            <div className="w-8 h-8 md:w-6 md:h-6 rounded-sm flex items-center justify-center" style={{ backgroundColor: colors.icon }}>
               <Heart className="h-4 w-4 md:h-3.5 md:w-3.5 text-white" aria-hidden="true" />
             </div>
-            <span className="text-lg md:text-base font-bold md:font-semibold text-gray-900">
+            <span className="text-lg md:text-base font-bold md:font-semibold" style={{ color: colors.text }}>
               CarePulse
             </span>
           </Link>
@@ -90,11 +132,27 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
                   key={item.href}
                   href={item.href}
                   aria-current={item.active ? "page" : undefined}
-                  className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium transition-colors rounded-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium transition-colors rounded-xs focus:outline-none focus:ring-2 focus:ring-offset-2 border ${
                     item.active
-                      ? "bg-blue-50 text-blue-700 border border-blue-200"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50 border border-transparent"
+                      ? "border"
+                      : "text-gray-600 hover:text-gray-900 border border-transparent"
                   }`}
+                  style={{
+                    backgroundColor: item.active ? colors.activeBg : 'transparent',
+                    color: item.active ? colors.text : undefined,
+                    borderColor: item.active ? colors.border : 'transparent',
+                    '--tw-ring-color': colors.ring
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!item.active) {
+                      e.currentTarget.style.backgroundColor = colors.hoverBg;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!item.active) {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }
+                  }}
                 >
                   <Icon className="h-3.5 w-3.5" aria-hidden="true" />
                   {item.label}
@@ -168,11 +226,27 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
                     href={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
                     aria-current={item.active ? "page" : undefined}
-                    className={`flex items-center gap-4 px-4 py-3 text-base font-semibold transition-colors rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 ${
+                    className={`flex items-center gap-4 px-4 py-3 text-base font-semibold transition-colors rounded-sm focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-95 border ${
                       item.active
-                        ? "bg-blue-50 text-blue-700 border border-blue-200"
-                        : "text-gray-700 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100"
+                        ? "border"
+                        : "text-gray-700 hover:text-gray-900 active:bg-gray-100 border-transparent"
                     }`}
+                    style={{
+                      backgroundColor: item.active ? colors.activeBg : 'transparent',
+                      color: item.active ? colors.text : undefined,
+                      borderColor: item.active ? colors.border : 'transparent',
+                      '--tw-ring-color': colors.ring
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!item.active) {
+                        e.currentTarget.style.backgroundColor = colors.hoverBg;
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!item.active) {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }
+                    }}
                   >
                     <Icon className="h-5 w-5" aria-hidden="true" />
                     {item.label}
@@ -189,10 +263,10 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
               })}
               
               {/* Mobile Auth Section - Enhanced Touch */}
-              <div className="border-t border-gray-200 pt-3 mt-3">
+              <div className="border-t pt-3 mt-3" style={{ borderColor: colors.border }}>
                 {isAuthenticated && user ? (
                   <div className="space-y-2">
-                    <div className="flex items-center gap-4 px-4 py-3 text-base text-gray-600 bg-gray-50 rounded-sm">
+                    <div className="flex items-center gap-4 px-4 py-3 text-base text-gray-600 rounded-sm" style={{ backgroundColor: colors.bg }}>
                       <User className="h-5 w-5" />
                       <span className="font-medium">{user.name || user.email}</span>
                     </div>
@@ -202,7 +276,12 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
                         setIsMobileMenuOpen(false);
                       }}
                       disabled={isSigningOut}
-                      className="flex items-center gap-4 px-4 py-3 text-base font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100 rounded-sm w-full text-left transition-colors active:scale-95"
+                      className="flex items-center gap-4 px-4 py-3 text-base font-semibold text-gray-600 hover:text-gray-900 rounded-sm w-full text-left transition-colors active:scale-95"
+                      style={{ 
+                        backgroundColor: 'transparent'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#E0ECDB'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       <LogOut className="h-5 w-5" />
                       {isSigningOut ? 'Signing out...' : 'Sign out'}
@@ -212,7 +291,12 @@ export const NavigationBar = ({ className = "" }: NavigationBarProps) => {
                   <Link
                     href="/sign-in"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-4 px-4 py-3 text-base font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-50 active:bg-gray-100 rounded-sm transition-colors active:scale-95"
+                    className="flex items-center gap-4 px-4 py-3 text-base font-semibold text-gray-600 hover:text-gray-900 rounded-sm transition-colors active:scale-95"
+                    style={{ 
+                      backgroundColor: 'transparent'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#E0ECDB'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     <User className="h-5 w-5" />
                     Sign in

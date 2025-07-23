@@ -213,17 +213,17 @@ export const BookAppointmentModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center z-50">
-      <div className="bg-white rounded-t-sm md:rounded-sm border-0 md:border md:border-gray-200 w-full max-w-lg md:mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-t-sm md:rounded-sm border-0 md:border w-full max-w-lg md:mx-4 max-h-[90vh] overflow-y-auto" style={{ borderColor: '#E0ECDB' }}>
         {/* Mobile handle */}
         <div className="md:hidden flex justify-center pt-3 pb-2">
-          <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
+          <div className="w-10 h-1 rounded-full" style={{ backgroundColor: '#D0E5C4' }}></div>
         </div>
         
         {/* Header with step indicator */}
-        <div className="px-6 py-6 md:px-6 md:py-4 md:border-b md:border-gray-200">
+        <div className="px-6 py-6 md:px-6 md:py-4 md:border-b" style={{ borderColor: '#E0ECDB' }}>
           <div className="flex items-center justify-between mb-4 md:mb-3">
             <div>
-              <h2 className="text-xl md:text-base font-bold md:font-semibold text-gray-900">Book Appointment</h2>
+              <h2 className="text-xl md:text-base font-bold md:font-semibold" style={{ color: '#2D5A29' }}>Book Appointment</h2>
               <p className="text-sm md:text-xs text-gray-500 mt-1">For {patientName}</p>
             </div>
             <button
@@ -240,9 +240,11 @@ export const BookAppointmentModal = ({
               <div
                 key={step}
                 className={cn(
-                  "flex-1 h-1 rounded-full transition-colors",
-                  step <= currentStep ? "bg-blue-600" : "bg-gray-200"
+                  "flex-1 h-1 rounded-full transition-colors"
                 )}
+                style={{ 
+                  backgroundColor: step <= currentStep ? '#6B9A65' : '#E0ECDB' 
+                }}
               />
             ))}
           </div>

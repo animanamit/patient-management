@@ -46,12 +46,12 @@ const LoadingSkeleton = () => (
   <div className="grid grid-cols-12 gap-6">
     <div className="col-span-8 space-y-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="h-16 bg-gray-100 rounded-sm animate-pulse" />
+        <div key={i} className="h-16 rounded-sm animate-pulse" style={{ backgroundColor: '#E0ECDB' }} />
       ))}
     </div>
     <div className="col-span-4 space-y-3">
       {[1, 2].map((i) => (
-        <div key={i} className="h-24 bg-gray-100 rounded-sm animate-pulse" />
+        <div key={i} className="h-24 rounded-sm animate-pulse" style={{ backgroundColor: '#E0ECDB' }} />
       ))}
     </div>
   </div>
@@ -138,11 +138,11 @@ export default function PatientDashboard() {
   // Show loading state
   if (isPatientsLoading || isPatientLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="border-b border-gray-200">
+      <div className="min-h-screen" style={{ backgroundColor: '#F8FBF7' }}>
+        <div className="border-b" style={{ borderColor: '#E0ECDB' }}>
           <div className="px-6 py-3">
-            <Skeleton className="h-5 w-32 bg-gray-200" />
-            <Skeleton className="h-3 w-24 bg-gray-100 mt-1" />
+            <Skeleton className="h-5 w-32" style={{ backgroundColor: '#E0ECDB' }} />
+            <Skeleton className="h-3 w-24 mt-1" style={{ backgroundColor: '#E0ECDB' }} />
           </div>
         </div>
         <div className="p-6">
@@ -159,12 +159,12 @@ export default function PatientDashboard() {
       patientError?.message ||
       "Unknown error occurred";
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen" style={{ backgroundColor: '#F8FBF7' }}>
         {/* Navigation Bar */}
         <NavigationBar />
 
         <div className="p-6 w-full h-full flex items-center justify-center">
-          <div className="bg-white border border-red-200 rounded-sm p-4 max-w-md">
+          <div className="border border-red-200 rounded-sm p-4 max-w-md" style={{ backgroundColor: '#FEF2F2' }}>
             <div className="flex items-center gap-2 text-red-600 mb-2">
               <AlertCircle className="h-4 w-4" />
               <span className="text-sm font-medium">
@@ -187,12 +187,12 @@ export default function PatientDashboard() {
   // Show no patients state
   if (!validPatientId || !patientData) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen" style={{ backgroundColor: '#F8FBF7' }}>
         {/* Navigation Bar */}
         <NavigationBar />
 
         <div className="p-6">
-          <div className="bg-white border border-gray-200 rounded-sm p-8 text-center max-w-md mx-auto">
+          <div className="border rounded-sm p-8 text-center max-w-md mx-auto" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
             <User className="h-8 w-8 mx-auto mb-3 text-gray-300" />
             <h3 className="text-sm font-medium text-gray-900 mb-1">
               No Patient Data
@@ -225,16 +225,16 @@ export default function PatientDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#F8FBF7' }}>
       {/* Navigation Bar */}
       <NavigationBar />
 
       {/* Header - Mobile Optimized */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="border-b" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
         <div className="px-4 md:px-6 py-4 md:py-3">
           <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl md:text-base font-bold md:font-semibold text-gray-900 truncate">
+              <h1 className="text-2xl md:text-base font-bold md:font-semibold truncate" style={{ color: '#2D5A29' }}>
                 {patient.firstName} {patient.lastName}
               </h1>
               <p className="text-sm md:text-xs text-gray-500 md:font-mono md:uppercase md:font-extralight md:tracking-normal">
@@ -248,7 +248,10 @@ export default function PatientDashboard() {
                   <select
                     value={validPatientId || ""}
                     onChange={(e) => setSelectedPatientId(e.target.value)}
-                    className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs bg-white appearance-none pr-8"
+                    className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border transition-colors rounded-xs appearance-none pr-8"
+                    style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#EDF5E9'}
                   >
                     {patientsData.patients.map((patient) => (
                       <option key={patient.id} value={patient.id}>
@@ -263,14 +266,17 @@ export default function PatientDashboard() {
               {/* Desktop Book Appointment Button */}
               <button
                 onClick={() => setIsBookingModalOpen(true)}
-                className="hidden md:block text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+                className="hidden md:block text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border transition-colors rounded-xs"
+                style={{ borderColor: '#E0ECDB', backgroundColor: 'transparent' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 Book Appointment
               </button>
 
               {/* Mobile Menu Button (if needed for patient selection) */}
               {patientsData?.patients && patientsData.patients.length > 1 && (
-                <button className="md:hidden p-2 text-gray-500 active:text-gray-700 rounded-xl active:bg-gray-100 transition-colors">
+                <button className="md:hidden p-2 text-gray-500 active:text-gray-700 rounded-xl transition-colors" style={{ backgroundColor: 'transparent' }} onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'} onMouseUp={(e) => e.currentTarget.style.backgroundColor = 'transparent'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                   <User className="h-6 w-6" />
                 </button>
               )}
@@ -290,7 +296,7 @@ export default function PatientDashboard() {
               <h2 className="hidden md:block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
                 Contact Information
               </h2>
-              <div className="bg-white md:border md:border-gray-200 rounded-sm  overflow-hidden">
+              <div className="md:border rounded-sm overflow-hidden" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
                 <div className="px-6 py-4 md:px-4 md:py-3">
                   <div className="flex items-center gap-4 md:gap-3">
                     <div className="w-10 h-10 md:w-auto md:h-auto bg-blue-100 rounded-full flex items-center justify-center md:bg-transparent">
@@ -307,7 +313,7 @@ export default function PatientDashboard() {
                     <ChevronRight className="h-5 w-5 text-gray-300 md:hidden" />
                   </div>
                 </div>
-                <div className="h-px bg-gray-100 mx-6 md:mx-0" />
+                <div className="h-px mx-6 md:mx-0" style={{ backgroundColor: '#E0ECDB' }} />
                 <div className="px-6 py-4 md:px-4 md:py-3">
                   <div className="flex items-center gap-4 md:gap-3">
                     <div className="w-10 h-10 md:w-auto md:h-auto bg-green-100 rounded-full flex items-center justify-center md:bg-transparent">
@@ -324,7 +330,7 @@ export default function PatientDashboard() {
                     <ChevronRight className="h-5 w-5 text-gray-300 md:hidden" />
                   </div>
                 </div>
-                <div className="h-px bg-gray-100 mx-6 md:mx-0" />
+                <div className="h-px mx-6 md:mx-0" style={{ backgroundColor: '#E0ECDB' }} />
                 <div className="px-6 py-4 md:px-4 md:py-3">
                   <div className="flex items-center gap-4 md:gap-3">
                     <div className="w-10 h-10 md:w-auto md:h-auto bg-purple-100 rounded-full flex items-center justify-center md:bg-transparent">
@@ -357,10 +363,10 @@ export default function PatientDashboard() {
                   View All
                 </button>
               </div>
-              <div className="bg-white md:border md:border-gray-200 rounded-sm  overflow-hidden">
+              <div className="md:border rounded-sm overflow-hidden" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
                 {upcomingAppointments.length === 0 ? (
                   <div className="px-6 py-12 md:px-4 md:py-8 text-center">
-                    <div className="w-16 h-16 md:w-6 md:h-6 mx-auto mb-4 md:mb-2 bg-gray-100 rounded-full flex items-center justify-center">
+                    <div className="w-16 h-16 md:w-6 md:h-6 mx-auto mb-4 md:mb-2 rounded-full flex items-center justify-center" style={{ backgroundColor: '#E0ECDB' }}>
                       <Calendar className="h-8 w-8 md:h-6 md:w-6 text-gray-300" />
                     </div>
                     <p className="text-lg font-semibold text-gray-900 mb-2 md:text-sm md:text-gray-600 md:mb-1 md:font-normal">
@@ -371,7 +377,7 @@ export default function PatientDashboard() {
                     </p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-gray-100">
+                  <div className="divide-y" style={{ borderColor: '#E0ECDB' }}>
                     {upcomingAppointments.slice(0, 3).map((appointment) => {
                       const doctorName =
                         "doctor" in appointment && appointment.doctor
@@ -391,7 +397,12 @@ export default function PatientDashboard() {
                       return (
                         <div
                           key={appointment.id}
-                          className="px-6 py-5 md:px-4 md:py-3 active:bg-gray-50 md:hover:bg-gray-50 transition-colors cursor-pointer"
+                          className="px-6 py-5 md:px-4 md:py-3 transition-colors cursor-pointer"
+                          style={{ backgroundColor: 'transparent' }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                          onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+                          onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
@@ -517,10 +528,10 @@ export default function PatientDashboard() {
                   Request Document
                 </button>
               </div>
-              <div className="bg-white md:border md:border-gray-200 rounded-sm  overflow-hidden">
+              <div className="md:border rounded-sm overflow-hidden" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
                 {isDocumentsLoading ? (
                   <div className="px-6 py-12 md:px-4 md:py-8 text-center">
-                    <div className="w-16 h-16 md:w-4 md:h-4 mx-auto mb-4 md:mb-2 bg-gray-100 rounded-full flex items-center justify-center">
+                    <div className="w-16 h-16 md:w-4 md:h-4 mx-auto mb-4 md:mb-2 rounded-full flex items-center justify-center" style={{ backgroundColor: '#E0ECDB' }}>
                       <Loader2 className="h-8 w-8 md:h-4 md:w-4 text-gray-300 animate-spin" />
                     </div>
                     <p className="text-base text-gray-500 md:text-xs md:text-gray-500">
@@ -529,7 +540,7 @@ export default function PatientDashboard() {
                   </div>
                 ) : documents.length === 0 ? (
                   <div className="px-6 py-12 md:px-4 md:py-8 text-center">
-                    <div className="w-16 h-16 md:w-6 md:h-6 mx-auto mb-4 md:mb-2 bg-gray-100 rounded-full flex items-center justify-center">
+                    <div className="w-16 h-16 md:w-6 md:h-6 mx-auto mb-4 md:mb-2 rounded-full flex items-center justify-center" style={{ backgroundColor: '#E0ECDB' }}>
                       <FileText className="h-8 w-8 md:h-6 md:w-6 text-gray-300" />
                     </div>
                     <p className="text-lg font-semibold text-gray-900 mb-2 md:text-sm md:text-gray-600 md:mb-1 md:font-normal">
@@ -540,11 +551,16 @@ export default function PatientDashboard() {
                     </p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-gray-100">
+                  <div className="divide-y" style={{ borderColor: '#E0ECDB' }}>
                     {documents.map((doc) => (
                       <div
                         key={doc.id}
-                        className="px-6 py-5 md:px-4 md:py-3 active:bg-gray-50 md:hover:bg-gray-50 transition-colors"
+                        className="px-6 py-5 md:px-4 md:py-3 transition-colors"
+                        style={{ backgroundColor: 'transparent' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+                        onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
                       >
                         <div className="flex items-center gap-4 md:gap-3">
                           {/* Mobile: Larger Document Type Badge */}
@@ -591,15 +607,23 @@ export default function PatientDashboard() {
                               </div>
                               <div className="mt-2">
                                 <span
-                                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                                    doc.status === "COMPLETE"
-                                      ? "bg-green-100 text-green-800"
+                                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                                  style={{ 
+                                    backgroundColor: doc.status === "COMPLETE"
+                                      ? "#E0ECDB"
                                       : doc.status === "ACTIVE"
-                                      ? "bg-blue-100 text-blue-800"
+                                      ? "#EBF1F8"
                                       : doc.status === "PENDING"
-                                      ? "bg-orange-100 text-orange-800"
-                                      : "bg-gray-100 text-gray-800"
-                                  }`}
+                                      ? "#FEF3E2"
+                                      : "#F8FBF7",
+                                    color: doc.status === "COMPLETE"
+                                      ? "#2D5A29"
+                                      : doc.status === "ACTIVE"
+                                      ? "#243A56"
+                                      : doc.status === "PENDING"
+                                      ? "#A66B42"
+                                      : "#2D5A29"
+                                  }}
                                 >
                                   {doc.status.toLowerCase()}
                                 </span>
@@ -662,7 +686,7 @@ export default function PatientDashboard() {
               <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
                 Overview
               </h2>
-              <div className="bg-white border border-gray-200 rounded-sm p-4 space-y-3">
+              <div className="border rounded-sm p-4 space-y-3" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
                 <div>
                   <p className="text-xs text-gray-500">Total Appointments</p>
                   <p className="text-lg font-semibold text-gray-900">
@@ -689,8 +713,8 @@ export default function PatientDashboard() {
               <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
                 Recent Activity
               </h2>
-              <div className="bg-white border border-gray-200 rounded-sm">
-                <div className="divide-y divide-gray-100">
+              <div className="border rounded-sm" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
+                <div className="divide-y" style={{ borderColor: '#E0ECDB' }}>
                   {pastAppointments.slice(0, 3).map((appointment) => {
                     const doctorName =
                       "doctor" in appointment
@@ -737,20 +761,26 @@ export default function PatientDashboard() {
               <div className="space-y-2">
                 <button
                   onClick={() => setIsBookingModalOpen(true)}
-                  className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+                  className="w-full text-left px-3 py-2 border transition-colors rounded-xs"
+                  style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#EDF5E9'}
                 >
                   <span className="text-sm font-medium text-gray-900">
                     Book Appointment
                   </span>
                 </button>
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
+                <button className="w-full text-left px-3 py-2 border transition-colors rounded-xs" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#EDF5E9'}>
                   <span className="text-sm font-medium text-gray-900">
                     Request Document
                   </span>
                 </button>
                 <button
                   onClick={() => setIsEditModalOpen(true)}
-                  className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+                  className="w-full text-left px-3 py-2 border transition-colors rounded-xs"
+                  style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#EDF5E9'}
                 >
                   <span className="text-sm font-medium text-gray-900">
                     Update Profile
@@ -766,19 +796,19 @@ export default function PatientDashboard() {
             <section>
               <h2 className="text-xl font-bold text-gray-900 mb-3">Overview</h2>
               <div className="grid grid-cols-3 gap-3">
-                <div className="bg-white rounded-2xl shadow-sm p-4 text-center">
+                <div className="rounded-2xl p-4 text-center" style={{ backgroundColor: '#EDF5E9', boxShadow: '0 1px 2px 0 rgba(45, 90, 41, 0.05)' }}>
                   <p className="text-2xl font-bold text-gray-900 mb-1">
                     {appointments.length}
                   </p>
                   <p className="text-sm text-gray-600">Total</p>
                 </div>
-                <div className="bg-white rounded-2xl shadow-sm p-4 text-center">
+                <div className="rounded-2xl p-4 text-center" style={{ backgroundColor: '#EDF5E9', boxShadow: '0 1px 2px 0 rgba(45, 90, 41, 0.05)' }}>
                   <p className="text-2xl font-bold text-blue-600 mb-1">
                     {upcomingAppointments.length}
                   </p>
                   <p className="text-sm text-gray-600">Upcoming</p>
                 </div>
-                <div className="bg-white rounded-2xl shadow-sm p-4 text-center">
+                <div className="rounded-2xl p-4 text-center" style={{ backgroundColor: '#EDF5E9', boxShadow: '0 1px 2px 0 rgba(45, 90, 41, 0.05)' }}>
                   <p className="text-2xl font-bold text-gray-900 mb-1">
                     {documents.length}
                   </p>
@@ -793,8 +823,8 @@ export default function PatientDashboard() {
                 <h2 className="text-xl font-bold text-gray-900 mb-3">
                   Recent Activity
                 </h2>
-                <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                  <div className="divide-y divide-gray-100">
+                <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#EDF5E9', boxShadow: '0 1px 2px 0 rgba(45, 90, 41, 0.05)' }}>
+                  <div className="divide-y" style={{ borderColor: '#E0ECDB' }}>
                     {pastAppointments.slice(0, 3).map((appointment) => {
                       const doctorName =
                         "doctor" in appointment
@@ -841,17 +871,24 @@ export default function PatientDashboard() {
       </div>
 
       {/* Mobile Bottom Action Bar - Apple Style */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 safe-area-inset-bottom">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 border-t px-4 py-3 safe-area-inset-bottom" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
         <div className="flex gap-3">
           <button
             onClick={() => setIsBookingModalOpen(true)}
-            className="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-semibold text-lg active:bg-blue-700 transition-colors"
+            className="flex-1 text-white py-4 rounded-2xl font-semibold text-lg transition-colors"
+            style={{ backgroundColor: '#6B9A65' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4A7A44'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#6B9A65'}
           >
             Book Appointment
           </button>
           <button
             onClick={() => setIsEditModalOpen(true)}
-            className="px-6 py-4 bg-gray-100 text-gray-700 rounded-2xl font-semibold active:bg-gray-200 transition-colors"
+            className="px-6 py-4 text-gray-700 rounded-2xl font-semibold transition-colors"
+            style={{ backgroundColor: '#F8FBF7' }}
+            onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#E0ECDB'}
+            onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
           >
             Edit Profile
           </button>

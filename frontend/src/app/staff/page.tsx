@@ -40,12 +40,12 @@ const LoadingSkeleton = () => (
   <div className="grid grid-cols-12 gap-6">
     <div className="col-span-8 space-y-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="h-16 bg-gray-100 rounded-sm animate-pulse" />
+        <div key={i} className="h-16 rounded-sm animate-pulse" style={{ backgroundColor: '#EDDCC7' }} />
       ))}
     </div>
     <div className="col-span-4 space-y-3">
       {[1, 2].map((i) => (
-        <div key={i} className="h-24 bg-gray-100 rounded-sm animate-pulse" />
+        <div key={i} className="h-24 rounded-sm animate-pulse" style={{ backgroundColor: '#EDDCC7' }} />
       ))}
     </div>
   </div>
@@ -65,23 +65,23 @@ const DashboardStats = ({ appointments }: { appointments: (Appointment | Appoint
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
-      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+      <div className="border-0 md:border rounded-sm p-4 md:p-3" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
         <p className="text-sm md:text-xs text-gray-500">Total Today</p>
-        <p className="text-2xl md:text-lg font-bold md:font-semibold text-gray-900">{stats.totalAppointments}</p>
+        <p className="text-2xl md:text-lg font-bold md:font-semibold" style={{ color: '#5D321A' }}>{stats.totalAppointments}</p>
       </div>
-      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+      <div className="border-0 md:border rounded-sm p-4 md:p-3" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
         <p className="text-sm md:text-xs text-gray-500">Checked In</p>
         <p className="text-2xl md:text-lg font-bold md:font-semibold text-blue-600">{stats.checkedIn}</p>
       </div>
-      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+      <div className="border-0 md:border rounded-sm p-4 md:p-3" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
         <p className="text-sm md:text-xs text-gray-500">In Progress</p>
         <p className="text-2xl md:text-lg font-bold md:font-semibold text-orange-600">{stats.inProgress}</p>
       </div>
-      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+      <div className="border-0 md:border rounded-sm p-4 md:p-3" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
         <p className="text-sm md:text-xs text-gray-500">Completed</p>
         <p className="text-2xl md:text-lg font-bold md:font-semibold text-green-600">{stats.completed}</p>
       </div>
-      <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm p-4 md:p-3">
+      <div className="border-0 md:border rounded-sm p-4 md:p-3" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
         <p className="text-sm md:text-xs text-gray-500">No Shows</p>
         <p className="text-2xl md:text-lg font-bold md:font-semibold text-red-600">{stats.noShows}</p>
       </div>
@@ -108,8 +108,8 @@ const PatientSearchSection = ({ onAddPatient }: { onAddPatient: () => void }) =>
   const patients = patientsData?.patients || [];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-sm">
-      <div className="px-4 py-3 border-b border-gray-200">
+    <div className="border rounded-sm" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
+      <div className="px-4 py-3 border-b" style={{ backgroundColor: '#EDDCC7', borderColor: '#EDDCC7' }}>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Patient Search</h2>
           <button 
@@ -125,7 +125,8 @@ const PatientSearchSection = ({ onAddPatient }: { onAddPatient: () => void }) =>
             placeholder="Search patients..."
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
-            className="pl-9 h-8 text-xs border-gray-200 rounded-sm"
+            className="pl-9 h-8 text-xs rounded-sm"
+            style={{ borderColor: '#EDDCC7' }}
           />
         </div>
       </div>
@@ -133,8 +134,8 @@ const PatientSearchSection = ({ onAddPatient }: { onAddPatient: () => void }) =>
       {isLoading ? (
         <div className="px-4 py-3">
           <div className="animate-pulse space-y-2">
-            <div className="h-4 bg-gray-100 rounded-sm w-3/4"></div>
-            <div className="h-3 bg-gray-100 rounded-sm w-1/2"></div>
+            <div className="h-4 rounded-sm w-3/4" style={{ backgroundColor: '#EDDCC7' }}></div>
+            <div className="h-3 rounded-sm w-1/2" style={{ backgroundColor: '#EDDCC7' }}></div>
           </div>
         </div>
       ) : error ? (
@@ -151,7 +152,7 @@ const PatientSearchSection = ({ onAddPatient }: { onAddPatient: () => void }) =>
       ) : (
         <div className="divide-y divide-gray-100">
           {patients.slice(0, 4).map((patient) => (
-            <div key={patient.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
+            <div key={patient.id} className="px-4 py-3 transition-colors" style={{ backgroundColor: 'transparent' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-medium text-gray-900 truncate">
@@ -196,13 +197,13 @@ const getStatusBg = (status: AppointmentStatus) => {
     case "SCHEDULED":
       return "bg-blue-50";
     case "IN_PROGRESS":
-      return "bg-orange-50";
+      return "#FEF3E2";
     case "COMPLETED":
       return "bg-green-50";
     case "NO_SHOW":
       return "bg-red-50";
     default:
-      return "bg-gray-50";
+      return "#EDDCC7";
   }
 };
 
@@ -331,11 +332,11 @@ export default function StaffDashboard() {
   // Show loading state
   if (isAppointmentsLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="border-b border-gray-200">
+      <div className="min-h-screen" style={{ backgroundColor: '#FDF9F7' }}>
+        <div className="border-b" style={{ borderColor: '#EDDCC7' }}>
           <div className="px-6 py-3">
-            <Skeleton className="h-5 w-32 bg-gray-200" />
-            <Skeleton className="h-3 w-40 bg-gray-100 mt-1" />
+            <Skeleton className="h-5 w-32" style={{ backgroundColor: '#EDDCC7' }} />
+            <Skeleton className="h-3 w-40 mt-1" style={{ backgroundColor: '#EDDCC7' }} />
           </div>
         </div>
         <div className="p-6">
@@ -346,16 +347,16 @@ export default function StaffDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#FDF9F7' }}>
       {/* Navigation Bar */}
       <NavigationBar />
       
       {/* Header - Mobile Responsive */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="border-b" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
         <div className="px-4 py-4 md:px-6 md:py-3">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
             <div>
-              <h1 className="text-lg md:text-base font-bold md:font-semibold text-gray-900">Staff Dashboard</h1>
+              <h1 className="text-lg md:text-base font-bold md:font-semibold" style={{ color: '#5D321A' }}>Staff Dashboard</h1>
               <p className="text-sm md:text-xs text-gray-500">
                 Front desk operations • {new Date().toLocaleDateString('en-US', { 
                   weekday: 'long', 
@@ -366,14 +367,23 @@ export default function StaffDashboard() {
             </div>
             <div className="flex items-center gap-2 overflow-x-auto">
               {/* View toggle */}
-              <div className="flex items-center border border-gray-200 rounded-full md:rounded-xs overflow-hidden flex-shrink-0">
+              <div className="flex items-center border rounded-full md:rounded-xs overflow-hidden flex-shrink-0" style={{ borderColor: '#EDDCC7' }}>
                 <button
                   onClick={() => setViewMode('dashboard')}
                   className={`px-4 py-2 md:px-3 md:py-1.5 text-sm md:text-xs font-semibold md:font-medium transition-colors ${
                     viewMode === 'dashboard'
-                      ? 'bg-blue-600 md:bg-gray-900 text-white'
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'text-white'
+                      : 'text-gray-700 hover:text-gray-900'
                   }`}
+                  style={{ 
+                    backgroundColor: viewMode === 'dashboard' ? '#A66B42' : 'transparent'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (viewMode !== 'dashboard') e.currentTarget.style.backgroundColor = '#FDF9F7';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (viewMode !== 'dashboard') e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
                 >
                   <List className="h-4 w-4 md:h-3 md:w-3 mr-1 inline" />
                   Dashboard
@@ -382,9 +392,18 @@ export default function StaffDashboard() {
                   onClick={() => setViewMode('calendar')}
                   className={`px-4 py-2 md:px-3 md:py-1.5 text-sm md:text-xs font-semibold md:font-medium transition-colors ${
                     viewMode === 'calendar'
-                      ? 'bg-blue-600 md:bg-gray-900 text-white'
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'text-white'
+                      : 'text-gray-700 hover:text-gray-900'
                   }`}
+                  style={{ 
+                    backgroundColor: viewMode === 'calendar' ? '#A66B42' : 'transparent'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (viewMode !== 'calendar') e.currentTarget.style.backgroundColor = '#FDF9F7';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (viewMode !== 'calendar') e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
                 >
                   <Grid3X3 className="h-4 w-4 md:h-3 md:w-3 mr-1 inline" />
                   Calendar
@@ -394,17 +413,23 @@ export default function StaffDashboard() {
               <button 
                 onClick={() => refetch()}
                 disabled={isAppointmentsLoading}
-                className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+                className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border transition-colors rounded-xs"
+                style={{ borderColor: '#EDDCC7', backgroundColor: 'transparent' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <RefreshCw className={`h-3 w-3 mr-1 inline ${isAppointmentsLoading ? 'animate-spin' : ''}`} />
                 {isAppointmentsLoading ? 'Refreshing...' : 'Refresh'}
               </button>
-              <button className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
+              <button className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border transition-colors rounded-xs" style={{ borderColor: '#EDDCC7', backgroundColor: 'transparent' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                 Export Data
               </button>
               <button 
                 onClick={() => setIsAddPatientModalOpen(true)}
-                className="text-sm md:text-xs font-semibold md:font-medium text-white bg-blue-600 md:bg-gray-900 hover:bg-blue-700 md:hover:bg-gray-800 px-4 py-2 md:px-3 md:py-1.5 transition-colors rounded-full md:rounded-xs flex-shrink-0"
+                className="text-sm md:text-xs font-semibold md:font-medium text-white px-4 py-2 md:px-3 md:py-1.5 transition-colors rounded-full md:rounded-xs flex-shrink-0"
+                style={{ backgroundColor: '#A66B42' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#7A4A2E'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#A66B42'}
               >
                 <Plus className="h-4 w-4 md:h-0 md:w-0 mr-1 md:mr-0" />
                 Add Patient
@@ -431,7 +456,7 @@ export default function StaffDashboard() {
               </h2>
               <Suspense fallback={<LoadingSkeleton />}>
                 {appointmentsError ? (
-                  <div className="bg-white border border-gray-200 rounded-sm p-6 text-center">
+                  <div className="border rounded-sm p-6 text-center" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
                     <AlertCircle className="h-6 w-6 mx-auto mb-2 text-red-500" />
                     <p className="text-sm text-red-600 mb-3">Failed to load appointment statistics</p>
                     <button 
@@ -457,7 +482,10 @@ export default function StaffDashboard() {
                   <span className="ml-2 font-mono text-gray-400 font-normal">{patientQueue.length}</span>
                 </h2>
                 <button 
-                  className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+                  className="text-xs font-medium text-gray-700 hover:text-gray-900 px-3 py-1.5 border transition-colors rounded-xs"
+                  style={{ borderColor: '#EDDCC7', backgroundColor: 'transparent' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   disabled={isBulkUpdating}
                 >
                   <Bell className="h-3 w-3 mr-1 inline" />
@@ -465,7 +493,7 @@ export default function StaffDashboard() {
                 </button>
               </div>
               
-              <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm overflow-hidden">
+              <div className="border-0 md:border rounded-sm overflow-hidden" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
                 <Suspense fallback={<LoadingSkeleton />}>
                   {appointmentsError ? (
                     <div className="px-4 py-12 md:py-8 text-center">
@@ -490,7 +518,7 @@ export default function StaffDashboard() {
                           : 'Doctor';
 
                         return (
-                          <div key={appointment.id} className={`px-5 py-4 md:px-4 md:py-3 ${appointment.status === 'IN_PROGRESS' ? 'bg-orange-50 border-l-4 md:border-l-2 border-orange-400' : 'hover:bg-gray-50'} transition-colors`}>
+                          <div key={appointment.id} className="px-5 py-4 md:px-4 md:py-3 border-l-4 md:border-l-2 transition-colors" style={{ backgroundColor: appointment.status === 'IN_PROGRESS' ? '#FEF3E2' : 'transparent', borderLeftColor: appointment.status === 'IN_PROGRESS' ? '#FB923C' : 'transparent' }} onMouseEnter={(e) => { if (appointment.status !== 'IN_PROGRESS') e.currentTarget.style.backgroundColor = '#FDF9F7'; }} onMouseLeave={(e) => { if (appointment.status !== 'IN_PROGRESS') e.currentTarget.style.backgroundColor = 'transparent'; }}>
                             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0">
                               <div className="flex items-start gap-4 md:gap-3">
                                 <div className="w-8 h-8 md:w-6 md:h-6 bg-blue-100 rounded-full md:rounded-sm flex items-center justify-center text-sm md:text-xs font-bold md:font-semibold text-blue-600 md:text-gray-600 flex-shrink-0">
@@ -526,7 +554,8 @@ export default function StaffDashboard() {
                                     handleSendSMS(appointment);
                                   }}
                                   disabled={sendReminderMutation.isPending}
-                                  className="text-sm md:text-xs font-semibold md:font-medium text-gray-700 hover:text-gray-900 px-3 py-2 md:px-0 md:py-0 border border-gray-200 md:border-0 rounded-full md:rounded-none flex-1 md:flex-initial"
+                                  className="text-sm md:text-xs font-semibold md:font-medium text-gray-700 hover:text-gray-900 px-3 py-2 md:px-0 md:py-0 border md:border-0 rounded-full md:rounded-none flex-1 md:flex-initial"
+                                  style={{ borderColor: '#EDDCC7' }}
                                 >
                                   <Phone className="h-4 w-4 md:h-3 md:w-3 mr-1 inline" />
                                   {sendReminderMutation.isPending ? 'Sending...' : 'SMS'}
@@ -537,7 +566,10 @@ export default function StaffDashboard() {
                                     const cleanId = appointment.id.startsWith('appt_') ? appointment.id.slice(5) : appointment.id;
                                     window.open(`/appointment/${cleanId}`, '_blank');
                                   }}
-                                  className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border border-gray-200 rounded-xs hover:bg-gray-50"
+                                  className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border rounded-xs transition-colors"
+                                  style={{ borderColor: '#EDDCC7', backgroundColor: 'transparent' }}
+                                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'}
+                                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                 >
                                   Details
                                 </button>
@@ -570,7 +602,7 @@ export default function StaffDashboard() {
                 </button>
               </div>
               
-              <div className="bg-white border-0 md:border md:border-gray-200 rounded-sm">
+              <div className="border-0 md:border rounded-sm" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
                 <Suspense fallback={<LoadingSkeleton />}>
                   {appointmentsError ? (
                     <div className="px-4 py-12 md:py-8 text-center">
@@ -597,7 +629,10 @@ export default function StaffDashboard() {
                         return (
                           <div 
                             key={appointment.id} 
-                            className="px-5 py-4 md:px-4 md:py-3 hover:bg-gray-50 transition-colors"
+                            className="px-5 py-4 md:px-4 md:py-3 transition-colors"
+                            style={{ backgroundColor: 'transparent' }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                           >
                             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0">
                               <div className="flex-1">
@@ -631,7 +666,10 @@ export default function StaffDashboard() {
                                     const cleanId = appointment.id.startsWith('appt_') ? appointment.id.slice(5) : appointment.id;
                                     window.open(`/appointment/${cleanId}`, '_blank');
                                   }}
-                                  className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border border-gray-200 rounded-xs hover:bg-gray-50"
+                                  className="hidden md:inline-flex text-xs font-medium text-gray-700 hover:text-gray-900 px-2 py-1 border rounded-xs transition-colors"
+                                  style={{ borderColor: '#EDDCC7', backgroundColor: 'transparent' }}
+                                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'}
+                                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                 >
                                   Details
                                 </button>
@@ -667,7 +705,7 @@ export default function StaffDashboard() {
             {/* Quick Stats */}
             <section>
               <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Quick Stats</h2>
-              <div className="bg-white border border-gray-200 rounded-sm p-4 space-y-3">
+              <div className="border rounded-sm p-4 space-y-3" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-gray-500">Avg Wait Time</span>
                   <span className="text-sm font-semibold text-gray-900">12min</span>
@@ -691,19 +729,22 @@ export default function StaffDashboard() {
             <section>
               <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Quick Actions</h2>
               <div className="space-y-2">
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
+                <button className="w-full text-left px-3 py-2 border transition-colors rounded-xs" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F5E8DF'}>
                   <span className="text-sm font-medium text-gray-900">Check In Patient</span>
                 </button>
                 <button 
                   onClick={() => setIsAddPatientModalOpen(true)}
-                  className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+                  className="w-full text-left px-3 py-2 border transition-colors rounded-xs"
+                  style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F5E8DF'}
                 >
                   <span className="text-sm font-medium text-gray-900">Add Patient</span>
                 </button>
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
+                <button className="w-full text-left px-3 py-2 border transition-colors rounded-xs" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F5E8DF'}>
                   <span className="text-sm font-medium text-gray-900">Print Reports</span>
                 </button>
-                <button className="w-full text-left px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs">
+                <button className="w-full text-left px-3 py-2 border transition-colors rounded-xs" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F5E8DF'}>
                   <span className="text-sm font-medium text-gray-900">Manage Rooms</span>
                 </button>
               </div>
@@ -712,7 +753,7 @@ export default function StaffDashboard() {
             {/* System Status */}
             <section>
               <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">System Status</h2>
-              <div className="bg-white border border-gray-200 rounded-sm p-4">
+              <div className="border rounded-sm p-4" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
                 <div className="flex items-center gap-2 mb-2">
                   <div className="h-2 w-2 rounded-full bg-green-500" />
                   <span className="text-xs font-medium text-gray-900">All Systems Operational</span>

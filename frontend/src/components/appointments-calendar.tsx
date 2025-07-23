@@ -14,17 +14,17 @@ interface AppointmentsCalendarProps {
 const getStatusColor = (status: AppointmentStatus) => {
   switch (status) {
     case "SCHEDULED":
-      return "bg-blue-100 text-blue-800 border-blue-200";
+      return { backgroundColor: "#EBF1F8", color: "#243A56", borderColor: "#D8E4F0" };
     case "IN_PROGRESS":
-      return "bg-orange-100 text-orange-800 border-orange-200";
+      return { backgroundColor: "#FEF3E2", color: "#A66B42", borderColor: "#EDDCC7" };
     case "COMPLETED":
-      return "bg-green-100 text-green-800 border-green-200";
+      return { backgroundColor: "#E0ECDB", color: "#2D5A29", borderColor: "#6B9A65" };
     case "CANCELLED":
-      return "bg-gray-100 text-gray-800 border-gray-200";
+      return { backgroundColor: "#EDDCC7", color: "#5D321A", borderColor: "#A66B42" };
     case "NO_SHOW":
-      return "bg-red-100 text-red-800 border-red-200";
+      return { backgroundColor: "#FEF2F2", color: "#DC2626", borderColor: "#FECACA" };
     default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
+      return { backgroundColor: "#EDDCC7", color: "#5D321A", borderColor: "#A66B42" };
   }
 };
 
@@ -33,8 +33,13 @@ const AppointmentItem = ({ appointment }: { appointment: AppointmentWithDetails 
   const doctorName = `Dr. ${appointment.doctor.lastName}`;
   const time = format(new Date(appointment.scheduledDateTime), "HH:mm");
   
+  const statusColors = getStatusColor(appointment.status);
+  
   return (
-    <div className={`px-2 py-1 mb-1 text-xs border rounded-xs ${getStatusColor(appointment.status)}`}>
+    <div 
+      className="px-2 py-1 mb-1 text-xs border rounded-xs" 
+      style={statusColors}
+    >
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1">
@@ -144,11 +149,11 @@ export const AppointmentsCalendar = ({ className = "" }: AppointmentsCalendarPro
   };
   
   return (
-    <div className={`bg-white border border-gray-200 rounded-sm ${className} flex relative overflow-hidden`}>
+    <div className={`border rounded-sm ${className} flex relative overflow-hidden`} style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
       {/* Main Calendar Container */}
       <div className={`flex-1 transition-all duration-300 ${isDetailsPanelOpen ? 'mr-80' : 'mr-0'}`}>
         {/* Header */}
-        <div className="px-4 py-3 border-b border-gray-200">
+        <div className="px-4 py-3 border-b" style={{ borderColor: '#EDDCC7' }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Calendar className="h-4 w-4 text-gray-400" />
@@ -159,19 +164,28 @@ export const AppointmentsCalendar = ({ className = "" }: AppointmentsCalendarPro
             <div className="flex items-center gap-1">
               <button
                 onClick={() => navigateMonth('prev')}
-                className="p-1 hover:bg-gray-100 rounded-xs transition-colors"
+                className="p-1 rounded-xs transition-colors"
+                style={{ backgroundColor: 'transparent' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <ChevronLeft className="h-4 w-4 text-gray-600" />
               </button>
               <button
                 onClick={() => setCurrentMonth(new Date())}
-                className="px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 rounded-xs transition-colors"
+                className="px-2 py-1 text-xs font-medium text-gray-700 rounded-xs transition-colors"
+                style={{ backgroundColor: 'transparent' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 Today
               </button>
               <button
                 onClick={() => navigateMonth('next')}
-                className="p-1 hover:bg-gray-100 rounded-xs transition-colors"
+                className="p-1 rounded-xs transition-colors"
+                style={{ backgroundColor: 'transparent' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <ChevronRight className="h-4 w-4 text-gray-600" />
               </button>
@@ -203,11 +217,15 @@ export const AppointmentsCalendar = ({ className = "" }: AppointmentsCalendarPro
                 key={index}
                 className={`
                   min-h-24 p-1 border rounded-xs cursor-pointer transition-colors
-                  ${isCurrentMonth ? 'bg-white' : 'bg-gray-50'}
-                  ${isSelected ? 'border-blue-600 border-2' : 'border-gray-100'}
-                  hover:bg-gray-50
+                  ${isSelected ? 'border-2' : ''}
                 `}
+                style={{
+                  backgroundColor: isCurrentMonth ? '#F5E8DF' : '#FDF9F7',
+                  borderColor: isSelected ? '#A66B42' : '#EDDCC7'
+                }}
                 onClick={() => handleDateClick(date)}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = isCurrentMonth ? '#F5E8DF' : '#FDF9F7'}
               >
                 <div className={`
                   text-xs font-medium mb-1 flex items-center gap-1
@@ -228,7 +246,7 @@ export const AppointmentsCalendar = ({ className = "" }: AppointmentsCalendarPro
                   ))}
                   
                   {appointments.length > 3 && (
-                    <div className="px-2 py-1 text-xs text-gray-500 bg-gray-100 border border-gray-200 rounded-xs">
+                    <div className="px-2 py-1 text-xs text-gray-500 border rounded-xs" style={{ backgroundColor: '#EDDCC7', borderColor: '#A66B42' }}>
                       +{appointments.length - 3} more
                     </div>
                   )}
@@ -243,14 +261,16 @@ export const AppointmentsCalendar = ({ className = "" }: AppointmentsCalendarPro
       
       {/* Sliding Details Panel */}
       <div className={`
-        absolute top-0 right-0 h-full w-80 bg-gray-50 border-l border-gray-200 
+        absolute top-0 right-0 h-full w-80 border-l"
+        style={{ backgroundColor: '#FDF9F7', borderColor: '#EDDCC7' }}
+        className=" 
         transform transition-transform duration-300 ease-in-out
         ${isDetailsPanelOpen ? 'translate-x-0' : 'translate-x-full'}
       `}>
         {selectedDate && (
           <div className="h-full flex flex-col">
             {/* Panel Header */}
-            <div className="px-4 py-3 border-b border-gray-200 bg-white">
+            <div className="px-4 py-3 border-b" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-gray-400" />
@@ -263,7 +283,10 @@ export const AppointmentsCalendar = ({ className = "" }: AppointmentsCalendarPro
                     setIsDetailsPanelOpen(false);
                     setTimeout(() => setSelectedDate(null), 300);
                   }}
-                  className="p-1 hover:bg-gray-100 rounded-xs transition-colors"
+                  className="p-1 rounded-xs transition-colors"
+                style={{ backgroundColor: 'transparent' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
                   <ChevronRight className="h-4 w-4 text-gray-600" />
                 </button>
@@ -274,7 +297,7 @@ export const AppointmentsCalendar = ({ className = "" }: AppointmentsCalendarPro
             <div className="flex-1 overflow-y-auto p-4">
               <div className="space-y-3">
                 {getDateAppointments(selectedDate).map((appointment) => (
-                  <div key={appointment.id} className="bg-white border border-gray-200 rounded-xs p-4 hover:shadow-sm transition-shadow">
+                  <div key={appointment.id} className="border rounded-xs p-4 transition-colors" style={{ backgroundColor: '#F5E8DF', borderColor: '#EDDCC7' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FDF9F7'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F5E8DF'}>
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <span className="text-base font-semibold text-gray-900">
@@ -314,7 +337,7 @@ export const AppointmentsCalendar = ({ className = "" }: AppointmentsCalendarPro
                       </div>
                       
                       {appointment.reasonForVisit && (
-                        <div className="mt-3 p-2 bg-gray-50 rounded-xs">
+                        <div className="mt-3 p-2 rounded-xs" style={{ backgroundColor: '#FDF9F7' }}>
                           <p className="text-xs text-gray-600">
                             <span className="font-medium">Reason:</span> {appointment.reasonForVisit}
                           </p>
@@ -339,7 +362,7 @@ export const AppointmentsCalendar = ({ className = "" }: AppointmentsCalendarPro
       
       {/* Loading state */}
       {isLoading && (
-        <div className="absolute inset-0 bg-white/75 flex items-center justify-center z-20">
+        <div className="absolute inset-0 flex items-center justify-center z-20" style={{ backgroundColor: 'rgba(253, 249, 247, 0.75)' }}>
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
         </div>
       )}

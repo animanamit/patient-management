@@ -42,19 +42,19 @@ import { useActiveDoctors } from "@/hooks/use-doctors";
 
 // Loading skeleton components - Dense grid
 const QueueSkeleton = () => (
-  <div className="bg-white border border-gray-200  p-6">
+  <div className="border p-6" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
     <div className="text-center space-y-3">
-      <Skeleton className="h-12 w-12  mx-auto bg-gray-200" />
-      <Skeleton className="h-4 w-32 mx-auto bg-gray-100" />
-      <Skeleton className="h-3 w-48 mx-auto bg-gray-100" />
+      <Skeleton className="h-12 w-12 mx-auto" style={{ backgroundColor: '#E0ECDB' }} />
+      <Skeleton className="h-4 w-32 mx-auto" style={{ backgroundColor: '#E0ECDB' }} />
+      <Skeleton className="h-3 w-48 mx-auto" style={{ backgroundColor: '#E0ECDB' }} />
     </div>
   </div>
 );
 
 const AppointmentSkeleton = () => (
   <div className="space-y-3">
-    <div className="h-16 bg-gray-100  animate-pulse" />
-    <div className="h-16 bg-gray-100  animate-pulse" />
+    <div className="h-16 animate-pulse" style={{ backgroundColor: '#E0ECDB' }} />
+    <div className="h-16 animate-pulse" style={{ backgroundColor: '#E0ECDB' }} />
   </div>
 );
 
@@ -82,10 +82,10 @@ const CheckInSuccess = ({
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
-        <div className="w-12 h-12 bg-green-50  flex items-center justify-center mx-auto mb-3">
-          <CheckCircle className="h-6 w-6 text-green-600" />
+        <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: '#EDF5E9' }}>
+          <CheckCircle className="h-6 w-6" style={{ color: '#6B9A65' }} />
         </div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-1">
+        <h2 className="text-lg font-semibold mb-1" style={{ color: '#2D5A29' }}>
           Check-in Successful!
         </h2>
         <p className="text-sm text-gray-600">
@@ -94,8 +94,8 @@ const CheckInSuccess = ({
       </div>
 
       {/* Appointment Details */}
-      <div className="bg-white border border-gray-200 ">
-        <div className="px-4 py-3 border-b border-gray-100">
+      <div className="bg-white border " style={{ borderColor: '#E0ECDB' }}>
+        <div className="px-4 py-3 border-b" style={{ borderColor: '#E0ECDB' }}>
           <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
             Appointment Details
           </h3>
@@ -142,8 +142,8 @@ const CheckInSuccess = ({
         {isQueueLoading ? (
           <QueueSkeleton />
         ) : queueData ? (
-          <div className="bg-white border border-gray-200 ">
-            <div className="px-4 py-3 border-b border-gray-100">
+          <div className="bg-white border " style={{ borderColor: '#E0ECDB' }}>
+            <div className="px-4 py-3 border-b" style={{ borderColor: '#E0ECDB' }}>
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Queue Status
@@ -173,15 +173,15 @@ const CheckInSuccess = ({
             </div>
           </div>
         ) : (
-          <div className="bg-white border border-gray-200  p-4">
+          <div className="border p-4" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
             <p className="text-sm text-gray-600">Loading queue position...</p>
           </div>
         )}
       </Suspense>
 
       {/* Instructions */}
-      <div className="bg-white border border-gray-200 ">
-        <div className="px-4 py-3 border-b border-gray-100">
+      <div className="bg-white border " style={{ borderColor: '#E0ECDB' }}>
+        <div className="px-4 py-3 border-b" style={{ borderColor: '#E0ECDB' }}>
           <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
             What&apos;s Next?
           </h3>
@@ -210,7 +210,13 @@ const CheckInSuccess = ({
 
       <button
         onClick={onReset}
-        className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+        className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border transition-colors rounded-xs"
+        style={{ 
+          borderColor: '#E0ECDB',
+          backgroundColor: 'transparent'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
       >
         Check In Another Patient
       </button>
@@ -420,7 +426,7 @@ export default function CheckInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#F8FBF7' }}>
       {/* Navigation Bar */}
       <NavigationBar />
 
@@ -431,7 +437,7 @@ export default function CheckInPage() {
           {checkInStatus === "idle" && (
             <div className="space-y-6">
               <div className="text-center">
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                <h2 className="text-lg font-semibold mb-1" style={{ color: '#2D5A29' }}>
                   Welcome to Our Clinic
                 </h2>
                 <p className="text-sm text-gray-600">
@@ -440,8 +446,8 @@ export default function CheckInPage() {
                 </p>
               </div>
 
-              <div className="bg-white border border-gray-200 ">
-                <div className="px-4 py-3 border-b border-gray-100">
+              <div className="border" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
+                <div className="px-4 py-3 border-b" style={{ borderColor: '#E0ECDB' }}>
                   <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Phone Number
                   </h3>
@@ -457,7 +463,8 @@ export default function CheckInPage() {
                       placeholder="XXXX XXXX"
                       value={formattedPhone}
                       onChange={handlePhoneChange}
-                      className="pl-16 h-10 border-gray-200  focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      className="pl-16 h-10 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      style={{ borderColor: '#E0ECDB' }}
                       maxLength={11}
                     />
                   </div>
@@ -504,7 +511,7 @@ export default function CheckInPage() {
           {checkInStatus === "found" && selectedPatient && (
             <div className="space-y-6">
               <div className="text-center">
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                <h2 className="text-lg font-semibold mb-1" style={{ color: '#2D5A29' }}>
                   Welcome, {selectedPatient.firstName}{" "}
                   {selectedPatient.lastName}!
                 </h2>
@@ -513,8 +520,8 @@ export default function CheckInPage() {
                 </p>
               </div>
 
-              <div className="bg-white border border-gray-200 ">
-                <div className="px-4 py-3 border-b border-gray-100">
+              <div className="border" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
+                <div className="px-4 py-3 border-b" style={{ borderColor: '#E0ECDB' }}>
                   <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Select Check-in Type
                   </h3>
@@ -528,7 +535,7 @@ export default function CheckInPage() {
                     ) : appointmentsData?.appointments &&
                       appointmentsData.appointments.length > 0 ? (
                       <>
-                        <div className="px-4 py-3 bg-gray-50">
+                        <div className="px-4 py-3" style={{ backgroundColor: '#F8FBF7' }}>
                           <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Scheduled Appointments
                           </p>
@@ -542,7 +549,10 @@ export default function CheckInPage() {
                           return (
                             <div
                               key={appointment.id}
-                              className="px-4 py-4 hover:bg-gray-50 transition-colors"
+                              className="px-4 py-4 transition-colors"
+                          style={{ backgroundColor: 'transparent' }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#E0ECDB'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                             >
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
@@ -611,12 +621,12 @@ export default function CheckInPage() {
                   </Suspense>
 
                   {/* Walk-in Option */}
-                  <div className="bg-gray-50">
+                  <div style={{ backgroundColor: '#F8FBF7' }}>
                     <div className="px-4 py-3">
                       <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
                         Don&apos;t have an appointment?
                       </p>
-                      <div className="bg-white border border-gray-200 rounded-xs">
+                      <div className="border rounded-xs" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
                         <div className="px-4 py-4">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -666,7 +676,13 @@ export default function CheckInPage() {
 
               <button
                 onClick={resetCheckIn}
-                className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+                className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border transition-colors rounded-xs"
+                style={{ 
+                  borderColor: '#E0ECDB',
+                  backgroundColor: 'transparent'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <span className="flex items-center justify-center gap-2">
                   <ArrowLeft className="h-3 w-3" />
@@ -680,10 +696,10 @@ export default function CheckInPage() {
           {checkInStatus === "processing" && (
             <div className="space-y-6">
               <div className="text-center">
-                <div className="w-12 h-12 bg-blue-50 rounded-sm flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 rounded-sm flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: '#EBF1F8' }}>
                   <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
                 </div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                <h2 className="text-lg font-semibold mb-1" style={{ color: '#2D5A29' }}>
                   Setting Up Your Visit
                 </h2>
                 <p className="text-sm text-gray-600">
@@ -697,10 +713,10 @@ export default function CheckInPage() {
           {checkInStatus === "concierge" && selectedPatient && (
             <div className="space-y-6">
               <div className="text-center">
-                <div className="w-12 h-12 bg-green-50 rounded-sm flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 rounded-sm flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: '#EDF5E9' }}>
                   <UserCheck className="h-6 w-6 text-green-600" />
                 </div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                <h2 className="text-lg font-semibold mb-1" style={{ color: '#2D5A29' }}>
                   Welcome to Our Clinic!
                 </h2>
                 <p className="text-sm text-gray-600">
@@ -708,8 +724,8 @@ export default function CheckInPage() {
                 </p>
               </div>
 
-              <div className="bg-white border border-gray-200 rounded-sm">
-                <div className="px-4 py-3 border-b border-gray-100">
+              <div className="border rounded-sm" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
+                <div className="px-4 py-3 border-b" style={{ borderColor: '#E0ECDB' }}>
                   <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Next Steps
                   </h3>
@@ -734,7 +750,7 @@ export default function CheckInPage() {
                   </div>
                 </div>
 
-                <div className="px-4 py-3 bg-blue-50 border-t border-gray-100">
+                <div className="px-4 py-3 border-t" style={{ backgroundColor: '#EBF1F8', borderColor: '#E0ECDB' }}>
                   <div className="flex items-center gap-2">
                     <Clock className="h-3 w-3 text-blue-600" />
                     <span className="text-xs font-medium text-blue-700">
@@ -744,7 +760,7 @@ export default function CheckInPage() {
                 </div>
               </div>
 
-              <div className="bg-gray-50 border border-gray-200 rounded-sm p-4">
+              <div className="border rounded-sm p-4" style={{ backgroundColor: '#F8FBF7', borderColor: '#E0ECDB' }}>
                 <h4 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">
                   Have your information ready:
                 </h4>
@@ -758,7 +774,13 @@ export default function CheckInPage() {
 
               <button
                 onClick={resetCheckIn}
-                className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+                className="w-full text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border transition-colors rounded-xs"
+                style={{ 
+                  borderColor: '#E0ECDB',
+                  backgroundColor: 'transparent'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <span className="flex items-center justify-center gap-2">
                   <ArrowLeft className="h-3 w-3" />
@@ -784,10 +806,10 @@ export default function CheckInPage() {
           {checkInStatus === "error" && (
             <div className="space-y-6">
               <div className="text-center">
-                <div className="w-12 h-12 bg-red-50  flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: '#FEF2F2' }}>
                   <AlertCircle className="h-6 w-6 text-red-600" />
                 </div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                <h2 className="text-lg font-semibold mb-1" style={{ color: '#2D5A29' }}>
                   Check-in Failed
                 </h2>
                 <p className="text-sm text-gray-600">
@@ -798,7 +820,7 @@ export default function CheckInPage() {
               </div>
 
               {lookupError && (
-                <div className="bg-red-50 border border-red-200  p-4">
+                <div className="border p-4" style={{ backgroundColor: '#FEF2F2', borderColor: '#FECACA' }}>
                   <div className="flex items-center gap-2">
                     <AlertCircle className="h-4 w-4 text-red-600" />
                     <span className="text-sm text-red-600">
@@ -811,8 +833,8 @@ export default function CheckInPage() {
                 </div>
               )}
 
-              <div className="bg-white border border-gray-200 ">
-                <div className="px-4 py-3 border-b border-gray-100">
+              <div className="border" style={{ backgroundColor: '#EDF5E9', borderColor: '#E0ECDB' }}>
+                <div className="px-4 py-3 border-b" style={{ borderColor: '#E0ECDB' }}>
                   <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Possible Reasons
                   </h3>
@@ -846,7 +868,13 @@ export default function CheckInPage() {
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={resetCheckIn}
-                  className="text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border border-gray-200 hover:bg-gray-50 transition-colors rounded-xs"
+                  className="text-xs font-medium text-gray-700 hover:text-gray-900 px-4 py-3 border transition-colors rounded-xs"
+                  style={{ 
+                    borderColor: '#E0ECDB',
+                    backgroundColor: 'transparent'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
                   Try Again
                 </button>
