@@ -27,11 +27,17 @@ interface EnvironmentConfig {
   AUTH_SECRET: string | undefined;
   GOOGLE_CLIENT_ID: string | undefined;
   GOOGLE_CLIENT_SECRET: string | undefined;
+  
+  // AWS S3 Configuration
+  AWS_REGION: string;
+  AWS_ACCESS_KEY_ID: string;
+  AWS_SECRET_ACCESS_KEY: string;
+  AWS_S3_BUCKET_NAME: string;
 }
 
 // Validate required environment variables
 const validateEnvironment = (): EnvironmentConfig => {
-  const requiredVars = ['DATABASE_URL'] as const;
+  const requiredVars = ['DATABASE_URL', 'AWS_REGION', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_S3_BUCKET_NAME'] as const;
   const missingVars: string[] = [];
 
   // Check required variables
@@ -65,6 +71,10 @@ const validateEnvironment = (): EnvironmentConfig => {
     AUTH_SECRET: process.env.AUTH_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    AWS_REGION: process.env.AWS_REGION!,
+    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID!,
+    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY!,
+    AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME!,
   };
 };
 

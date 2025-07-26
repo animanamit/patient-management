@@ -30,6 +30,15 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { AppointmentWithDetails, AppointmentStatus, AppointmentId } from "@/lib/api-types";
 import { useAppointment, useUpdateAppointment } from "@/hooks/use-appointments";
+import {
+  useDocuments,
+  DocumentWithUploader,
+  DocumentCategory,
+} from "@/hooks/use-documents";
+import { DocumentList } from "@/components/documents/document-list";
+import { DocumentUploadModal } from "@/components/documents/document-upload-modal";
+import { DocumentPreview } from "@/components/documents/document-preview";
+import { useAuth } from "@/hooks/use-auth";
 
 const getStatusColor = (status: AppointmentStatus) => {
   switch (status) {
@@ -80,6 +89,14 @@ export default function AppointmentDetailsPage() {
   const [isPending, startTransition] = useTransition();
   const [isEditing, setIsEditing] = useState(false);
   
+  // Document modal states
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [previewDocument, setPreviewDocument] = useState<DocumentWithUploader | null>(null);
+
+  // Get current user for document management
+  const { data: authData } = useAuth();
+  const currentUser = authData?.user;
+  
   // Doctor's notes and clinical data
   const [clinicalNotes, setClinicalNotes] = useState("");
   const [diagnosis, setDiagnosis] = useState("");
@@ -104,10 +121,18 @@ export default function AppointmentDetailsPage() {
     vitals: typeof vitals;
   } | null>(null);
 
-  // File attachments
-  const [attachments, setAttachments] = useState<Array<{ id: string; name: string; type: string; uploadedBy: string; uploadedAt: Date }>>([]);
-
   const { data: appointmentData, isLoading, error } = useAppointment(appointmentId as AppointmentId);
+  
+  // Fetch appointment documents
+  const { 
+    data: documentsData, 
+    isLoading: isDocumentsLoading,
+    refetch: refetchDocuments 
+  } = useDocuments({ 
+    appointmentId: appointmentId as AppointmentId
+  }, { 
+    enabled: !!appointmentId 
+  });
   
   console.log('Appointment data:', appointmentData);
   console.log('Error:', error);
@@ -548,6 +573,7 @@ export default function AppointmentDetailsPage() {
                     size="sm"
                     variant="outline"
                     className="text-xs"
+                    onClick={() => setIsUploadModalOpen(true)}
                   >
                     <Upload className="h-3 w-3 mr-2" />
                     Upload File
@@ -555,38 +581,24 @@ export default function AppointmentDetailsPage() {
                 </div>
               </div>
               <div className="p-4">
-                {attachments.length === 0 ? (
+                {isDocumentsLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto mb-2"></div>
+                    <p className="text-sm text-gray-600">Loading documents...</p>
+                  </div>
+                ) : documentsData?.documents && documentsData.documents.length > 0 ? (
+                  <DocumentList
+                    documents={documentsData.documents}
+                    userRole={currentUser?.role === 'DOCTOR' ? 'DOCTOR' : currentUser?.role === 'STAFF' ? 'STAFF' : 'PATIENT'}
+                    currentUserId={currentUser?.id}
+                    onPreview={setPreviewDocument}
+                    onRefresh={refetchDocuments}
+                  />
+                ) : (
                   <div className="text-center py-8">
                     <FileText className="h-8 w-8 text-gray-300 mx-auto mb-2" />
                     <p className="text-sm text-gray-600 mb-1">No attachments yet</p>
                     <p className="text-xs text-gray-500">Upload lab results, reports, or other files</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {attachments.map((file) => (
-                      <div key={file.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-sm hover:bg-gray-50">
-                        <div className="flex items-center gap-3">
-                          <FileText className="h-4 w-4 text-gray-400" />
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                            <p className="text-xs text-gray-500">
-                              Uploaded by {file.uploadedBy} • {file.uploadedAt.toLocaleDateString()}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button size="sm" variant="ghost" className="text-xs">
-                            <Download className="h-3 w-3 mr-1" />
-                            Download
-                          </Button>
-                          {(isDoctorView || isAdminView) && (
-                            <Button size="sm" variant="ghost" className="text-xs text-red-600">
-                              <X className="h-3 w-3" />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 )}
               </div>
@@ -594,6 +606,27 @@ export default function AppointmentDetailsPage() {
           </div>
         </div>
       </div>
+
+      {/* Document Upload Modal */}
+      {appointment?.patient && (
+        <DocumentUploadModal
+          isOpen={isUploadModalOpen}
+          onClose={() => setIsUploadModalOpen(false)}
+          patientId={appointment.patient.id}
+          appointmentId={appointmentId}
+          onUploadComplete={() => {
+            refetchDocuments();
+            setIsUploadModalOpen(false);
+          }}
+        />
+      )}
+
+      {/* Document Preview Modal */}
+      <DocumentPreview
+        document={previewDocument}
+        isOpen={!!previewDocument}
+        onClose={() => setPreviewDocument(null)}
+      />
     </div>
   );
 }

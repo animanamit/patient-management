@@ -22,10 +22,14 @@ import {
   useOptimisticAppointmentStatusUpdate,
 } from "@/hooks/use-appointments";
 import {
-  usePatientDocuments,
+  useDocuments,
+  DocumentWithUploader,
   formatFileSize,
-  getDocumentTypeStyles,
+  getFileTypeIcon,
 } from "@/hooks/use-documents";
+import { DocumentList } from "@/components/documents/document-list";
+import { DocumentPreview } from "@/components/documents/document-preview";
+import { useAuth } from "@/hooks/use-auth";
 import { BookAppointmentModal } from "@/components/book-appointment-modal";
 import { EditPatientModal } from "@/components/edit-patient-modal";
 import { NavigationBar } from "@/components/navigation-bar";
@@ -80,6 +84,11 @@ const getStatusColor = (status: string) => {
 export default function PatientDashboard() {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [previewDocument, setPreviewDocument] = useState<DocumentWithUploader | null>(null);
+
+  // Get current user for document management
+  const { data: authData } = useAuth();
+  const currentUser = authData?.user;
 
   // Optimistic appointment status updates
   const {
@@ -130,10 +139,15 @@ export default function PatientDashboard() {
     });
 
   // Fetch patient documents
-  const { data: documentsData, isLoading: isDocumentsLoading } =
-    usePatientDocuments(validPatientId || undefined, {
-      enabled: !!validPatientId,
-    });
+  const { 
+    data: documentsData, 
+    isLoading: isDocumentsLoading,
+    refetch: refetchDocuments 
+  } = useDocuments({ 
+    patientId: validPatientId || undefined 
+  }, { 
+    enabled: !!validPatientId 
+  });
 
   // Show loading state
   if (isPatientsLoading || isPatientLoading) {
@@ -551,128 +565,14 @@ export default function PatientDashboard() {
                     </p>
                   </div>
                 ) : (
-                  <div className="divide-y" style={{ borderColor: '#E0ECDB' }}>
-                    {documents.map((doc) => (
-                      <div
-                        key={doc.id}
-                        className="px-6 py-5 md:px-4 md:py-3 transition-colors"
-                        style={{ backgroundColor: 'transparent' }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
-                        onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#F8FBF7'}
-                      >
-                        <div className="flex items-center gap-4 md:gap-3">
-                          {/* Mobile: Larger Document Type Badge */}
-                          <div className="md:hidden">
-                            <div
-                              className={`px-3 py-2 text-sm font-mono border rounded-xl ${getDocumentTypeStyles(
-                                doc.type
-                              )}`}
-                            >
-                              {doc.type}
-                            </div>
-                          </div>
-
-                          {/* Desktop: Small Badge */}
-                          <span
-                            className={`hidden md:inline-block px-2 py-1 text-xs font-mono border rounded-xs ${getDocumentTypeStyles(
-                              doc.type
-                            )}`}
-                          >
-                            {doc.type}
-                          </span>
-
-                          <div className="flex-1">
-                            {/* Mobile: Large Typography */}
-                            <div className="md:hidden">
-                              <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                                {doc.name}
-                              </h3>
-                              <div className="flex items-center gap-3 text-sm text-gray-600">
-                                <span className="font-medium">
-                                  {formatFileSize(doc.fileSize)}
-                                </span>
-                                <span className="text-gray-400">•</span>
-                                <span>
-                                  {new Date(doc.uploadedAt).toLocaleDateString(
-                                    "en-US",
-                                    {
-                                      month: "short",
-                                      day: "numeric",
-                                      year: "numeric",
-                                    }
-                                  )}
-                                </span>
-                              </div>
-                              <div className="mt-2">
-                                <span
-                                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                                  style={{ 
-                                    backgroundColor: doc.status === "COMPLETE"
-                                      ? "#E0ECDB"
-                                      : doc.status === "ACTIVE"
-                                      ? "#EBF1F8"
-                                      : doc.status === "PENDING"
-                                      ? "#FEF3E2"
-                                      : "#F8FBF7",
-                                    color: doc.status === "COMPLETE"
-                                      ? "#2D5A29"
-                                      : doc.status === "ACTIVE"
-                                      ? "#243A56"
-                                      : doc.status === "PENDING"
-                                      ? "#A66B42"
-                                      : "#2D5A29"
-                                  }}
-                                >
-                                  {doc.status.toLowerCase()}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Desktop: Compact Layout */}
-                            <div className="hidden md:block">
-                              <p className="text-sm font-medium text-gray-900">
-                                {doc.name}
-                              </p>
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <span className="text-xs text-gray-500">
-                                  {formatFileSize(doc.fileSize)}
-                                </span>
-                                <span className="text-xs text-gray-400">•</span>
-                                <span className="text-xs text-gray-500">
-                                  {new Date(
-                                    doc.uploadedAt
-                                  ).toLocaleDateString()}
-                                </span>
-                                <span className="text-xs text-gray-400">•</span>
-                                <span
-                                  className={`text-xs ${
-                                    doc.status === "COMPLETE"
-                                      ? "text-green-600"
-                                      : doc.status === "ACTIVE"
-                                      ? "text-blue-600"
-                                      : doc.status === "PENDING"
-                                      ? "text-orange-600"
-                                      : "text-gray-600"
-                                  }`}
-                                >
-                                  {doc.status.toLowerCase()}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <button
-                            className="flex items-center gap-2 px-4 py-2 md:gap-1 md:text-xs md:font-medium text-blue-600 md:text-gray-700 hover:bg-blue-50 md:hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed rounded-full md:rounded-none font-medium transition-colors"
-                            disabled={doc.status === "PENDING"}
-                          >
-                            <Download className="h-5 w-5 md:h-3 md:w-3" />
-                            <span className="md:inline">Download</span>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="px-4 md:px-0">
+                    <DocumentList
+                      documents={documents}
+                      userRole="PATIENT"
+                      currentUserId={currentUser?.id}
+                      onPreview={setPreviewDocument}
+                      onRefresh={refetchDocuments}
+                    />
                   </div>
                 )}
               </div>
@@ -911,6 +811,13 @@ export default function PatientDashboard() {
           />
         </>
       )}
+
+      {/* Document Preview Modal */}
+      <DocumentPreview
+        document={previewDocument}
+        isOpen={!!previewDocument}
+        onClose={() => setPreviewDocument(null)}
+      />
     </div>
   );
 }

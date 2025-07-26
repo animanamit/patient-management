@@ -35,6 +35,9 @@ model user {
   patient       Patient?
   doctor        Doctor?
   
+  // Document relations
+  uploadedDocuments Document[] @relation("DocumentUploader")
+  
   // Phone number fields from plugin
   phoneNumber          String?   @unique
   phoneNumberVerified  Boolean   @default(false)
@@ -118,6 +121,7 @@ model Patient {
   // Relations
   user          user          @relation(fields: [userId], references: [id], onDelete: Cascade)
   appointments  Appointment[]
+  documents     Document[]    @relation("PatientDocuments")
 
   @@map("patients")
 }
@@ -139,6 +143,7 @@ model Doctor {
   // Relations
   user           user          @relation(fields: [userId], references: [id], onDelete: Cascade)
   appointments   Appointment[]
+  documents      Document[]    @relation("DoctorDocuments")
 
   @@map("doctors")
 }
@@ -170,8 +175,43 @@ model Appointment {
   // Relations
   patient             Patient           @relation(fields: [patientId], references: [id])
   doctor              Doctor            @relation(fields: [doctorId], references: [id])
+  documents           Document[]        @relation("AppointmentDocuments")
 
   @@map("appointments")
+}
+
+// Document management for patient files, clinical notes, etc.
+model Document {
+  id                  String            @id @default(cuid())
+  
+  // File information
+  fileName            String
+  fileType            String            // MIME type
+  fileSize            Int               // Size in bytes
+  s3Key               String            @unique // S3 object key
+  
+  // Ownership and association
+  uploadedBy          String            // userId of uploader
+  patientId           String
+  doctorId            String?           // optional, for documents uploaded by doctors
+  appointmentId       String?           // optional, for appointment-specific documents
+  
+  // Categorization and access
+  category            DocumentCategory
+  description         String?
+  isSharedWithPatient Boolean           @default(false)
+  
+  // System fields
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  
+  // Relations
+  patient             Patient           @relation("PatientDocuments", fields: [patientId], references: [id])
+  doctor              Doctor?           @relation("DoctorDocuments", fields: [doctorId], references: [id])
+  appointment         Appointment?      @relation("AppointmentDocuments", fields: [appointmentId], references: [id])
+  uploadedByUser      user              @relation("DocumentUploader", fields: [uploadedBy], references: [id])
+
+  @@map("documents")
 }
 
 // ============================================
@@ -196,4 +236,15 @@ enum AppointmentType {
   FIRST_CONSULT
   CHECK_UP
   FOLLOW_UP
+}
+
+enum DocumentCategory {
+  MEDICAL_HISTORY
+  LAB_RESULTS
+  PRESCRIPTION
+  IMAGING
+  CLINICAL_NOTES
+  CONSENT_FORM
+  INSURANCE
+  OTHER
 }

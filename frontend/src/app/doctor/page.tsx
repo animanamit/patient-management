@@ -10,11 +10,23 @@ import {
   Search,
   ChevronDown,
   Stethoscope,
+  Upload,
+  FileText,
+  FolderOpen,
 } from "lucide-react";
 import { useDoctors, useDoctor } from "@/hooks/use-doctors";
 import { useTodayAppointments } from "@/hooks/use-appointments";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Appointment, AppointmentWithDetails } from "@/lib/api-types";
+import { DocumentList } from "@/components/documents/document-list";
+import { DocumentPreview } from "@/components/documents/document-preview";
+import { 
+  useDocuments, 
+  DocumentWithUploader,
+  DocumentCategory 
+} from "@/hooks/use-documents";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 // Loading skeleton - Dense grid
 const LoadingSkeleton = () => (
@@ -138,6 +150,13 @@ const getStatusBg = (status: string) => {
 };
 
 export default function DoctorDashboard() {
+  // Document modal states
+  const [previewDocument, setPreviewDocument] = useState<DocumentWithUploader | null>(null);
+
+  // Get current user for document management
+  const { data: authData } = useAuth();
+  const currentUser = authData?.user;
+
   // Helper function to ensure doctor ID is properly formatted
   const ensureCleanDoctorId = (id: string | null): string | null => {
     if (!id || typeof id !== "string") return null;
@@ -209,6 +228,17 @@ export default function DoctorDashboard() {
     });
 
   const appointments = appointmentsData?.appointments || [];
+
+  // Fetch documents - get all documents for the doctor to see across all patients
+  const { 
+    data: documentsData, 
+    isLoading: isDocumentsLoading,
+    refetch: refetchDocuments 
+  } = useDocuments({ 
+    doctorId: validDoctorId || undefined
+  }, { 
+    enabled: !!validDoctorId 
+  });
   const upcomingAppointments = appointments.filter(
     (apt) => apt.status === "SCHEDULED"
   );
@@ -658,6 +688,62 @@ export default function DoctorDashboard() {
                 )}
               </div>
             </section>
+
+            {/* Documents Section */}
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Recent Documents
+                  <span className="ml-2 font-mono text-gray-400 font-normal">
+                    {documentsData?.documents?.length || 0}
+                  </span>
+                </h2>
+                <button
+                  onClick={() => {
+                    // TODO: Add patient selection for upload
+                    toast.error("Please select a patient from appointments to upload documents");
+                  }}
+                  className="text-xs font-medium text-gray-400 px-2 py-1 border rounded-xs transition-colors flex items-center gap-1 cursor-not-allowed"
+                  style={{
+                    borderColor: "#D8E4F0",
+                    backgroundColor: "transparent",
+                  }}
+                  title="Select a patient from appointments to upload documents"
+                >
+                  <Upload className="h-3 w-3" />
+                  Upload
+                </button>
+              </div>
+              <div
+                className="border-0 md:border rounded-sm"
+                style={{ backgroundColor: "#EBF1F8", borderColor: "#D8E4F0" }}
+              >
+                {isDocumentsLoading ? (
+                  <div className="px-4 py-8 text-center">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
+                    <p className="text-xs text-gray-500 mt-2">Loading documents...</p>
+                  </div>
+                ) : documentsData?.documents && documentsData.documents.length > 0 ? (
+                  <DocumentList
+                    documents={documentsData.documents.slice(0, 5)} // Show only first 5 for dashboard
+                    userRole="DOCTOR"
+                    currentUserId={currentUser?.id}
+                    onPreview={setPreviewDocument}
+                    onRefresh={refetchDocuments}
+                  />
+                ) : (
+                  <div className="px-4 py-12 md:py-8 text-center">
+                    <FolderOpen className="h-8 w-8 md:h-6 md:w-6 mx-auto mb-3 md:mb-2 text-gray-300" />
+                    <p className="text-base md:text-sm text-gray-600 mb-1">
+                      No documents uploaded
+                    </p>
+                    <p className="text-sm md:text-xs text-gray-500">
+                      Upload documents for your patients
+                    </p>
+                  </div>
+                )}
+              </div>
+            </section>
           </div>
 
           {/* Right Column - Side Information - Hidden on Mobile */}
@@ -808,6 +894,13 @@ export default function DoctorDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Document Preview Modal */}
+      <DocumentPreview
+        document={previewDocument}
+        isOpen={!!previewDocument}
+        onClose={() => setPreviewDocument(null)}
+      />
     </div>
   );
 }

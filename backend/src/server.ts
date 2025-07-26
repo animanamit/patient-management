@@ -55,7 +55,8 @@ const start = async () => {
           "/api/appointments",
           "/api/patients", 
           "/api/doctors",
-          "/api/sms/send"
+          "/api/sms/send",
+          "/api/documents"
         ]
       };
     });
@@ -80,6 +81,8 @@ const start = async () => {
     await fastify.register(import("./routes/appointments.js"), { prefix: "/api" });
     console.log("📱 Registering SMS routes at /api/sms prefix...");
     await fastify.register(import("./routes/sms.routes.js"), { prefix: "/api/sms" });
+    console.log("📄 Registering document routes at /api/documents prefix...");
+    await fastify.register(import("./routes/documents.js"), { prefix: "/api/documents" });
     
     // Register authentication routes (no prefix needed - routes include /api/auth)
     console.log("🔐 Registering authentication routes...");
