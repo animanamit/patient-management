@@ -1,13 +1,20 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { env } from './environment.js';
 
-export const s3Client = new S3Client({
+// Check if we have real AWS credentials
+export const isAWSConfigured = 
+  env.AWS_ACCESS_KEY_ID !== 'mock-access-key' && 
+  env.AWS_SECRET_ACCESS_KEY !== 'mock-secret-key' &&
+  env.AWS_S3_BUCKET_NAME !== 'mock-bucket';
+
+// Only create S3 client if AWS is configured
+export const s3Client = isAWSConfigured ? new S3Client({
   region: env.AWS_REGION,
   credentials: {
     accessKeyId: env.AWS_ACCESS_KEY_ID,
     secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
   },
-});
+}) : null;
 
 export const S3_CONFIG = {
   bucket: env.AWS_S3_BUCKET_NAME,

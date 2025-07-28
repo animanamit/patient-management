@@ -37,7 +37,7 @@ interface EnvironmentConfig {
 
 // Validate required environment variables
 const validateEnvironment = (): EnvironmentConfig => {
-  const requiredVars = ['DATABASE_URL', 'AWS_REGION', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_S3_BUCKET_NAME'] as const;
+  const requiredVars = ['DATABASE_URL'] as const;
   const missingVars: string[] = [];
 
   // Check required variables
@@ -52,6 +52,16 @@ const validateEnvironment = (): EnvironmentConfig => {
       `Missing required environment variables: ${missingVars.join(', ')}\n` +
       'Please check your .env file and ensure all required variables are set.'
     );
+  }
+
+  // Check if AWS variables are provided
+  const hasAWSConfig = process.env.AWS_REGION && 
+                       process.env.AWS_ACCESS_KEY_ID && 
+                       process.env.AWS_SECRET_ACCESS_KEY && 
+                       process.env.AWS_S3_BUCKET_NAME;
+
+  if (!hasAWSConfig) {
+    console.warn('⚠️  AWS S3 configuration not found. File uploads will use local mock storage.');
   }
 
   // Validate DATABASE_URL format
@@ -71,10 +81,10 @@ const validateEnvironment = (): EnvironmentConfig => {
     AUTH_SECRET: process.env.AUTH_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    AWS_REGION: process.env.AWS_REGION!,
-    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID!,
-    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY!,
-    AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME!,
+    AWS_REGION: process.env.AWS_REGION || 'us-east-1',
+    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID || 'mock-access-key',
+    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY || 'mock-secret-key',
+    AWS_S3_BUCKET_NAME: process.env.AWS_S3_BUCKET_NAME || 'mock-bucket',
   };
 };
 

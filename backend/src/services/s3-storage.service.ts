@@ -1,7 +1,8 @@
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { fileTypeFromBuffer } from 'file-type';
-import { s3Client, S3_CONFIG } from '../config/s3.js';
+import { s3Client, S3_CONFIG, isAWSConfigured } from '../config/s3.js';
+import { mockS3StorageService } from './mock-s3-storage.service.js';
 import { nanoid } from 'nanoid';
 
 export interface UploadUrlRequest {
@@ -29,6 +30,10 @@ export class S3StorageService {
    * Generate a pre-signed URL for file upload
    */
   async generateUploadUrl(request: UploadUrlRequest): Promise<UploadUrlResponse> {
+    // Use mock service if AWS is not configured
+    if (!isAWSConfigured) {
+      return mockS3StorageService.generateUploadUrl(request);
+    }
     // Validate file type
     if (!S3_CONFIG.allowedFileTypes.includes(request.fileType)) {
       throw new Error(`File type ${request.fileType} is not allowed`);
@@ -61,7 +66,7 @@ export class S3StorageService {
     });
 
     // Generate pre-signed URL
-    const uploadUrl = await getSignedUrl(s3Client, command, {
+    const uploadUrl = await getSignedUrl(s3Client!, command, {
       expiresIn: S3_CONFIG.uploadUrlExpiration,
     });
 
@@ -76,6 +81,10 @@ export class S3StorageService {
    * Generate a pre-signed URL for file download
    */
   async generateDownloadUrl(request: DownloadUrlRequest): Promise<string> {
+    // Use mock service if AWS is not configured
+    if (!isAWSConfigured) {
+      return mockS3StorageService.generateDownloadUrl(request);
+    }
     const command = new GetObjectCommand({
       Bucket: S3_CONFIG.bucket,
       Key: request.s3Key,
@@ -84,7 +93,7 @@ export class S3StorageService {
         : undefined,
     });
 
-    return await getSignedUrl(s3Client, command, {
+    return await getSignedUrl(s3Client!, command, {
       expiresIn: S3_CONFIG.downloadUrlExpiration,
     });
   }
