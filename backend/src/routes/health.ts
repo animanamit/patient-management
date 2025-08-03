@@ -1,42 +1,41 @@
-import { FastifyPluginAsync } from "fastify";
+import { Hono } from "hono";
 import { checkDatabaseConnection } from "../config/database.js";
 
-const healthRoutes: FastifyPluginAsync = async function (fastify) {
-  // Basic health check
-  fastify.get("/health", async (request, _reply) => {
-    console.log(`🚀 FASTIFY ROUTE HIT: ${request.method} ${request.url}`);
-    console.log(`🌐 Health check origin: ${request.headers.origin}`);
-    
-    return {
-      status: "healthy",
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      port: process.env.PORT,
-      nodeEnv: process.env.NODE_ENV,
-    };
+const app = new Hono();
+
+// Basic health check
+app.get("/", async (c) => {
+  console.log(`🚀 HONO ROUTE HIT: ${c.req.method} ${c.req.url}`);
+  console.log(`🌐 Health check origin: ${c.req.header("origin")}`);
+  
+  return c.json({
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    port: process.env.PORT,
+    nodeEnv: process.env.NODE_ENV,
   });
+});
 
-  // Detailed health check with database
-  fastify.get("/health/detailed", async (_request, reply) => {
-    const dbHealthy = await checkDatabaseConnection();
+// Detailed health check with database
+app.get("/detailed", async (c) => {
+  const dbHealthy = await checkDatabaseConnection();
 
-    if (!dbHealthy) {
-      reply.code(503);
-      return {
-        status: "unhealthy",
-        database: "disconnected",
-        timestamp: new Date().toISOString(),
-      };
-    }
-
-    return {
-      status: "healthy",
-      database: "connected",
+  if (!dbHealthy) {
+    return c.json({
+      status: "unhealthy",
+      database: "disconnected",
       timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      memory: process.memoryUsage(),
-    };
-  });
-};
+    }, 503);
+  }
 
-export default healthRoutes;
+  return c.json({
+    status: "healthy",
+    database: "connected",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+  });
+});
+
+export default app;

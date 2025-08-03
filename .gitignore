@@ -102,3 +102,6 @@ build/
 *.md
 !README.md
 *.txt
+
+inspiration-images/
+*.mdc
